@@ -6,15 +6,14 @@
  * @def MAX_ELEMENTS_MEMORY
  * @brief sequenceの配列がとれる最大バイト数.
  */
-#define MAX_ELEMENTS_MEMORY 65535
+#define SIZE 1000
 
 /**
  * @brief 配列とそのメタデータを保持する構造体.
  */
 typedef struct sequence {
-  size_t elements_length;                          /** 配列の長さ. */
-  size_t size;                                     /** 配列がとれる最大長. */
-  int elements[MAX_ELEMENTS_MEMORY / sizeof(int)]; /** int型で表された配列. */
+  size_t length;                    /** 配列の長さ. */
+  int elements[SIZE / sizeof(int)]; /** int型で表された配列. */
 } sequence;
 
 /**
@@ -23,8 +22,7 @@ typedef struct sequence {
  */
 sequence* init_sequence() {
   sequence* s = (sequence*)malloc(sizeof(sequence));
-  s->elements_length = 0;
-  s->size = MAX_ELEMENTS_MEMORY / sizeof(int);
+  s->length = 0;
   return s;
 }
 
@@ -39,32 +37,32 @@ void release_sequence(sequence* seq) {
 /**
  * @brief 配列の指定位置にデータを挿入し,指定位置以降を後ろにずらす. Program 1.3.1
  * @param[in] seq 挿入対象の配列をもつsequenceのポインタ.
- * @param[in] k   挿入する位置/キー/インデックス (0 <= k <= seq->elements_lengthを前提).
+ * @param[in] k   挿入する位置/キー/インデックス (0 <= k <= seq->lengthを前提).
  * @param[in] val int型の挿入データ.
  */
 void insert_element(sequence* seq, int k, int val) {
-  if (seq->elements_length >= seq->size) {
+  if (seq->length >= SIZE) {
     printf("No more element can be inserted into elements.\n");
     return;
   }
 
-  for (int i = seq->elements_length - 1; i >= k; i--) {
+  for (int i = seq->length - 1; i >= k; i--) {
     seq->elements[i + 1] = seq->elements[i];
   }
 
-  seq->elements_length++;
+  seq->length++;
   seq->elements[k] = val;
 }
 
 /**
  * @brief 配列の指定位置のデータを削除し,指定位置以降を前にずらす. Program 1.3.2
  * @param[in] seq 削除対象の配列をもつsequenceのポインタ.
- * @param[in] k   削除する位置/キー/インデックス (0 <= k < seq->elements_lengthを前提).
+ * @param[in] k   削除する位置/キー/インデックス (0 <= k < seq->lengthを前提).
  */
 void delete_element(sequence* seq, int k) {
-  seq->elements_length--;
+  seq->length--;
 
-  for (size_t i = k; i < seq->elements_length; i++) {
+  for (size_t i = k; i < seq->length; i++) {
     seq->elements[i] = seq->elements[i + 1];
   }
 }
@@ -75,10 +73,10 @@ void delete_element(sequence* seq, int k) {
  */
 void print_sequence(sequence* seq) {
   printf("ELEMENTS: [ ");
-  for (size_t i = 0; i < seq->elements_length; i++) {
+  for (size_t i = 0; i < seq->length; i++) {
     printf("%d ", seq->elements[i]);
   }
-  printf("]\nLENGTH  : %ld\n", seq->elements_length);
+  printf("]\nLENGTH  : %ld\n", seq->length);
 }
 
 int main() {
@@ -88,6 +86,7 @@ int main() {
     insert_element(array, i, i);
   }
   print_sequence(array);
+
   delete_element(array, 5);
   print_sequence(array);
 
