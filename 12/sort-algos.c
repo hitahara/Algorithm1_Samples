@@ -1044,7 +1044,7 @@ int main() {
 
   fisher_yates_shuffle(keys, sizeof(keys) / sizeof(size_t));
 
-  sequence *seq = init_sequence();
+  sequence* seq = init_sequence();
   for (size_t i = 0; i < MAX_RECORDS_SIZE; i++)
   {
     insert_tail(seq, init_record(keys[i], (char *)"AAA"));

@@ -13,10 +13,11 @@ int gcd(int m, int n) {
 }
 
 int main() {
-  int m, n, gcd_answer;
+  int m, n;
 
   printf("Type in m...\n");
   scanf("%d", &m);
+
   printf("Type in n...\n");
   scanf("%d", &n);
 

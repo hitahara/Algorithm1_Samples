@@ -21,8 +21,8 @@ typedef struct sequence {
  * @brief sequenceの初期化.
  * @return 初期化されたsequenceのポインタ.
  */
-sequence *init_sequence() {
-  sequence *s = (sequence *)malloc(sizeof(sequence));
+sequence* init_sequence() {
+  sequence* s = (sequence*)malloc(sizeof(sequence));
   s->elements_length = 0;
   s->size = MAX_ELEMENTS_MEMORY / sizeof(int);
   return s;
@@ -32,7 +32,7 @@ sequence *init_sequence() {
  * @brief sequenceのメモリを解放.
  * @param[in] seq メモリを開放するsequence.
  */
-void release_sequence(sequence *seq) {
+void release_sequence(sequence* seq) {
   free(seq);
 }
 
@@ -42,7 +42,7 @@ void release_sequence(sequence *seq) {
  * @param[in] k   挿入する位置/キー/インデックス (0 <= k <= seq->elements_lengthを前提).
  * @param[in] val int型の挿入データ.
  */
-void insert_element(sequence *seq, int k, int val) {
+void insert_element(sequence* seq, int k, int val) {
   if (seq->elements_length >= seq->size) {
     printf("No more element can be inserted into elements.\n");
     return;
@@ -61,7 +61,7 @@ void insert_element(sequence *seq, int k, int val) {
  * @param[in] seq 削除対象の配列をもつsequenceのポインタ.
  * @param[in] k   削除する位置/キー/インデックス (0 <= k < seq->elements_lengthを前提).
  */
-void delete_element(sequence *seq, int k) {
+void delete_element(sequence* seq, int k) {
   seq->elements_length--;
 
   for (size_t i = k; i < seq->elements_length; i++) {
@@ -73,7 +73,7 @@ void delete_element(sequence *seq, int k) {
  * @brief sequence確認用プリント関数.
  * @param[in] seq プリントする配列をもつsequenceのポインタ.
  */
-void print_sequence(sequence *seq) {
+void print_sequence(sequence* seq) {
   printf("ELEMENTS: [ ");
   for (size_t i = 0; i < seq->elements_length; i++) {
     printf("%d ", seq->elements[i]);
@@ -82,7 +82,7 @@ void print_sequence(sequence *seq) {
 }
 
 int main() {
-  sequence *array = init_sequence();
+  sequence* array = init_sequence();
 
   for (int i = 0; i < 20; i++) {
     insert_element(array, i, i);

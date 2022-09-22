@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int binary_search(int *table, int table_length, int x) {
+int binary_search(int* table, int table_length, int x) {
   int lo = 0, hi = table_length - 1;
   int mid;
 
@@ -22,14 +22,14 @@ int binary_search(int *table, int table_length, int x) {
 int main() {
   double start_clock, end_clock;
 
-  int *table;
+  int* table;
   int table_length;
   int target = 1;
 
   printf("Type in the length of the array...\n");
   scanf("%d", &table_length);
 
-  table = (int *)malloc(table_length * sizeof(int));
+  table = (int*)malloc(table_length * sizeof(int));
 
   printf("Type in the table numbers (number >= 0)...\n");
   for (int i = 0; i < table_length; i++) {
