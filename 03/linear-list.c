@@ -30,12 +30,12 @@ cell* init_cell() {
  * @param[in] list_head メモリ解放するlistのポインタ.
  */
 void release_list(list* l) {
-  cell* disposing_cell = l->head;
-  cell* next_cell = l->head;
-  while (next_cell != NULL) {
-    next_cell = disposing_cell->next;
-    free(disposing_cell);
-    disposing_cell = next_cell;
+  cell* current = l->head;
+  cell* next = NULL;
+  while (next != NULL) {
+    next = current->next;
+    free(current);
+    current = next;
   }
   l->head = NULL;
 }
