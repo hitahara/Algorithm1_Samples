@@ -1,9 +1,9 @@
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <time.h>
-#include <math.h>
 
 /**
  * @brief レコードのフィールドが保持できるcharの個数(\0を含まない).
@@ -28,8 +28,7 @@ void visit_lst(adj_list *list, bool *visit_list, size_t v);
 /**
  * @brief レコード：keyとfieldをもった構造体
  */
-struct record
-{
+struct record {
   size_t key;                 /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_SIZE]; /** データを保持するchar型の配列. */
 };
@@ -41,16 +40,13 @@ struct record
  * サイズはMAX_FIELD_SIZEで定義.初期化時に指定するフィールド.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, char *field)
-{
-  if (strlen(field) > MAX_FIELD_SIZE)
-  {
+record *init_record(size_t key, char *field) {
+  if (strlen(field) > MAX_FIELD_SIZE) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
   }
   record *rec = (record *)malloc(sizeof(record));
-  if (rec == NULL)
-  {
+  if (rec == NULL) {
     fprintf(stderr, "ERROR: Not enough memory for new record.\n");
     exit(1);
   }
@@ -65,8 +61,7 @@ record *init_record(size_t key, char *field)
  * @brief recordのメモリを解放.
  * @param[in] rec メモリを開放するrecord.
  */
-void release_record(record **rec)
-{
+void release_record(record **rec) {
   free(*rec);
   *rec = NULL;
 }
@@ -75,70 +70,55 @@ void release_record(record **rec)
  * @brief record確認用プリント関数.
  * @param[in] rec プリントするrecordのポインタ.
  */
-void print_record(record *rec)
-{
-  if (rec == NULL)
-  {
+void print_record(record *rec) {
+  if (rec == NULL) {
     printf("ERROR: Record is NULL\n");
-  }
-  else
-  {
+  } else {
     printf("[%06zu, %s]\n", rec->key, rec->field);
   }
 }
 
-struct adjacency_matrix
-{
+struct adjacency_matrix {
   bool M[MAX_GRAPH_SIZE][MAX_GRAPH_SIZE];
 };
 
-adj_mat *init_adj_mat()
-{
+adj_mat *init_adj_mat() {
   adj_mat *m = (adj_mat *)malloc(sizeof(adj_mat));
   return m;
 }
 
-struct edge_cell
-{
+struct edge_cell {
   size_t destination;
   edge_cell *next;
 };
 
-struct adjacency_list
-{
+struct adjacency_list {
   edge_cell *adj_list[MAX_GRAPH_SIZE];
 };
 
-adj_list *init_adj_list()
-{
+adj_list *init_adj_list() {
   adj_list *l = (adj_list *)malloc(sizeof(adj_list));
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i)
-  {
+  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
     l->adj_list[i] = NULL;
   }
   return l;
 }
 
-edge_cell *init_edge_cell(size_t dest)
-{
+edge_cell *init_edge_cell(size_t dest) {
   edge_cell *c = (edge_cell *)malloc(sizeof(edge_cell));
   c->destination = dest;
   c->next = NULL;
   return c;
 }
 
-void dfs_mat(adj_mat *mat)
-{
+void dfs_mat(adj_mat *mat) {
   bool visit_list[MAX_GRAPH_SIZE];
 
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i)
-  {
+  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
     visit_list[i] = false;
   }
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i)
-  {
-    if (visit_list[i] == false)
-    {
+  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+    if (visit_list[i] == false) {
       visit_mat(mat, visit_list, i);
     }
   }
@@ -146,48 +126,38 @@ void dfs_mat(adj_mat *mat)
   printf("\n");
 }
 
-void visit_mat(adj_mat *mat, bool *visit_list, size_t v)
-{
+void visit_mat(adj_mat *mat, bool *visit_list, size_t v) {
   visit_list[v] = true;
 
-  for (size_t z = 0; z < MAX_GRAPH_SIZE; ++z)
-  {
-    if (mat->M[v][z] && visit_list[z] == false)
-    {
+  for (size_t z = 0; z < MAX_GRAPH_SIZE; ++z) {
+    if (mat->M[v][z] && visit_list[z] == false) {
       printf("%zu - %zu\n", v, z);
       visit_mat(mat, visit_list, z);
     }
   }
 }
 
-void dfs_list(adj_list *list)
-{
+void dfs_list(adj_list *list) {
   bool visit_list[MAX_GRAPH_SIZE];
 
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i)
-  {
+  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
     visit_list[i] = false;
   }
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i)
-  {
-    if (visit_list[i] == false)
-    {
+  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+    if (visit_list[i] == false) {
       visit_lst(list, visit_list, i);
     }
   }
 }
 
-void visit_lst(adj_list *list, bool *visit_list, size_t v)
-{
+void visit_lst(adj_list *list, bool *visit_list, size_t v) {
   visit_list[v] = true;
 
   edge_cell *p = list->adj_list[v];
-  while (p != NULL)
-  {
+  while (p != NULL) {
     size_t z = p->destination;
 
-    if (visit_list[z] == false)
-    {
+    if (visit_list[z] == false) {
       printf("%zu - %zu\n", v, z);
       visit_lst(list, visit_list, z);
     }
@@ -195,13 +165,10 @@ void visit_lst(adj_list *list, bool *visit_list, size_t v)
   }
 }
 
-int main()
-{
+int main() {
   adj_mat *mat = init_adj_mat();
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i)
-  {
-    for (size_t j = 0; j < MAX_GRAPH_SIZE; ++j)
-    {
+  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+    for (size_t j = 0; j < MAX_GRAPH_SIZE; ++j) {
       mat->M[i][j] = false;
     }
   }

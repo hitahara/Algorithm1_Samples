@@ -1,7 +1,7 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 // size_t型: 恐らく64bitのシステムだとlong unsigned int, 32bitのシステムだとunsigned int.
 
 /**
@@ -29,8 +29,7 @@
 /**
  * @brief レコード：keyとfieldをもった構造体
  */
-typedef struct record
-{
+typedef struct record {
   size_t key;                   /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
 } record;
@@ -38,8 +37,7 @@ typedef struct record
 /**
  * @brief 表：recordの配列とそのメタデータを保持する構造体.
  */
-typedef struct table
-{
+typedef struct table {
   size_t records_length;                             /** 配列の長さ. */
   size_t size;                                       /** 配列がとれる最大長. */
   record records[MAX_ARRAY_MEMORY / sizeof(record)]; /** record型で表された配列. */
@@ -51,10 +49,8 @@ typedef struct table
  * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, const char *field)
-{
-  if (strlen(field) > MAX_FIELD_MEMORY + 1)
-  {
+record *init_record(size_t key, const char *field) {
+  if (strlen(field) > MAX_FIELD_MEMORY + 1) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
   }
@@ -70,8 +66,7 @@ record *init_record(size_t key, const char *field)
  * @brief tableの初期化.
  * @return 初期化されたtableのポインタ.
  */
-table *init_table()
-{
+table *init_table() {
   table *tab = (table *)malloc(sizeof(table));
   tab->records_length = 0;
   tab->size = MAX_ARRAY_MEMORY / sizeof(record);
@@ -82,8 +77,7 @@ table *init_table()
  * @brief tableのメモリを解放.
  * @param[in] tab メモリを開放するtable.
  */
-void release_table(table *tab)
-{
+void release_table(table *tab) {
   free(tab);
   tab = NULL;
 }
@@ -95,12 +89,10 @@ void release_table(table *tab)
  * @param[out] found targetがtab内に存在するかの真理値.
  * @param[out] index targetが存在する場合キーのインデックスを指す,無い場合は-1==2^64-1.
  */
-void linear_search_existence_and_index(table *tab, size_t target, bool *found, size_t *index)
-{
+void linear_search_existence_and_index(table *tab, size_t target, bool *found, size_t *index) {
   tab->records[tab->records_length].key = target;
   size_t searching_pos = 0;
-  while (target != tab->records[searching_pos].key)
-  {
+  while (target != tab->records[searching_pos].key) {
     searching_pos++;
   }
   *found = searching_pos < tab->records_length;
@@ -114,22 +106,17 @@ void linear_search_existence_and_index(table *tab, size_t target, bool *found, s
  * @param[out] found targetがtab内に存在するかの真理値.
  * @param[out] index targetが存在する場合キーのインデックスを指す,無い場合はtarget以上の最小キー.
  */
-void binary_search_existence_and_index(table *tab, size_t target, bool *found, size_t *index)
-{
+void binary_search_existence_and_index(table *tab, size_t target, bool *found, size_t *index) {
   long int lo = 0, hi = tab->records_length - 1, mid;
-  while(lo <= hi)
-  {
+  while (lo <= hi) {
     // whileから出るワンステップ前になりえる状態はlo==hiまたはlo==hi+1(lo==mid+1で前者になる).
     // target <= tab->records[mid].keyによって,whileから抜けた後,
     // hiはtarget未満の最大を指すインデックス.
     // loはtarget以上の最小を指すインデックス.
     mid = (lo + hi) / 2;
-    if (target <= tab->records[mid].key)
-    {
+    if (target <= tab->records[mid].key) {
       hi = mid - 1;
-    }
-    else
-    {
+    } else {
       lo = mid + 1;
     }
   }
@@ -169,10 +156,8 @@ void binary_search_existence_and_index(table *tab, size_t target, bool *found, s
  * @param[in] tab 挿入対象のrecordsをもつtableのポインタ.
  * @param[in] rec 挿入するrecord.
  */
-void insert_record(table *tab, record *rec)
-{
-  if (tab->records_length >= tab->size - 1)
-  {
+void insert_record(table *tab, record *rec) {
+  if (tab->records_length >= tab->size - 1) {
     printf("ERROR: No more record can be inserted into table.\n");
     return;
   }
@@ -181,8 +166,7 @@ void insert_record(table *tab, record *rec)
   size_t inserting_pos;
   binary_search_existence_and_index(tab, rec->key, &dummy, &inserting_pos);
 
-  for (size_t i = tab->records_length; i > inserting_pos; i--)
-  {
+  for (size_t i = tab->records_length; i > inserting_pos; i--) {
     tab->records[i] = tab->records[i - 1];
   }
 
@@ -195,15 +179,12 @@ void insert_record(table *tab, record *rec)
  * @param[in] tab 削除対象のrecordsをもつtableのポインタ.
  * @param[in] pos 削除するrecordsの位置.
  */
-void delete_record(table *tab, size_t pos)
-{
-  if (pos == (size_t)-1)
-  {
+void delete_record(table *tab, size_t pos) {
+  if (pos == (size_t)-1) {
     printf("Valid pos was not set to delte. pos=\"%zu\".\n", pos);
     return;
   }
-  for (size_t i = pos; i < tab->records_length - 1; i++)
-  {
+  for (size_t i = pos; i < tab->records_length - 1; i++) {
     tab->records[i] = tab->records[i + 1];
   }
   tab->records_length--;
@@ -213,8 +194,7 @@ void delete_record(table *tab, size_t pos)
  * @brief cliからrecordの内容を読み取りrecordに格納.
  * @return cliから読み取った内容で生成したrecordのポインタ
  */
-record *cli_record()
-{
+record *cli_record() {
   record *rec;
   size_t key = -1;
   char field[MAX_FIELD_MEMORY];
@@ -222,8 +202,7 @@ record *cli_record()
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
-  while (key == (long unsigned int)-1)
-  {
+  while (key == (long unsigned int)-1) {
     scanf("%zu", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
@@ -237,22 +216,17 @@ record *cli_record()
  * @brief cliからrecordの内容を読み取り,tableの末尾に挿入.
  * @param[in] tab 挿入対象のrecordsをもつtableのポインタ.
  */
-void cli_insert(table *tab)
-{
+void cli_insert(table *tab) {
   printf("ENETER A RECORD THAT WILL BE INSERTED.\n");
   record *scanned_rec = NULL;
   bool does_scanned_rec_exist = false;
-  while (true)
-  {
+  while (true) {
     scanned_rec = cli_record();
     size_t dummy;
     binary_search_existence_and_index(tab, scanned_rec->key, &does_scanned_rec_exist, &dummy);
-    if (does_scanned_rec_exist)
-    {
+    if (does_scanned_rec_exist) {
       printf("The key is already used.\n");
-    }
-    else
-    {
+    } else {
       break;
     }
   }
@@ -263,8 +237,7 @@ void cli_insert(table *tab)
  * @brief record確認用プリント関数.
  * @param[in] rec プリントするrecordのポインタ.
  */
-void print_record(record *rec)
-{
+void print_record(record *rec) {
   printf("%08zu, \"%s\"\n", rec->key, rec->field);
 }
 
@@ -272,12 +245,10 @@ void print_record(record *rec)
  * @brief table確認用プリント関数.
  * @param[in] tab プリントする配列をもつtableのポインタ.
  */
-void print_table(table *tab)
-{
+void print_table(table *tab) {
   printf("================================\n");
   printf("TABLE: [\n");
-  for (size_t i = 0; i < tab->records_length; i++)
-  {
+  for (size_t i = 0; i < tab->records_length; i++) {
     print_record(&tab->records[i]);
   }
   printf("]\nTABLE LENGTH: %ld\n", tab->records_length);
@@ -289,20 +260,17 @@ void print_table(table *tab)
  * @param[in] tab targetが存在するか調べるtable.
  * @param[in] target 調べるキー.
  */
-void print_search_existence(table *tab, size_t target)
-{
+void print_search_existence(table *tab, size_t target) {
   bool b = false;
   size_t dummy;
   binary_search_existence_and_index(tab, target, &b, &dummy);
   printf("\"%zu\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
 }
 
-int main()
-{
+int main() {
   table *tab = init_table();
   record *rec = NULL;
-  for (size_t i = 0; i < SAMPLE_RECORDS_SIZE; i++)
-  {
+  for (size_t i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
     rec = init_record(i, "AAA");
     insert_record(tab, rec);
   }

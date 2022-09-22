@@ -1,8 +1,7 @@
 #ifndef _binary_tree_h
 #define _binary_tree_h
-#include <stdio.h>
 #include <stdbool.h>
-
+#include <stdio.h>
 
 typedef struct node node;
 typedef node *tree;
@@ -28,6 +27,5 @@ void print_node(node *n);
 void print_search_node(tree rt, size_t target);
 void print_tree_recursion(tree p, size_t depth);
 void print_tree(tree rt);
-
 
 #endif

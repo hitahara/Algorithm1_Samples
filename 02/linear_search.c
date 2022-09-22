@@ -1,15 +1,12 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <time.h>
 
-int linear_search(int *table, int table_length, int x)
-{
+int linear_search(int *table, int table_length, int x) {
   // 0 origin
-  for (int i = 0; i < table_length; i++)
-  {
-    if (x == table[i])
-    {
+  for (int i = 0; i < table_length; i++) {
+    if (x == table[i]) {
       return true;
     }
   }
@@ -17,27 +14,23 @@ int linear_search(int *table, int table_length, int x)
   return false;
 }
 
-int linear_search_analyze(int *table, int table_length, int x)
-{
+int linear_search_analyze(int *table, int table_length, int x) {
   // 0 origin
-  int i = 0;               // 2
-  while (i < table_length) // 3
+  int i = 0;                // 2
+  while (i < table_length)  // 3
   {
-    if (x != table[i]) // 4
+    if (x != table[i])  // 4
     {
-      i = i + 1; // 7
-    }
-    else
-    {
-      return true; // 5
+      i = i + 1;  // 7
+    } else {
+      return true;  // 5
     }
   }
 
   return false;
 }
 
-int main()
-{
+int main() {
   double start_clock, end_clock;
 
   int *table;
@@ -50,18 +43,15 @@ int main()
   table = (int *)malloc(table_length * sizeof(int));
 
   printf("Type in the table numbers (number >= 0)...\n");
-  for (int i = 0; i < table_length; i++)
-  {
+  for (int i = 0; i < table_length; i++) {
     scanf("%d", &table[i]);
   }
 
-  while (true)
-  {
+  while (true) {
     printf("\nType in the target number... (Type in number < 0 to exit)\n");
     scanf("%d", &target);
 
-    if (target < 0)
-    {
+    if (target < 0) {
       break;
     }
 

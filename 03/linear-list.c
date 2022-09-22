@@ -4,36 +4,33 @@
 
 /**
  * @brief データと続くリストを保持する構造体.
-*/
+ */
 typedef struct cell cell;
 
-struct cell
-{
+struct cell {
   int element; /** int型で表されたデータ. */
-  cell* next;  /** 続くリストの先頭のcellのポインタ/list. */
+  cell *next;  /** 続くリストの先頭のcellのポインタ/list. */
 };
 
 typedef struct
 {
-  cell* head;
+  cell *head;
 } list;
 
 /**
  * @brief cellの初期化.
  * @return 初期化された,データやポインタが代入されていないcellのポインタ.
-*/
-cell* init_cell()
-{
-  cell* c = (cell*) malloc( sizeof(cell) );
+ */
+cell *init_cell() {
+  cell *c = (cell *)malloc(sizeof(cell));
   return c;
 }
 
 /**
- * @brief listの初期化. 
+ * @brief listの初期化.
  * @return NULLのlist.
-*/
-list init_list()
-{
+ */
+list init_list() {
   list l;
   l.head = NULL;
   return l;
@@ -42,22 +39,19 @@ list init_list()
 /**
  * @brief 引数のcellを削除する.
  * @param[in] c 削除するcellのポインタ.
-*/
-void dispose(cell* c)
-{
+ */
+void dispose(cell *c) {
   free(c);
 }
 
 /**
  * @brief 引数のlistをメモリ解放する.
  * @param[in] list_head メモリ解放するlistのポインタ.
-*/
-void release_list(list* l)
-{
-  cell* disposing_cell = l->head;
-  cell* next_cell = l->head;
-  while(next_cell != NULL)
-  {
+ */
+void release_list(list *l) {
+  cell *disposing_cell = l->head;
+  cell *next_cell = l->head;
+  while (next_cell != NULL) {
     next_cell = disposing_cell->next;
     dispose(disposing_cell);
     disposing_cell = next_cell;
@@ -69,10 +63,9 @@ void release_list(list* l)
  * @brief previousの後ろにvalを挿入する. Program 1.3.4
  * @param[in] previous 挿入する位置の前のcellをさすポインタ.
  * @param[in] val 挿入するint型のデータ.
-*/
-void insert_cell(cell* previous, int val)
-{
-  cell* q = init_cell();
+ */
+void insert_cell(cell *previous, int val) {
+  cell *q = init_cell();
   q->element = val;
   q->next = previous->next;
   previous->next = q;
@@ -82,10 +75,9 @@ void insert_cell(cell* previous, int val)
  * @brief リストの先頭にvalを挿入し,listを更新する. Program 1.3.6
  * @param[in] list 先頭に挿入するlistのポインタ.
  * @param[in] val 挿入するint型のデータ.
-*/
-void insert_head(list* l, int val)
-{
-  cell* q = init_cell();
+ */
+void insert_head(list *l, int val) {
+  cell *q = init_cell();
   q->element = val;
   q->next = l->head;
   l->head = q;
@@ -94,10 +86,9 @@ void insert_head(list* l, int val)
 /**
  * @brief previousの後ろのcellを削除する. Program 1.3.7
  * @param[in] previous 削除するcellの前のcellをさすポインタ.
-*/
-void delete_cell(cell* previous)
-{
-  cell* q = previous->next;
+ */
+void delete_cell(cell *previous) {
+  cell *q = previous->next;
   previous->next = q->next;
   dispose(q);
 }
@@ -105,10 +96,9 @@ void delete_cell(cell* previous)
 /**
  * @brief リストの先頭を削除し,list_headを更新する. Program 1.3.9
  * @param[in] list_head 先頭を削除するlistのポインタ.
-*/
-void delete_head(list* l)
-{
-  cell* q = l->head;
+ */
+void delete_head(list *l) {
+  cell *q = l->head;
   l->head = q->next;
   dispose(q);
 }
@@ -116,29 +106,26 @@ void delete_head(list* l)
 /**
  * @brief list確認用プリント関数.
  * @param[in] list_head プリントするlist.
-*/
-void print_list(list l)
-{
+ */
+void print_list(list l) {
   printf("LIST: [ ");
-  cell* c = l.head;
-  while(c != NULL)
-  {
+  cell *c = l.head;
+  while (c != NULL) {
     printf("%d ", c->element);
     c = c->next;
   }
   printf("]\n");
 }
 
-int main()
-{
+int main() {
   list l = init_list();
 
-  cell* example_cell;
-  for(int i = 0; i < 20; i++)
-  {
+  cell *example_cell;
+  for (int i = 0; i < 20; i++) {
     insert_head(&l, i);
-    if(i==6) example_cell = l.head;
-  }  
+    if (i == 6)
+      example_cell = l.head;
+  }
   print_list(l);
 
   insert_cell(example_cell, 100);

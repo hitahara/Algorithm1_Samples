@@ -1,38 +1,35 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 /**
  * @brief データと次のアイテムを保持する構造体.
-*/
-typedef struct cell
-{
-  int element; /** int型で表されたデータ. */
-  struct cell* next;  /** 次のcellを指すポインタ. */
+ */
+typedef struct cell {
+  int element;       /** int型で表されたデータ. */
+  struct cell* next; /** 次のcellを指すポインタ. */
 } cell;
 
 /**
  * @brief cellのポインタの型.
-*/
+ */
 typedef cell* list;
 
 /**
  * @brief cellの初期化.
  * @return 初期化された,データやポインタが代入されていないcellのポインタ.
-*/
-cell* init_cell()
-{
-  cell* c = (cell*) malloc( sizeof(cell) );
+ */
+cell* init_cell() {
+  cell* c = (cell*)malloc(sizeof(cell));
   return c;
 }
 
 /**
- * @brief listの初期化. 
+ * @brief listの初期化.
  * @return NULLのlist.
-*/
-list init_list()
-{
+ */
+list init_list() {
   list l = NULL;
   return l;
 }
@@ -40,22 +37,19 @@ list init_list()
 /**
  * @brief 引数のcellを削除する.
  * @param[in] c 削除するcellのポインタ.
-*/
-void dispose(cell* c)
-{
+ */
+void dispose(cell* c) {
   free(c);
 }
 
 /**
  * @brief 引数のlistをメモリ解放する.
  * @param[in] list_head メモリ解放するlistのポインタ.
-*/
-void release_list(list* list_head)
-{
+ */
+void release_list(list* list_head) {
   cell* disposing_cell = *list_head;
   cell* next_cell = *list_head;
-  for(;next_cell != NULL;)
-  {
+  for (; next_cell != NULL;) {
     next_cell = disposing_cell->next;
     dispose(disposing_cell);
     disposing_cell = next_cell;
@@ -66,9 +60,8 @@ void release_list(list* list_head)
 /**
  * @brief 引数のqueue_headが指すcellを削除する.
  * @param[in] queue_head 削除するキューの先頭.
-*/
-void clear_queue(list* queue_head, list* queue_tail)
-{
+ */
+void clear_queue(list* queue_head, list* queue_tail) {
   release_list(queue_head);
   *queue_head = NULL;
   *queue_tail = NULL;
@@ -77,9 +70,8 @@ void clear_queue(list* queue_head, list* queue_tail)
 /**
  * @brief 引数のqueue_headが空か確認.
  * @param[in] queue_head 確認するキューの先頭.
-*/
-bool empty_queue(list queue_head)
-{
+ */
+bool empty_queue(list queue_head) {
   return queue_head == NULL;
 }
 
@@ -88,35 +80,28 @@ bool empty_queue(list queue_head)
  * @param[in] queue_head キューの先頭を表すlistのポインタ.
  * @param[in] queue_tail キューの最後尾を表すlistのポインタ.
  * @param[in] val エンキューするint型のデータ.
-*/
-void enter_queue(list* queue_head, list* queue_tail, int val)
-{
+ */
+void enter_queue(list* queue_head, list* queue_tail, int val) {
   cell* q = init_cell();
   q->element = val;
   q->next = NULL;
 
-  if( empty_queue(*queue_head) )
-  {
+  if (empty_queue(*queue_head)) {
     *queue_head = q;
-  }
-  else
-  {
+  } else {
     (*queue_tail)->next = q;
   }
-  
+
   *queue_tail = q;
 }
-
 
 /**
  * @brief キューの先頭をデキューし,queue_headを更新する.
  * @param[in] queue_head 先頭をデキューするlistのポインタ.
  * @param[out] val デキューした値の受けてとなるint型のポインタ
-*/
-void remove_queue(list* queue_head, int* val)
-{
-  if( empty_queue(*queue_head) )
-  {
+ */
+void remove_queue(list* queue_head, int* val) {
+  if (empty_queue(*queue_head)) {
     printf("No more element can be dequeued from the queue.\n");
     return;
   }
@@ -129,35 +114,30 @@ void remove_queue(list* queue_head, int* val)
 /**
  * @brief 配列のデータがint型と前提にした,確認用プリント関数.
  * @param[in] list プリントするlist.
-*/
-void print_list(list list)
-{
+ */
+void print_list(list list) {
   cell* c = list;
   printf("LIST CELLS: [ ");
-  for(;c != NULL;c = c->next)
-  {
-    printf("%d ", c->element);   
+  for (; c != NULL; c = c->next) {
+    printf("%d ", c->element);
   }
   printf("]\n");
 }
 
-int main()
-{
+int main() {
   list queue_head = init_list();
-  list queue_tail = init_list(); 
+  list queue_tail = init_list();
 
-  for(int i = 0; i < 20; i++)
-  {
+  for (int i = 0; i < 20; i++) {
     enter_queue(&queue_head, &queue_tail, i);
   }
-  
+
   print_list(queue_head);
 
   int val;
   remove_queue(&queue_head, &val);
 
   print_list(queue_head);
-
 
   clear_queue(&queue_head, &queue_tail);
   return 0;

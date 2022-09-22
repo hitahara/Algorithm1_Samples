@@ -1,21 +1,19 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #define INF 1000000000
 #define SIZE 100
 
 typedef struct node node;
-struct node
-{
+struct node {
   int via;
   int weight;
   bool visited;
 };
 
 typedef struct adj_mat adj_mat;
-struct adj_mat
-{
+struct adj_mat {
   int max_size;
   int mat[SIZE][SIZE];
 };
@@ -23,27 +21,22 @@ struct adj_mat
 adj_mat GRAPH;
 node NODES[SIZE];
 
-int dijkstra(int start, int goal)
-{
+int dijkstra(int start, int goal) {
   int min, target;
 
   NODES[start].weight = 0;
 
-  while (true)
-  {
+  while (true) {
     min = INF;
 
-    for (int i = 0; i < GRAPH.max_size; ++i)
-    {
-      if (NODES[i].visited == false && NODES[i].weight < min)
-      {
+    for (int i = 0; i < GRAPH.max_size; ++i) {
+      if (NODES[i].visited == false && NODES[i].weight < min) {
         target = i;
         min = NODES[i].weight;
       }
     }
 
-    if (min == INF)
-    {
+    if (min == INF) {
       fprintf(stderr, "ERROR: s=%d and s=%d is not in the same graph.\n", start, goal);
       exit(1);
     }
@@ -53,10 +46,8 @@ int dijkstra(int start, int goal)
 
     NODES[target].visited = true;
 
-    for (int neighbor = 0; neighbor < GRAPH.max_size; ++neighbor)
-    {
-      if (NODES[target].weight + GRAPH.mat[target][neighbor] < NODES[neighbor].weight)
-      {
+    for (int neighbor = 0; neighbor < GRAPH.max_size; ++neighbor) {
+      if (NODES[target].weight + GRAPH.mat[target][neighbor] < NODES[neighbor].weight) {
         NODES[neighbor].weight = GRAPH.mat[target][neighbor] + NODES[target].weight;
         NODES[neighbor].via = target;
       }
@@ -64,10 +55,8 @@ int dijkstra(int start, int goal)
   }
 }
 
-void init_graph_and_nodes()
-{
-  for (int i = 0; i < SIZE; ++i)
-  {
+void init_graph_and_nodes() {
+  for (int i = 0; i < SIZE; ++i) {
     NODES[i].weight = INF;
     NODES[i].visited = false;
     NODES[i].via = -1;
@@ -76,8 +65,7 @@ void init_graph_and_nodes()
   }
 }
 
-int main(void)
-{
+int main(void) {
   int edge_count;
   int a, b, w;
   int start, goal;
@@ -104,8 +92,7 @@ int main(void)
   */
 
   scanf("%d %d", &(GRAPH.max_size), &edge_count);
-  for (int i = 0; i < edge_count; ++i)
-  {
+  for (int i = 0; i < edge_count; ++i) {
     scanf("%d %d %d", &a, &b, &w);
     GRAPH.mat[a][b] = w;
   }
@@ -115,8 +102,7 @@ int main(void)
 
   int route_node = goal;
   printf("%d", route_node);
-  while (true)
-  {
+  while (true) {
     route_node = NODES[route_node].via;
     printf(" <- %d", route_node);
     if (route_node == start)

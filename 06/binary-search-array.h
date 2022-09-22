@@ -1,8 +1,7 @@
 #ifndef _binary_search_array_h
 #define _binary_search_array_h
-#include <stdio.h>
 #include <stdbool.h>
-
+#include <stdio.h>
 
 typedef struct record;
 typedef struct table table;
@@ -21,6 +20,5 @@ void cli_insert(table *tab);
 void print_record(record *rec);
 void print_table(table *tab);
 void print_search_existence(table *tab, size_t target);
-
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef _b_tree_h
 #define _b_tree_h
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef struct record record;
 typedef enum status status;

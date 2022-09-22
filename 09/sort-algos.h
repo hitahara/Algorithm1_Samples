@@ -1,7 +1,7 @@
 #ifndef _sort_algos_h
 #define _sort_algos_h
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef struct record record;
 typedef struct sequence sequence;

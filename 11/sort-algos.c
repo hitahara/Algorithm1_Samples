@@ -1,7 +1,7 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <time.h>
 
 /**
@@ -20,7 +20,7 @@
 /**
  * @brief レコードの最大長.
  */
-#define MAX_RECORDS_SIZE 10000 // 1037499
+#define MAX_RECORDS_SIZE 10000  // 1037499
 /**
  * @brief レコードのフィールドが保持できるcharの個数(\0を含まない).
  */
@@ -101,8 +101,7 @@ void fisher_yates_shuffle(size_t *array, size_t array_size);
 /**
  * @brief レコード：keyとfieldをもった構造体
  */
-struct record
-{
+struct record {
   size_t key;                 /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_SIZE]; /** データを保持するchar型の配列. */
 };
@@ -110,8 +109,7 @@ struct record
 /**
  * @brief 配列とそのメタデータを保持する構造体.
  */
-struct sequence
-{
+struct sequence {
   size_t elements_length;             /** 配列の長さ. */
   size_t size;                        /** 配列がとれる最大長. */
   record *elements[MAX_RECORDS_SIZE]; /** recordのポインタの配列. */
@@ -124,16 +122,13 @@ struct sequence
  * サイズはMAX_FIELD_SIZEで定義.初期化時に指定するフィールド.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, char *field)
-{
-  if (strlen(field) > MAX_FIELD_SIZE)
-  {
+record *init_record(size_t key, char *field) {
+  if (strlen(field) > MAX_FIELD_SIZE) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
   }
   record *rec = (record *)malloc(sizeof(record));
-  if (rec == NULL)
-  {
+  if (rec == NULL) {
     fprintf(stderr, "ERROR: Not enough memory for new record.\n");
     exit(1);
   }
@@ -147,12 +142,10 @@ record *init_record(size_t key, char *field)
  * @brief sequenceの初期化.
  * @return 初期化されたsequenceのポインタ.
  */
-sequence *init_sequence()
-{
+sequence *init_sequence() {
   sequence *s = (sequence *)malloc(sizeof(sequence));
   s->elements_length = 0;
-  if (MAX_ARRAY_MEMORY >= 8300000)
-  {
+  if (MAX_ARRAY_MEMORY >= 8300000) {
     fprintf(stderr, "ERROR: \"MAX_ARRAY_MEMORY\" is too large.\n");
     exit(1);
   }
@@ -170,8 +163,7 @@ sequence *init_sequence()
  * @brief recordのメモリを解放.
  * @param[in] rec メモリを開放するrecord.
  */
-void release_record(record **rec)
-{
+void release_record(record **rec) {
   free(*rec);
   *rec = NULL;
 }
@@ -180,13 +172,10 @@ void release_record(record **rec)
  * @brief sequenceのメモリを解放.
  * @param[in] seq メモリを開放するsequence.
  */
-void release_sequence(sequence **seq)
-{
+void release_sequence(sequence **seq) {
   // seq内のmallocで生成されたrecord群のメモリも解放.
-  for (size_t i = 0; i < (*seq)->size; i++)
-  {
-    if ((*seq)->elements[i] != NULL)
-    {
+  for (size_t i = 0; i < (*seq)->size; i++) {
+    if ((*seq)->elements[i] != NULL) {
       release_record(&(*seq)->elements[i]);
     }
   }
@@ -197,8 +186,7 @@ void release_sequence(sequence **seq)
 /**
  * @brief スタックの配列とメタ情報を保持する構造体.
  */
-struct stack_data
-{
+struct stack_data {
   size_t left;
   size_t right;
 };
@@ -206,8 +194,7 @@ struct stack_data
 /**
  * @brief スタックの配列とメタ情報を保持する構造体.
  */
-struct stack
-{
+struct stack {
   size_t sp;                           /** 配列の長さ. */
   size_t size;                         /** 配列がとれる最大長. */
   stack_data elements[MAX_STACK_SIZE]; /** int型で表された配列. */
@@ -217,8 +204,7 @@ struct stack
  * @brief stackの初期化.
  * @return 初期化されたstackのポインタ.
  */
-stack *init_stack()
-{
+stack *init_stack() {
   stack *s = (stack *)malloc(sizeof(stack));
   s->sp = 0;
   s->size = MAX_STACK_SIZE;
@@ -229,8 +215,7 @@ stack *init_stack()
  * @brief stackのメモリを解放.
  * @param[in] stack メモリを解放するstackのポインタ.
  */
-void release_stack(stack **stack)
-{
+void release_stack(stack **stack) {
   (*stack)->sp = 0;
   free(*stack);
   *stack = NULL;
@@ -241,10 +226,8 @@ void release_stack(stack **stack)
  * @param[in] stack プッシュする配列をもつstackのポインタ.
  * @param[in] data stack_data型のプッシュするデータ.
  */
-void push_stack(stack *stack, size_t left, size_t right)
-{
-  if (stack->sp >= stack->size)
-  {
+void push_stack(stack *stack, size_t left, size_t right) {
+  if (stack->sp >= stack->size) {
     printf("No more element can be pushed into the stack.\n");
     return;
   }
@@ -259,10 +242,8 @@ void push_stack(stack *stack, size_t left, size_t right)
  * @param[in] stack ポップする配列をもつstackのポインタ.
  * @param[in] data ポップした値の受けてとなるstack_data型のポインタ.
  */
-void pop_stack(stack *stack, size_t *left, size_t *right)
-{
-  if (stack->sp == 0)
-  {
+void pop_stack(stack *stack, size_t *left, size_t *right) {
+  if (stack->sp == 0) {
     printf("No more element can be popped from the elements.\n");
     return;
   }
@@ -278,8 +259,7 @@ void pop_stack(stack *stack, size_t *left, size_t *right)
  * @param[in] b 評価するrecord.
  * @return a->key > b->keyの場合:true,a->key > b->keyの場合:false.
  */
-bool is_record_a_larger_than_b(record *a, record *b)
-{
+bool is_record_a_larger_than_b(record *a, record *b) {
   return a->key > b->key;
 }
 
@@ -290,8 +270,7 @@ bool is_record_a_larger_than_b(record *a, record *b)
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  * @return a>bの場合:true,a<bの場合:false.
  */
-bool is_a_larger_than_b_records(record **records, size_t a, size_t b)
-{
+bool is_a_larger_than_b_records(record **records, size_t a, size_t b) {
   return is_record_a_larger_than_b(records[a], records[b]);
 }
 
@@ -302,8 +281,7 @@ bool is_a_larger_than_b_records(record **records, size_t a, size_t b)
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  * @return a>bの場合:true,a<bの場合:false.
  */
-bool is_a_larger_than_b_sequence(sequence *seq, size_t a, size_t b)
-{
+bool is_a_larger_than_b_sequence(sequence *seq, size_t a, size_t b) {
   return is_record_a_larger_than_b(seq->elements[a], seq->elements[b]);
 }
 
@@ -313,10 +291,8 @@ bool is_a_larger_than_b_sequence(sequence *seq, size_t a, size_t b)
  * @param[in] a 評価するインデックスのなかで最小(a<b).
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  */
-void compare_and_swap_records(record **records, size_t a, size_t b)
-{
-  if (is_a_larger_than_b_records(records, a, b))
-  {
+void compare_and_swap_records(record **records, size_t a, size_t b) {
+  if (is_a_larger_than_b_records(records, a, b)) {
     SWAP(record *, records[a], records[b])
   }
 }
@@ -327,10 +303,8 @@ void compare_and_swap_records(record **records, size_t a, size_t b)
  * @param[in] a 評価するインデックスのなかで最小(a<b).
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  */
-void compare_and_swap_sequence(sequence *seq, size_t a, size_t b)
-{
-  if (is_a_larger_than_b_sequence(seq, a, b))
-  {
+void compare_and_swap_sequence(sequence *seq, size_t a, size_t b) {
+  if (is_a_larger_than_b_sequence(seq, a, b)) {
     SWAP(record *, seq->elements[a], seq->elements[b])
   }
 }
@@ -340,20 +314,15 @@ void compare_and_swap_sequence(sequence *seq, size_t a, size_t b)
  * @param[in] seq recを挿入するsequenceのポインタ.
  * @param[in] rec 挿入するrecordのポインタ.
  */
-void insert_tail(sequence *seq, record *rec)
-{
-  if (seq->elements_length >= seq->size)
-  {
+void insert_tail(sequence *seq, record *rec) {
+  if (seq->elements_length >= seq->size) {
     printf("ERROR: No more record can be inserted into table.\n");
     return;
   }
 
-  if (seq->elements[seq->elements_length] == NULL)
-  {
+  if (seq->elements[seq->elements_length] == NULL) {
     seq->elements[seq->elements_length] = rec;
-  }
-  else
-  {
+  } else {
     release_record(&seq->elements[seq->elements_length]);
     printf("The inserting index was dirty, so it was cleaned.\n");
 
@@ -367,23 +336,18 @@ void insert_tail(sequence *seq, record *rec)
  * @param[in] seq key==targetを削除するsequenceのポインタ.
  * @param[in] target 削除するキー.
  */
-void delete_target_record(sequence *seq, size_t target)
-{
+void delete_target_record(sequence *seq, size_t target) {
   bool found;
   size_t target_index;
   binary_search_existence_and_index(seq, target, &found, &target_index);
-  if (found)
-  {
+  if (found) {
     release_record(&seq->elements[target_index]);
-    for (size_t i = target_index; i < seq->elements_length - 1; i++)
-    {
+    for (size_t i = target_index; i < seq->elements_length - 1; i++) {
       seq->elements[i] = seq->elements[i + 1];
     }
     seq->elements[seq->elements_length - 1] = NULL;
     seq->elements_length--;
-  }
-  else
-  {
+  } else {
     printf("ERROR: Target was not found, and cannot be deleted.\n");
   }
 }
@@ -395,20 +359,15 @@ void delete_target_record(sequence *seq, size_t target)
  * @param[out] found targetがtab内に存在するかの真理値.
  * @param[out] index sequenceのなかで,target以上であり最小のキー.
  */
-void binary_search_existence_and_index(sequence *seq, size_t target, bool *found, size_t *index)
-{
+void binary_search_existence_and_index(sequence *seq, size_t target, bool *found, size_t *index) {
   size_t ng = -1;
   size_t ok = seq->elements_length;
   size_t mid;
-  while (ok - ng > 1)
-  {
+  while (ok - ng > 1) {
     mid = (ok + ng) / 2;
-    if (target <= seq->elements[mid]->key)
-    {
+    if (target <= seq->elements[mid]->key) {
       ok = mid;
-    }
-    else
-    {
+    } else {
       ng = mid;
     }
   }
@@ -421,12 +380,9 @@ void binary_search_existence_and_index(sequence *seq, size_t target, bool *found
  * @brief 単純なソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void simple_sort(sequence *seq)
-{
-  for (size_t i = 0; i < seq->elements_length - 1; i++)
-  {
-    for (size_t j = i + 1; j < seq->elements_length; j++)
-    {
+void simple_sort(sequence *seq) {
+  for (size_t i = 0; i < seq->elements_length - 1; i++) {
+    for (size_t j = i + 1; j < seq->elements_length; j++) {
       compare_and_swap_records(seq->elements, i, j);
     }
   }
@@ -436,12 +392,9 @@ void simple_sort(sequence *seq)
  * @brief バブルソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void bubble_sort(sequence *seq)
-{
-  for (size_t i = 0; i < seq->elements_length - 1; i++)
-  {
-    for (size_t j = seq->elements_length - 1; j > i; j--)
-    {
+void bubble_sort(sequence *seq) {
+  for (size_t i = 0; i < seq->elements_length - 1; i++) {
+    for (size_t j = seq->elements_length - 1; j > i; j--) {
       compare_and_swap_sequence(seq, j - 1, j);
     }
   }
@@ -451,16 +404,12 @@ void bubble_sort(sequence *seq)
  * @brief 選択ソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void selection_sort(sequence *seq)
-{
+void selection_sort(sequence *seq) {
   size_t min_pos;
-  for (size_t i = 0; i < seq->elements_length - 1; i++)
-  {
+  for (size_t i = 0; i < seq->elements_length - 1; i++) {
     min_pos = i;
-    for (size_t j = i + 1; j < seq->elements_length; j++)
-    {
-      if (is_a_larger_than_b_records(seq->elements, min_pos, j))
-      {
+    for (size_t j = i + 1; j < seq->elements_length; j++) {
+      if (is_a_larger_than_b_records(seq->elements, min_pos, j)) {
         min_pos = j;
       }
     }
@@ -472,13 +421,11 @@ void selection_sort(sequence *seq)
  * @brief 挿入ソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void insertion_sort(sequence *seq)
-{
+void insertion_sort(sequence *seq) {
   record *inserting_record;
   size_t j = 0;
 
-  for (size_t i = 1; i < seq->elements_length; i++)
-  {
+  for (size_t i = 1; i < seq->elements_length; i++) {
     inserting_record = seq->elements[i];
 
     /**
@@ -491,16 +438,12 @@ void insertion_sort(sequence *seq)
      * また番兵を用いる事を考えるならば,
      * MAX_RECORDS_SIZEの定義に+1をし,番兵分をつくる.
      * */
-    for (j = i - 1; j != (size_t)-1; j--)
-    {
+    for (j = i - 1; j != (size_t)-1; j--) {
       /* 挿入するrecord->key以上かつ最小のインデックスを探すまで,後ろにシフト*/
-      if (is_record_a_larger_than_b(seq->elements[j], inserting_record))
-      {
+      if (is_record_a_larger_than_b(seq->elements[j], inserting_record)) {
         seq->elements[j + 1] = seq->elements[j];
         continue;
-      }
-      else
-      {
+      } else {
         break;
       }
     }
@@ -512,32 +455,24 @@ void insertion_sort(sequence *seq)
  * @brief シェルソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void shell_sort(sequence *seq)
-{
+void shell_sort(sequence *seq) {
   size_t h = 0, i = 0, j = 0;
   record *inserting_record = NULL;
-  while (h < seq->elements_length - 1)
-  {
+  while (h < seq->elements_length - 1) {
     h = 3 * h + 1;
   }
-  while (h > 1)
-  {
+  while (h > 1) {
     h = h / 3;
     /* h関係以外挿入ソートと同様にしている.*/
-    for (i = h; i < seq->elements_length; i++)
-    {
+    for (i = h; i < seq->elements_length; i++) {
       inserting_record = seq->elements[i];
 
       /* デクリメント量が1からhになったため,hにそった条件式にしている.*/
-      for (j = i - h; j != (i % h - h); j = j - h)
-      {
-        if (is_record_a_larger_than_b(seq->elements[j], inserting_record))
-        {
+      for (j = i - h; j != (i % h - h); j = j - h) {
+        if (is_record_a_larger_than_b(seq->elements[j], inserting_record)) {
           seq->elements[j + h] = seq->elements[j];
           continue;
-        }
-        else
-        {
+        } else {
           break;
         }
       }
@@ -550,8 +485,7 @@ void shell_sort(sequence *seq)
  * @brief クイックソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void quick_sort(sequence *seq)
-{
+void quick_sort(sequence *seq) {
   size_t left = 0, right = seq->elements_length - 1;
 
   q_sort_refined(seq, left, right);
@@ -563,10 +497,8 @@ void quick_sort(sequence *seq)
  * @param[in] left 処理を行う塊のなかで最も小さいインデックス.
  * @param[in] right 処理を行う塊のなかで最も大きいインデックス.
  */
-void q_sort_simple(sequence *seq, size_t left, size_t right)
-{
-  if (left < right)
-  {
+void q_sort_simple(sequence *seq, size_t left, size_t right) {
+  if (left < right) {
     size_t pivot_index = (left + right) / 2;
     record *pivot_record = seq->elements[pivot_index];
     seq->elements[pivot_index] = seq->elements[left];
@@ -585,10 +517,8 @@ void q_sort_simple(sequence *seq, size_t left, size_t right)
      * 交換された後のインデックス(左側の最後のインデックス)にpivot_recordで上書きする.
      */
     size_t left_land_last_index = left;
-    for (size_t i = left + 1; i <= right; i++)
-    {
-      if (is_record_a_larger_than_b(pivot_record, seq->elements[i]))
-      {
+    for (size_t i = left + 1; i <= right; i++) {
+      if (is_record_a_larger_than_b(pivot_record, seq->elements[i])) {
         /**
          * left_land_last_index++;を先にしてleft_land_last_index + 1をleft_land_last_indexにしても良い.
          * このように実装が冗長になっているのは理解しやすくするためである.
@@ -619,25 +549,19 @@ void q_sort_simple(sequence *seq, size_t left, size_t right)
  * @param[in] left 処理を行う塊のなかで最も小さいインデックス.
  * @param[in] right 処理を行う塊のなかで最も大きいインデックス.
  */
-void q_sort_refined(sequence *seq, size_t left, size_t right)
-{
-  if (left < right)
-  {
+void q_sort_refined(sequence *seq, size_t left, size_t right) {
+  if (left < right) {
     size_t pivot_index = (left + right) / 2;
     record *pivot_record = seq->elements[pivot_index];
     size_t i = left, j = right;
-    do
-    {
-      while (is_record_a_larger_than_b(pivot_record, seq->elements[i]))
-      {
+    do {
+      while (is_record_a_larger_than_b(pivot_record, seq->elements[i])) {
         i++;
       }
-      while (is_record_a_larger_than_b(seq->elements[j], pivot_record))
-      {
+      while (is_record_a_larger_than_b(seq->elements[j], pivot_record)) {
         --j;
       }
-      if (i <= j)
-      {
+      if (i <= j) {
         SWAP(record *, seq->elements[i], seq->elements[j])
         i++;
         --j;
@@ -656,8 +580,7 @@ void q_sort_refined(sequence *seq, size_t left, size_t right)
  * @param[in] left 処理を行う塊のなかで最も小さいインデックス.
  * @param[in] right 処理を行う塊のなかで最も大きいインデックス.
  */
-void q_sort_definitive(sequence *seq, size_t whole_left, size_t whole_right)
-{
+void q_sort_definitive(sequence *seq, size_t whole_left, size_t whole_right) {
   // right - left < limitになったときにinsertionを用いる.
   size_t q_sort_limit = 10;
   stack *s = init_stack();
@@ -667,25 +590,20 @@ void q_sort_definitive(sequence *seq, size_t whole_left, size_t whole_right)
   record *w1, *w2, *w3, *pivot, *w;
   size_t center;
   size_t i, j;
-  do
-  {
+  do {
     pop_stack(s, &left, &right);
-    while (right - left >= q_sort_limit)
-    {
+    while (right - left >= q_sort_limit) {
       center = (left + right) / 2;
       w1 = seq->elements[left];
       w2 = seq->elements[right];
       w3 = seq->elements[center];
       seq->elements[center] = seq->elements[left + 1];
-      if (is_record_a_larger_than_b(w1, w2))
-      {
+      if (is_record_a_larger_than_b(w1, w2)) {
         SWAP(record *, w1, w2)
       }
-      if (is_record_a_larger_than_b(w2, w3))
-      {
+      if (is_record_a_larger_than_b(w2, w3)) {
         SWAP(record *, w2, w3)
-        if (is_record_a_larger_than_b(w1, w2))
-        {
+        if (is_record_a_larger_than_b(w1, w2)) {
           SWAP(record *, w1, w2)
         }
       }
@@ -696,26 +614,21 @@ void q_sort_definitive(sequence *seq, size_t whole_left, size_t whole_right)
       pivot = w2;
       i = left + 1;
       j = right;
-      do
-      {
+      do {
         for (; is_record_a_larger_than_b(pivot, seq->elements[i]); ++i)
           ;
         for (; is_record_a_larger_than_b(seq->elements[j], pivot); --j)
           ;
-        if (i < j)
-        {
+        if (i < j) {
           SWAP(record *, seq->elements[i], seq->elements[j])
         }
       } while (i < j);
       SWAP(record *, seq->elements[left + 1], seq->elements[j])
 
-      if (j - left <= right - j)
-      {
+      if (j - left <= right - j) {
         push_stack(s, j + 1, right);
         right = j - 1;
-      }
-      else
-      {
+      } else {
         push_stack(s, left, j - 1);
         left = j + 1;
       }
@@ -729,15 +642,12 @@ void q_sort_definitive(sequence *seq, size_t whole_left, size_t whole_right)
  * @brief ヒープソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void heap_sort(sequence *seq)
-{
-  for (size_t i = seq->elements_length / 2 - 1; i != (size_t)-1; i--)
-  {
+void heap_sort(sequence *seq) {
+  for (size_t i = seq->elements_length / 2 - 1; i != (size_t)-1; i--) {
     down_heap(seq, i, seq->elements_length - 1);
   }
 
-  for (size_t i = seq->elements_length - 1; i > 0;)
-  {
+  for (size_t i = seq->elements_length - 1; i > 0;) {
     SWAP(record *, seq->elements[0], seq->elements[i])
     down_heap(seq, 0, --i);
   }
@@ -749,10 +659,8 @@ void heap_sort(sequence *seq)
  * @param[in] target_node_index 縦方向の順序を確認する部分木の根のノード.
  * @param[in] end_node_index 更新対象の末尾のインデックス.
  */
-void down_heap(sequence *seq, size_t target_node_index, size_t end_node_index)
-{
-  while (true)
-  {
+void down_heap(sequence *seq, size_t target_node_index, size_t end_node_index) {
+  while (true) {
     /**
      *                0
      *       1                  2
@@ -761,21 +669,17 @@ void down_heap(sequence *seq, size_t target_node_index, size_t end_node_index)
      * 左部分木のインデックス
      */
     size_t comparing_node_index = 2 * target_node_index + 1;
-    if (comparing_node_index > end_node_index)
-    {
+    if (comparing_node_index > end_node_index) {
       break;
     }
     // comparing_node_index == end_node_indexの時に右部分木は存在しない.
-    if (comparing_node_index != end_node_index)
-    {
-      if (is_record_a_larger_than_b(seq->elements[comparing_node_index + 1], seq->elements[comparing_node_index]))
-      {
+    if (comparing_node_index != end_node_index) {
+      if (is_record_a_larger_than_b(seq->elements[comparing_node_index + 1], seq->elements[comparing_node_index])) {
         //右部分木に
         comparing_node_index++;
       }
     }
-    if (is_record_a_larger_than_b(seq->elements[target_node_index], seq->elements[comparing_node_index]))
-    {
+    if (is_record_a_larger_than_b(seq->elements[target_node_index], seq->elements[comparing_node_index])) {
       break;
     }
     SWAP(record *, seq->elements[target_node_index], seq->elements[comparing_node_index])
@@ -787,13 +691,11 @@ void down_heap(sequence *seq, size_t target_node_index, size_t end_node_index)
  * @brief マージソート.
  * @param[in] seq ソートするsequenceのポインタ.
  */
-void merge_sort(sequence *seq)
-{
+void merge_sort(sequence *seq) {
   sequence *new_seq = init_sequence();
   new_seq->elements_length = seq->elements_length;
   size_t segment_size = 1;
-  while (segment_size < seq->elements_length)
-  {
+  while (segment_size < seq->elements_length) {
     merge_seqs(segment_size, seq, new_seq);
     merge_seqs(2 * segment_size, new_seq, seq);
     segment_size *= 4;
@@ -806,14 +708,12 @@ void merge_sort(sequence *seq)
  * @param[in] from 合成されるsequenceのポインタ.
  * @param[in] into 合成した結果を格納するsequenceのポインタ.
  */
-void merge_seqs(size_t segment_size, sequence *from, sequence *into)
-{
+void merge_seqs(size_t segment_size, sequence *from, sequence *into) {
   size_t start_index = 0;
   size_t i, j, k;
   size_t i_end, j_end;
 
-  while (start_index < from->elements_length)
-  {
+  while (start_index < from->elements_length) {
     i = start_index;
     j = start_index + segment_size;
     k = start_index;
@@ -821,25 +721,19 @@ void merge_seqs(size_t segment_size, sequence *from, sequence *into)
     i_end = MIN(start_index + segment_size - 1, from->elements_length - 1);
     j_end = MIN(start_index + 2 * segment_size - 1, from->elements_length - 1);
 
-    while (i <= i_end && j <= j_end)
-    {
-      if (is_record_a_larger_than_b(from->elements[j], from->elements[i]))
-      {
+    while (i <= i_end && j <= j_end) {
+      if (is_record_a_larger_than_b(from->elements[j], from->elements[i])) {
         put(from, into, &i, &k);
-      }
-      else
-      {
+      } else {
         put(from, into, &j, &k);
       }
     }
 
-    while (i <= i_end)
-    {
+    while (i <= i_end) {
       put(from, into, &i, &k);
     }
 
-    while (j <= j_end)
-    {
+    while (j <= j_end) {
       put(from, into, &j, &k);
     }
 
@@ -854,8 +748,7 @@ void merge_seqs(size_t segment_size, sequence *from, sequence *into)
  * @param[in] from_inputting_index 挿入するコンテンツが存在するインデックス.
  * @param[in] into_inputted_index 挿入するインデックス.
  */
-void put(sequence *from, sequence *into, size_t *from_inputting_index, size_t *into_inputted_index)
-{
+void put(sequence *from, sequence *into, size_t *from_inputting_index, size_t *into_inputted_index) {
   into->elements[*into_inputted_index] = from->elements[*from_inputting_index];
   (*from_inputting_index)++;
   (*into_inputted_index)++;
@@ -865,14 +758,10 @@ void put(sequence *from, sequence *into, size_t *from_inputting_index, size_t *i
  * @brief record確認用プリント関数.
  * @param[in] rec プリントするrecordのポインタ.
  */
-void print_record(record *rec)
-{
-  if (rec == NULL)
-  {
+void print_record(record *rec) {
+  if (rec == NULL) {
     printf("ERROR: Record is NULL\n");
-  }
-  else
-  {
+  } else {
     printf("[%06zu, %s]\n", rec->key, rec->field);
   }
 }
@@ -881,20 +770,15 @@ void print_record(record *rec)
  * @brief sequence確認用プリント関数.
  * @param[in] seq プリントするsequenceのポインタ.
  */
-void print_sequence(sequence *seq)
-{
-  if (seq == NULL)
-  {
+void print_sequence(sequence *seq) {
+  if (seq == NULL) {
     printf("ERROR: Sequence is NULL\n");
-  }
-  else
-  {
+  } else {
     printf("\n");
     printf("================================\n");
     printf("Printing sequence\n");
     printf("================================\n");
-    for (size_t i = 0; i < seq->elements_length; i++)
-    {
+    for (size_t i = 0; i < seq->elements_length; i++) {
       print_record(seq->elements[i]);
     }
     printf("================================\n");
@@ -909,8 +793,7 @@ void print_sequence(sequence *seq)
  * @param[in] tab targetが存在するか調べるsequence.
  * @param[in] target 調べるキー.
  */
-void print_search_existence_and_index(sequence *seq, size_t target)
-{
+void print_search_existence_and_index(sequence *seq, size_t target) {
   printf("\n");
   printf("================================\n");
 
@@ -918,8 +801,7 @@ void print_search_existence_and_index(sequence *seq, size_t target)
   size_t target_index;
   binary_search_existence_and_index(seq, target, &found, &target_index);
   printf("\"%zu\" was %s\n", target, found ? "FOUND." : "NOT FOUND.");
-  if (found)
-  {
+  if (found) {
     printf("The content of the target is...\n");
     print_record(seq->elements[target_index]);
   }
@@ -931,8 +813,7 @@ void print_search_existence_and_index(sequence *seq, size_t target)
  * @brief cliからrecordの内容を読み取りrecordに格納.
  * @return cliから読み取った内容で生成したrecordのポインタ
  */
-record *cli_record()
-{
+record *cli_record() {
   record *rec;
   size_t key = -1;
   char field[MAX_FIELD_SIZE];
@@ -940,17 +821,13 @@ record *cli_record()
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
   printf(STRINGFY(MAX_FIELD_SIZE_WITHOUT_NULL_CHARACTER) "=" DEF_STRINGFY(MAX_FIELD_SIZE_WITHOUT_NULL_CHARACTER) "\n");
 
-  while (true)
-  {
+  while (true) {
     scanf("%zu", &key);
-    if (key == (size_t)-1)
-    {
+    if (key == (size_t)-1) {
       getchar();
       printf("ERROR: Try again from the key.\n");
       continue;
-    }
-    else
-    {
+    } else {
       break;
     }
   }
@@ -964,25 +841,20 @@ record *cli_record()
  * @brief cliからrecordの内容を読み取り,tableの末尾に挿入.
  * @param[in] seq スキャンしたrecordを挿入するseqのポインタ.
  */
-void cli_insert(sequence *seq)
-{
+void cli_insert(sequence *seq) {
   printf("ENETER A RECORD THAT WILL BE INSERTED.\n");
   record *scanned_rec = NULL;
-  while (true)
-  {
+  while (true) {
     // CLIからの入力を受け付け,入力されたデータをscanned_recに代入.
     scanned_rec = cli_record();
     // 同じキーが既に存在しているか確認.
     bool found;
     size_t dummy;
     binary_search_existence_and_index(seq, scanned_rec->key, &found, &dummy);
-    if (found)
-    {
+    if (found) {
       printf("The key is already used.\n");
       continue;
-    }
-    else
-    {
+    } else {
       break;
     }
   }
@@ -994,8 +866,7 @@ void cli_insert(sequence *seq)
   printf("was inserted.\n");
 }
 
-void run_sort_algorithm(sequence *seq, void (*sort_algorithm)(sequence *))
-{
+void run_sort_algorithm(sequence *seq, void (*sort_algorithm)(sequence *)) {
   double start_clock, end_clock;
 
   start_clock = (double)clock();
@@ -1005,19 +876,16 @@ void run_sort_algorithm(sequence *seq, void (*sort_algorithm)(sequence *))
   printf("CPU execution time: %.8lf s.\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
 }
 
-int main()
-{
+int main() {
   size_t keys[MAX_RECORDS_SIZE];
-  for (size_t i = 0; i < MAX_RECORDS_SIZE; i++)
-  {
+  for (size_t i = 0; i < MAX_RECORDS_SIZE; i++) {
     keys[i] = i;
   }
 
   fisher_yates_shuffle(keys, sizeof(keys) / sizeof(size_t));
 
   sequence *seq = init_sequence();
-  for (size_t i = 0; i < MAX_RECORDS_SIZE; i++)
-  {
+  for (size_t i = 0; i < MAX_RECORDS_SIZE; i++) {
     insert_tail(seq, init_record(keys[i], (char *)"AAAAAAAA"));
   }
 
@@ -1044,11 +912,9 @@ int main()
  * @param[in,out] array シャフルする配列であるsize_tのポインタ.
  * @param[in] array_size シャッフルする配列のサイズ
  */
-void fisher_yates_shuffle(size_t *array, size_t array_size)
-{
+void fisher_yates_shuffle(size_t *array, size_t array_size) {
   size_t i = array_size;
-  while (i > 1)
-  {
+  while (i > 1) {
     size_t j = rand() % i;
     i--;
     int t = array[i];
