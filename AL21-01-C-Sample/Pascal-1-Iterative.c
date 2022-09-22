@@ -15,9 +15,7 @@ int gcd(int m, int n)
     n = r;
   } while (r != 0);
 
-  int gcd = m;
-
-  return gcd;
+  return m;
 }
 
 int main()
