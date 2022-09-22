@@ -23,9 +23,7 @@ int binary_search(int *table, int table_length, int x)
   }
   
   //0 origin
-  bool found = (hi >= 0) && (x == table[hi]);
-
-  return found;
+  return (hi >= 0) && (x == table[hi]);
 }
 
 
