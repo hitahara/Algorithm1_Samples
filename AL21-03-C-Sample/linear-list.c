@@ -7,17 +7,16 @@
 */
 typedef struct cell cell;
 
-/**
- * @brief cellのポインタの型.
-*/
-typedef cell* list;
-
 struct cell
 {
   int element; /** int型で表されたデータ. */
-  list next;  /** 続くリストの先頭のcellのポインタ/list. */
+  cell* next;  /** 続くリストの先頭のcellのポインタ/list. */
 };
 
+typedef struct
+{
+  cell* head;
+} list;
 
 /**
  * @brief cellの初期化.
@@ -35,7 +34,8 @@ cell* init_cell()
 */
 list init_list()
 {
-  list l = NULL;
+  list l;
+  l.head = NULL;
   return l;
 }
 
@@ -52,17 +52,17 @@ void dispose(cell* c)
  * @brief 引数のlistをメモリ解放する.
  * @param[in] list_head メモリ解放するlistのポインタ.
 */
-void release_list(list* list_head)
+void release_list(list* l)
 {
-  cell* disposing_cell = *list_head;
-  cell* next_cell = *list_head;
+  cell* disposing_cell = l->head;
+  cell* next_cell = l->head;
   for(;next_cell != NULL;)
   {
     next_cell = disposing_cell->next;
     dispose(disposing_cell);
     disposing_cell = next_cell;
   }
-  *list_head = NULL;
+  l->head = NULL;
 }
 
 /**
@@ -83,12 +83,12 @@ void insert_cell(cell* previous, int val)
  * @param[in] list 先頭に挿入するlistのポインタ.
  * @param[in] val 挿入するint型のデータ.
 */
-void insert_head(list* list_head, int val)
+void insert_head(list* l, int val)
 {
   cell* q = init_cell();
   q->element = val;
-  q->next = *list_head;
-  *list_head = q;
+  q->next = l->head;
+  l->head = q;
 }
 
 /**
@@ -106,10 +106,10 @@ void delete_cell(cell* previous)
  * @brief リストの先頭を削除し,list_headを更新する. Program 1.3.9
  * @param[in] list_head 先頭を削除するlistのポインタ.
 */
-void delete_head(list* list_head)
+void delete_head(list* l)
 {
-  cell* q = *list_head;
-  *list_head = q->next;
+  cell* q = l->head;
+  l->head = q->next;
   dispose(q);
 }
 
@@ -117,11 +117,11 @@ void delete_head(list* list_head)
  * @brief list確認用プリント関数.
  * @param[in] list_head プリントするlist.
 */
-void print_list(list list_head)
+void print_list(list l)
 {
-  cell* c = list_head;
   printf("LIST: [ ");
-  for(;c != NULL;c = c->next)
+  cell* c;
+  for(c = l.head; c != NULL;c = c->next)
   {
     printf("%d ", c->element);   
   }
@@ -130,25 +130,27 @@ void print_list(list list_head)
 
 int main()
 {
-  //list_headを更新する関数でポインタを渡す必要有り
-  list list_head = init_list();
+  list l = init_list();
 
   cell* example_cell;
   for(int i = 0; i < 20; i++)
   {
-    insert_head(&list_head, i);
-    if(i==6) example_cell = list_head;
+    insert_head(&l, i);
+    if(i==6) example_cell = l.head;
   }  
-  print_list(list_head);
-  insert_cell(example_cell, 100);
-  print_list(list_head);
-  delete_cell(example_cell);
-  print_list(list_head);
-  delete_head(&list_head);
-  print_list(list_head);
+  print_list(l);
 
-  release_list(&list_head);
-  print_list(list_head);
+  insert_cell(example_cell, 100);
+  print_list(l);
+
+  delete_cell(example_cell);
+  print_list(l);
+
+  delete_head(&l);
+  print_list(l);
+
+  release_list(&l);
+  print_list(l);
 
   return 0;
 }
