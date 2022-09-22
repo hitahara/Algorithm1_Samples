@@ -5,25 +5,20 @@
 
 int linear_search(int *table, int table_length, int x)
 {
-  bool found = false;
-
   // 0 origin
   for (int i = 0; i < table_length; i++)
   {
     if (x == table[i])
     {
-      found = true;
-      break;
+      return true;
     }
   }
 
-  return found;
+  return false;
 }
 
 int linear_search_analyze(int *table, int table_length, int x)
 {
-  bool found = false; // 1
-
   // 0 origin
   int i = 0;               // 2
   while (i < table_length) // 3
@@ -34,12 +29,11 @@ int linear_search_analyze(int *table, int table_length, int x)
     }
     else
     {
-      found = true; // 5
-      break;        // 6
+      return true; // 5
     }
   }
 
-  return found;
+  return false;
 }
 
 int main()
