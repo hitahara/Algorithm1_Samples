@@ -3,14 +3,12 @@
 #include <string.h>
 
 /**
- * @brief データと続くリストを保持する構造体.
+ * @brief データと次のデータへのポインタを保持する構造体.
  */
-typedef struct cell cell;
-
-struct cell {
-  int element; /** int型で表されたデータ. */
-  cell* next;  /** 続くリストの先頭のcellのポインタ/list. */
-};
+typedef struct _cell {
+  int element;
+  struct _cell* next;
+} cell;
 
 typedef struct
 {
@@ -19,21 +17,12 @@ typedef struct
 
 /**
  * @brief cellの初期化.
- * @return 初期化された,データやポインタが代入されていないcellのポインタ.
  */
 cell* init_cell() {
   cell* c = (cell*)malloc(sizeof(cell));
+  c->element = 0;
+  c->next = NULL;
   return c;
-}
-
-/**
- * @brief listの初期化.
- * @return NULLのlist.
- */
-list init_list() {
-  list l;
-  l.head = NULL;
-  return l;
 }
 
 /**
@@ -118,10 +107,11 @@ void print_list(list l) {
 }
 
 int main() {
-  list l = init_list();
+  list l;
+  l.head = NULL;
 
   cell* example_cell;
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 10; i++) {
     insert_head(&l, i);
     if (i == 6)
       example_cell = l.head;
@@ -142,3 +132,10 @@ int main() {
 
   return 0;
 }
+
+// 実行結果
+// LIST: [ 9 8 7 6 5 4 3 2 1 0 ]
+// LIST: [ 9 8 7 6 100 5 4 3 2 1 0 ]
+// LIST: [ 9 8 7 6 5 4 3 2 1 0 ]
+// LIST: [ 8 7 6 5 4 3 2 1 0 ]
+// LIST: [ ]
