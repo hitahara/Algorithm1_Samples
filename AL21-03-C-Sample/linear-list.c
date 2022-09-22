@@ -56,7 +56,7 @@ void release_list(list* l)
 {
   cell* disposing_cell = l->head;
   cell* next_cell = l->head;
-  for(;next_cell != NULL;)
+  while(next_cell != NULL)
   {
     next_cell = disposing_cell->next;
     dispose(disposing_cell);
@@ -120,10 +120,11 @@ void delete_head(list* l)
 void print_list(list l)
 {
   printf("LIST: [ ");
-  cell* c;
-  for(c = l.head; c != NULL;c = c->next)
+  cell* c = l.head;
+  while(c != NULL)
   {
-    printf("%d ", c->element);   
+    printf("%d ", c->element);
+    c = c->next;
   }
   printf("]\n");
 }
