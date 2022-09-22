@@ -1,5 +1,24 @@
-#include "binary_search.h"
-#include "linear_search.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int binary_search(int* table, int table_length, int x) {
+  int lo = 0;
+  int hi = table_length - 1;
+  int mid;
+
+  while (lo <= hi) {
+    mid = (lo + hi) / 2;
+    if (x < table[mid]) {
+      hi = mid - 1;
+    } else {
+      lo = mid + 1;
+    }
+  }
+
+  return (hi >= 0) && (x == table[hi]);
+}
 
 int main() {
   int length;
@@ -22,8 +41,7 @@ int main() {
     }
 
     double start_clock = (double)clock();
-    bool found = linear_search(table, length, target);
-    // bool found = binary_search(table, length, target);
+    bool found = binary_search(table, length, target);
     double end_clock = (double)clock();
 
     printf("CPU execution time: %.8lf s.\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
