@@ -42,13 +42,11 @@ int main()
   
   table = (int *) malloc(table_length * sizeof(int));
   
-
   printf("Type in the table numbers (number >= 0)...\n");
   for(int i = 0; i < table_length; i++)
   {
     scanf("%d", &table[i]);
   }
-  
 
   while(true)
   {
@@ -60,16 +58,13 @@ int main()
       break;
     }
     
-
     start_clock = (double)clock();
     bool search_result = binary_search(table, table_length, target);
     end_clock = (double)clock();
-    
 
     printf("CPU execution time: %.8lf s.\nIs target in the table: %s\n",
       (end_clock - start_clock) / CLOCKS_PER_SEC, search_result ? "Yes" : "No"); 
   }
-  
   
   free(table);
   
