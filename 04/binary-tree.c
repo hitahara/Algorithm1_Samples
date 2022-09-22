@@ -29,14 +29,6 @@ node* init_node() {
 }
 
 /**
- * @brief 引数のnodeを削除する.
- * @param[in] n 削除するnodeのポインタ.
- */
-void dispose(node* n) {
-  free(n);
-}
-
-/**
  * @brief 引数のtreeをメモリ解放する.
  * @param[in] tree メモリ解放するtreeのポインタ.
  */
@@ -44,7 +36,7 @@ void release_tree(tree* tree) {
   if (*tree != NULL) {
     release_tree(&(*tree)->left);
     release_tree(&(*tree)->right);
-    dispose((*tree));
+    free(*tree);
   }
   (*tree) = NULL;
 }

@@ -34,14 +34,6 @@ list init_list() {
 }
 
 /**
- * @brief 引数のcellを削除する.
- * @param[in] c 削除するcellのポインタ.
- */
-void dispose(cell* c) {
-  free(c);
-}
-
-/**
  * @brief 引数のlistをメモリ解放する.
  * @param[in] list_head メモリ解放するlistのポインタ.
  */
@@ -50,7 +42,7 @@ void release_list(list* list_head) {
   cell* next_cell = *list_head;
   for (; next_cell != NULL;) {
     next_cell = disposing_cell->next;
-    dispose(disposing_cell);
+    free(disposing_cell);
     disposing_cell = next_cell;
   }
   *list_head = NULL;
@@ -81,7 +73,7 @@ void pop(list* stack, int* val) {
   *val = (*stack)->element;
   cell* p = *stack;
   *stack = (*stack)->next;
-  dispose(p);
+  free(p);
 }
 
 /**
