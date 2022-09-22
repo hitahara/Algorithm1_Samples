@@ -4,7 +4,8 @@
 #include <time.h>
 
 int binary_search(int* table, int table_length, int x) {
-  int lo = 0, hi = table_length - 1;
+  int lo = 0;
+  int hi = table_length - 1;
   int mid;
 
   while (lo <= hi) {
