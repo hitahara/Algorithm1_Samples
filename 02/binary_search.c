@@ -6,10 +6,9 @@
 int binary_search(int* table, int length, int x) {
   int lo = 0;
   int hi = length - 1;
-  int mid;
 
   while (lo <= hi) {
-    mid = (lo + hi) / 2;
+    int mid = (lo + hi) / 2;
     if (x < table[mid]) {
       hi = mid - 1;
     } else {
