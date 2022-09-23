@@ -2,16 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-/** @brief スタックの配列がとれる最大バイト数. */
-#define MAX_ELEMENTS_MEMORY 65535
+/** @brief スタックの配列がとれる最大要素数. */
+#define SIZE 1000
 
 /**
  * @brief スタックの配列とメタ情報を保持する構造体.
  */
-typedef struct stack {
-  size_t sp;                                       /** 配列の長さ. */
-  size_t size;                                     /** 配列がとれる最大長. */
-  int elements[MAX_ELEMENTS_MEMORY / sizeof(int)]; /** int型で表された配列. */
+typedef struct {
+  size_t pointer;     /** 配列の長さ. */
+  int elements[SIZE]; /** int型で表された配列. */
 } stack;
 
 /**
@@ -20,8 +19,7 @@ typedef struct stack {
  */
 stack* init_stack() {
   stack* s = (stack*)malloc(sizeof(stack));
-  s->sp = 0;
-  s->size = MAX_ELEMENTS_MEMORY / sizeof(int);
+  s->pointer = 0;
   return s;
 }
 
@@ -30,7 +28,7 @@ stack* init_stack() {
  * @param[in] stack spを0にするstackのポインタ.
  */
 void clear_stack(stack* stack) {
-  stack->sp = 0;
+  stack->pointer = 0;
 }
 
 /**
@@ -47,13 +45,13 @@ void release_stack(stack* stack) {
  * @param[in] val int型のプッシュするデータ.
  */
 void push(stack* stack, int val) {
-  if (stack->sp >= stack->size) {
+  if (stack->pointer >= SIZE) {
     printf("No more element can be pushed into the stack.\n");
     return;
   }
 
-  stack->elements[stack->sp] = val;
-  stack->sp++;
+  stack->elements[stack->pointer] = val;
+  stack->pointer++;
 }
 
 /**
@@ -62,13 +60,13 @@ void push(stack* stack, int val) {
  * @param[in] val ポップした値の受けてとなるint型のポインタ.
  */
 void pop(stack* stack, int* val) {
-  if (stack->sp == 0) {
+  if (stack->pointer == 0) {
     printf("No more element can be popped from the elements.\n");
     return;
   }
 
-  stack->sp--;
-  *val = stack->elements[stack->sp];
+  stack->pointer--;
+  *val = stack->elements[stack->pointer];
 }
 
 /**
@@ -77,28 +75,35 @@ void pop(stack* stack, int* val) {
  */
 void print_stack(stack* stack) {
   printf("ELEMENTS: [ ");
-  for (int i = stack->sp - 1; i >= 0; i--) {
+  for (int i = stack->pointer - 1; i >= 0; i--) {
     printf("%d ", stack->elements[i]);
   }
-  printf("]\nSTACK POINT: %ld\n", stack->sp);
+  printf("]\nSTACK POINTER: %ld\n", stack->pointer);
 }
 
 int main() {
   stack* stack = init_stack();
-
   print_stack(stack);
 
   for (int i = 0; i < 10; i++) {
     push(stack, i);
   }
-
   print_stack(stack);
 
   int val;
   pop(stack, &val);
   print_stack(stack);
-  printf("val: %d\n", val);
+  printf("POP: %d\n", val);
 
   release_stack(stack);
   return 0;
 }
+
+// 実行結果
+// ELEMENTS: [ ]
+// STACK POINTER: 0
+// ELEMENTS: [ 9 8 7 6 5 4 3 2 1 0 ]
+// STACK POINTER: 10
+// ELEMENTS: [ 8 7 6 5 4 3 2 1 0 ]
+// STACK POINTER: 9
+// POP: 9
