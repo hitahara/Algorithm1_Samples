@@ -96,8 +96,6 @@ void remove_queue(queue* queue, int* val) {
  */
 void print_queue(queue* queue) {
   printf("QUEUE: [ ");
-  // int jはqueue->count==SIZEの時
-  // queue->head==queue->tailとなるため存在
   int index = queue->head;
   for (int count = 0; count < queue->count; count++) {
     printf("%d ", queue->elements[index]);
