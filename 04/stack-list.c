@@ -5,19 +5,21 @@
 /**
  * @brief データと次のアイテムを保持する構造体.
  */
-typedef struct cell {
-  int element;       /** int型で表されたデータ. */
-  struct cell* next; /** 次のcellを指すポインタ. */
+typedef struct _cell {
+  int element;        /** int型で表されたデータ. */
+  struct _cell* next; /** 次のcellを指すポインタ. */
 } cell;
 
 /**
  * @brief cellのポインタの型.
  */
-typedef cell* list;
+typedef struct
+{
+  cell* head;
+} list;
 
 /**
  * @brief cellの初期化.
- * @return 初期化された,データやポインタが代入されていないcellのポインタ.
  */
 cell* init_cell() {
   cell* c = (cell*)malloc(sizeof(cell));
@@ -26,10 +28,10 @@ cell* init_cell() {
 
 /**
  * @brief listの初期化.
- * @return NULLのlist.
  */
 list init_list() {
-  list l = NULL;
+  list l;
+  l.head = NULL;
   return l;
 }
 
@@ -37,15 +39,14 @@ list init_list() {
  * @brief 引数のlistをメモリ解放する.
  * @param[in] list_head メモリ解放するlistのポインタ.
  */
-void release_list(list* list_head) {
-  cell* disposing_cell = *list_head;
-  cell* next_cell = *list_head;
-  for (; next_cell != NULL;) {
-    next_cell = disposing_cell->next;
-    free(disposing_cell);
-    disposing_cell = next_cell;
+void release_list(list* stack) {
+  cell* current = stack->head;
+  while (current != NULL) {
+    cell* next = current->next;
+    free(current);
+    current = next;
   }
-  *list_head = NULL;
+  stack->head = NULL;
 }
 
 /**
@@ -56,8 +57,8 @@ void release_list(list* list_head) {
 void push(list* stack, int val) {
   cell* p = init_cell();
   p->element = val;
-  p->next = *stack;
-  *stack = p;
+  p->next = stack->head;
+  stack->head = p;
 }
 
 /**
@@ -70,9 +71,9 @@ void pop(list* stack, int* val) {
     printf("No more element can be popped from the stack.\n");
     return;
   }
-  *val = (*stack)->element;
-  cell* p = *stack;
-  *stack = (*stack)->next;
+  *val = stack->head->element;
+  cell* p = stack->head;
+  stack->head = stack->head->next;
   free(p);
 }
 
@@ -81,10 +82,11 @@ void pop(list* stack, int* val) {
  * @param[in] list プリントするlistのポインタ.
  */
 void print_list(list list) {
-  cell* c = list;
   printf("LIST CELLS: [ ");
-  for (; c != NULL; c = c->next) {
+  cell* c = list.head;
+  while (c != NULL) {
     printf("%d ", c->element);
+    c = c->next;
   }
   printf("]\n");
 }
@@ -92,7 +94,7 @@ void print_list(list list) {
 int main() {
   list stack = init_list();
 
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 10; i++) {
     push(&stack, i);
   }
 
@@ -107,3 +109,8 @@ int main() {
   release_list(&stack);
   return 0;
 }
+
+// 実行結果
+// LIST CELLS: [ 9 8 7 6 5 4 3 2 1 0 ]
+// LIST CELLS: [ 8 7 6 5 4 3 2 1 0 ]
+// 9
