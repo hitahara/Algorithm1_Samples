@@ -6,19 +6,18 @@
 /**
  * @brief データと次のアイテムを保持する構造体.
  */
-typedef struct cell {
-  int element;       /** int型で表されたデータ. */
-  struct cell* next; /** 次のcellを指すポインタ. */
+typedef struct _cell {
+  int element;        /** int型で表されたデータ. */
+  struct _cell* next; /** 次のcellを指すポインタ. */
 } cell;
 
-/**
- * @brief cellのポインタの型.
- */
-typedef cell* list;
+typedef struct {
+  cell* head;
+  cell* tail;
+} queue;
 
 /**
  * @brief cellの初期化.
- * @return 初期化された,データやポインタが代入されていないcellのポインタ.
  */
 cell* init_cell() {
   cell* c = (cell*)malloc(sizeof(cell));
@@ -27,110 +26,98 @@ cell* init_cell() {
 
 /**
  * @brief listの初期化.
- * @return NULLのlist.
  */
-list init_list() {
-  list l = NULL;
-  return l;
-}
-
-/**
- * @brief 引数のlistをメモリ解放する.
- * @param[in] list_head メモリ解放するlistのポインタ.
- */
-void release_list(list* list_head) {
-  cell* disposing_cell = *list_head;
-  cell* next_cell = *list_head;
-  for (; next_cell != NULL;) {
-    next_cell = disposing_cell->next;
-    free(disposing_cell);
-    disposing_cell = next_cell;
-  }
-  *list_head = NULL;
+queue init_queue() {
+  queue q;
+  q.head = NULL;
+  q.tail = NULL;
+  return q;
 }
 
 /**
  * @brief 引数のqueue_headが指すcellを削除する.
  * @param[in] queue_head 削除するキューの先頭.
  */
-void clear_queue(list* queue_head, list* queue_tail) {
-  release_list(queue_head);
-  *queue_head = NULL;
-  *queue_tail = NULL;
+void clear_queue(queue* q) {
+  cell* current = q->head;
+  while (current != NULL) {
+    cell* next = current->next;
+    free(current);
+    current = next;
+  }
+  q->head = NULL;
+  q->tail = NULL;
 }
 
 /**
  * @brief 引数のqueue_headが空か確認.
- * @param[in] queue_head 確認するキューの先頭.
  */
-bool empty_queue(list queue_head) {
-  return queue_head == NULL;
+bool empty_queue(queue* q) {
+  return q->head == NULL;
 }
 
 /**
- * @brief キューの先頭にvalをエンキューし,queue_headとqueue_tailを更新する.
- * @param[in] queue_head キューの先頭を表すlistのポインタ.
- * @param[in] queue_tail キューの最後尾を表すlistのポインタ.
- * @param[in] val エンキューするint型のデータ.
+ * @brief キューの先頭にvalをエンキューする.
  */
-void enter_queue(list* queue_head, list* queue_tail, int val) {
-  cell* q = init_cell();
-  q->element = val;
-  q->next = NULL;
+void enter_queue(queue* q, int val) {
+  cell* c = init_cell();
+  c->element = val;
+  c->next = NULL;
 
-  if (empty_queue(*queue_head)) {
-    *queue_head = q;
+  if (empty_queue(q)) {
+    q->head = c;
   } else {
-    (*queue_tail)->next = q;
+    q->tail->next = c;
   }
 
-  *queue_tail = q;
+  q->tail = c;
 }
 
 /**
- * @brief キューの先頭をデキューし,queue_headを更新する.
- * @param[in] queue_head 先頭をデキューするlistのポインタ.
- * @param[out] val デキューした値の受けてとなるint型のポインタ
+ * @brief キューの先頭をデキューする.
  */
-void remove_queue(list* queue_head, int* val) {
-  if (empty_queue(*queue_head)) {
+void remove_queue(queue* q, int* val) {
+  if (empty_queue(q)) {
     printf("No more element can be dequeued from the queue.\n");
     return;
   }
-  *val = (*queue_head)->element;
-  cell* q = *queue_head;
-  *queue_head = (*queue_head)->next;
-  free(q);
+  *val = q->head->element;
+  cell* c = q->head;
+  q->head = q->head->next;
+  free(c);
 }
 
 /**
  * @brief 配列のデータがint型と前提にした,確認用プリント関数.
- * @param[in] list プリントするlist.
  */
-void print_list(list list) {
-  cell* c = list;
-  printf("LIST CELLS: [ ");
-  for (; c != NULL; c = c->next) {
-    printf("%d ", c->element);
+void print_queue(queue q) {
+  printf("QUEUE: [ ");
+  cell* current = q.head;
+  while (current != NULL) {
+    printf("%d ", current->element);
+    current = current->next;
   }
   printf("]\n");
 }
 
 int main() {
-  list queue_head = init_list();
-  list queue_tail = init_list();
+  queue q = init_queue();
 
-  for (int i = 0; i < 20; i++) {
-    enter_queue(&queue_head, &queue_tail, i);
+  for (int i = 0; i < 10; i++) {
+    enter_queue(&q, i);
   }
-
-  print_list(queue_head);
+  print_queue(q);
 
   int val;
-  remove_queue(&queue_head, &val);
+  remove_queue(&q, &val);
+  print_queue(q);
 
-  print_list(queue_head);
-
-  clear_queue(&queue_head, &queue_tail);
+  clear_queue(&q);
+  print_queue(q);
   return 0;
 }
+
+// 実行結果
+// QUEUE: [ 0 1 2 3 4 5 6 7 8 9 ]
+// QUEUE: [ 1 2 3 4 5 6 7 8 9 ]
+// QUEUE: [ ]

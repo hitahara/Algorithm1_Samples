@@ -65,32 +65,32 @@ void pop(stack* stack, int* val) {
 /**
  * @brief stack確認用プリント関数.
  */
-void print_stack(stack* stack) {
+void print_stack(stack* s) {
   printf("ELEMENTS: [ ");
-  for (int i = stack->length - 1; i >= 0; i--) {
-    printf("%d ", stack->elements[i]);
+  for (int i = s->length - 1; i >= 0; i--) {
+    printf("%d ", s->elements[i]);
   }
-  printf("]\nSTACK POINTER: %ld\n", stack->length);
+  printf("]\nSTACK POINTER: %ld\n", s->length);
 }
 
 int main() {
-  stack* stack = init_stack();
-  print_stack(stack);
+  stack* s = init_stack();
+  print_stack(s);
 
   for (int i = 0; i < 10; i++) {
-    push(stack, i);
+    push(s, i);
   }
-  print_stack(stack);
+  print_stack(s);
 
   int val;
-  pop(stack, &val);
-  print_stack(stack);
+  pop(s, &val);
+  print_stack(s);
   printf("POP: %d\n", val);
 
-  clear_stack(stack);
-  print_stack(stack);
+  clear_stack(s);
+  print_stack(s);
 
-  release_stack(stack);
+  release_stack(s);
   return 0;
 }
 

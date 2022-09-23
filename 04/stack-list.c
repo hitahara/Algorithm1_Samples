@@ -16,7 +16,7 @@ typedef struct _cell {
 typedef struct
 {
   cell* head;
-} list;
+} stack;
 
 /**
  * @brief cellの初期化.
@@ -27,63 +27,57 @@ cell* init_cell() {
 }
 
 /**
- * @brief listの初期化.
+ * @brief stackの初期化.
  */
-list init_list() {
-  list l;
-  l.head = NULL;
-  return l;
+stack init_stack() {
+  stack s;
+  s.head = NULL;
+  return s;
 }
 
 /**
  * @brief 引数のlistをメモリ解放する.
- * @param[in] list_head メモリ解放するlistのポインタ.
  */
-void release_list(list* stack) {
-  cell* current = stack->head;
+void release_list(stack* s) {
+  cell* current = s->head;
   while (current != NULL) {
     cell* next = current->next;
     free(current);
     current = next;
   }
-  stack->head = NULL;
+  s->head = NULL;
 }
 
 /**
  * @brief スタックの先頭にvalをプッシュし,stackを更新する.
- * @param[in] stack 先頭にプッシュするlistのポインタ.
- * @param[in] val プッシュするint型のデータ.
  */
-void push(list* stack, int val) {
-  cell* p = init_cell();
-  p->element = val;
-  p->next = stack->head;
-  stack->head = p;
+void push(stack* s, int val) {
+  cell* c = init_cell();
+  c->element = val;
+  c->next = s->head;
+  s->head = c;
 }
 
 /**
  * @brief スタックの先頭をポップし,stackを更新する.
- * @param[in] list 先頭をポップするlistのポインタ.
- * @param[in] val ポップした値の受けてとなるint型のポインタ
  */
-void pop(list* stack, int* val) {
-  if (stack == NULL) {
+void pop(stack* s, int* val) {
+  if (s == NULL) {
     printf("No more element can be popped from the stack.\n");
     return;
   }
-  *val = stack->head->element;
-  cell* p = stack->head;
-  stack->head = stack->head->next;
-  free(p);
+  *val = s->head->element;
+  cell* c = s->head;
+  s->head = s->head->next;
+  free(c);
 }
 
 /**
- * @brief 配列のデータがint型と前提にした,確認用プリント関数.
- * @param[in] list プリントするlistのポインタ.
+ * @brief 確認用プリント関数.
  */
-void print_list(list list) {
+void print_stack(stack s) {
   printf("LIST CELLS: [ ");
-  cell* c = list.head;
+  cell* c = s.head;
   while (c != NULL) {
     printf("%d ", c->element);
     c = c->next;
@@ -92,21 +86,19 @@ void print_list(list list) {
 }
 
 int main() {
-  list stack = init_list();
+  stack s = init_stack();
 
   for (int i = 0; i < 10; i++) {
-    push(&stack, i);
+    push(&s, i);
   }
-
-  print_list(stack);
+  print_stack(s);
 
   int val;
-  pop(&stack, &val);
-
-  print_list(stack);
+  pop(&s, &val);
+  print_stack(s);
   printf("%d\n", val);
 
-  release_list(&stack);
+  release_list(&s);
   return 0;
 }
 

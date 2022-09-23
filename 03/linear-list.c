@@ -26,8 +26,7 @@ cell* init_cell() {
 }
 
 /**
- * @brief 引数のlistをメモリ解放する.
- * @param[in] list_head メモリ解放するlistのポインタ.
+ * @brief listのをメモリを解放する.
  */
 void release_list(list* l) {
   cell* current = l->head;
@@ -41,8 +40,6 @@ void release_list(list* l) {
 
 /**
  * @brief previousの後ろにvalを挿入する. Program 1.3.4
- * @param[in] previous 挿入する位置の前のcellをさすポインタ.
- * @param[in] val 挿入するint型のデータ.
  */
 void insert_cell(cell* previous, int val) {
   cell* q = init_cell();
@@ -52,9 +49,7 @@ void insert_cell(cell* previous, int val) {
 }
 
 /**
- * @brief リストの先頭にvalを挿入し,listを更新する. Program 1.3.6
- * @param[in] list 先頭に挿入するlistのポインタ.
- * @param[in] val 挿入するint型のデータ.
+ * @brief リストの先頭にvalを挿入する. Program 1.3.6
  */
 void insert_head(list* l, int val) {
   cell* q = init_cell();
@@ -65,7 +60,6 @@ void insert_head(list* l, int val) {
 
 /**
  * @brief previousの後ろのcellを削除する. Program 1.3.7
- * @param[in] previous 削除するcellの前のcellをさすポインタ.
  */
 void delete_cell(cell* previous) {
   cell* q = previous->next;
@@ -74,8 +68,7 @@ void delete_cell(cell* previous) {
 }
 
 /**
- * @brief リストの先頭を削除し,list_headを更新する. Program 1.3.9
- * @param[in] list_head 先頭を削除するlistのポインタ.
+ * @brief リストの先頭を削除する. Program 1.3.9
  */
 void delete_head(list* l) {
   cell* q = l->head;
@@ -85,7 +78,6 @@ void delete_head(list* l) {
 
 /**
  * @brief list確認用プリント関数.
- * @param[in] list_head プリントするlist.
  */
 void print_list(list l) {
   printf("LIST: [ ");

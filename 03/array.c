@@ -33,40 +33,34 @@ void release_sequence(sequence* seq) {
 
 /**
  * @brief 配列の指定位置にデータを挿入し,指定位置以降を後ろにずらす. Program 1.3.1
- * @param[in] seq 挿入対象の配列をもつsequenceのポインタ.
- * @param[in] k   挿入する位置 (0 <= k <= seq->lengthを前提).
- * @param[in] val 挿入データ.
  */
-void insert_element(sequence* seq, int k, int val) {
+void insert_element(sequence* seq, int pos, int val) {
   if (seq->length >= SIZE) {
     printf("No more element can be inserted into elements.\n");
     return;
   }
 
-  for (int i = seq->length - 1; i >= k; i--) {
+  for (int i = seq->length - 1; i >= pos; i--) {
     seq->elements[i + 1] = seq->elements[i];
   }
 
   seq->length++;
-  seq->elements[k] = val;
+  seq->elements[pos] = val;
 }
 
 /**
  * @brief 配列の指定位置のデータを削除し,指定位置以降を前にずらす. Program 1.3.2
- * @param[in] seq 削除対象の配列をもつsequenceのポインタ.
- * @param[in] k   削除する位置/キー/インデックス (0 <= k < seq->lengthを前提).
  */
-void delete_element(sequence* seq, int k) {
+void delete_element(sequence* seq, int pos) {
   seq->length--;
 
-  for (int i = k; i < seq->length; i++) {
+  for (int i = pos; i < seq->length; i++) {
     seq->elements[i] = seq->elements[i + 1];
   }
 }
 
 /**
  * @brief sequence確認用プリント関数.
- * @param[in] seq プリントする配列をもつsequenceのポインタ.
  */
 void print_sequence(sequence* seq) {
   printf("ELEMENTS: [ ");

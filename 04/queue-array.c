@@ -22,83 +22,82 @@ typedef struct {
  * @brief queueの初期化.
  */
 queue* init_queue() {
-  queue* s = (queue*)malloc(sizeof(queue));
-  s->head = 0;
-  s->tail = 0;
-  s->count = 0;
-  return s;
+  queue* q = (queue*)malloc(sizeof(queue));
+  q->head = 0;
+  q->tail = 0;
+  q->count = 0;
+  return q;
 }
 
 /**
  * @brief 引数のqueueのメタデータを0にする.
  */
-void clear_queue(queue* queue) {
-  queue->head = 0;
-  queue->tail = 0;
-  queue->count = 0;
+void clear_queue(queue* q) {
+  q->head = 0;
+  q->tail = 0;
+  q->count = 0;
 }
 
 /**
  * @brief 引数のqueueが空か確認.
  */
-bool empty_queue(queue* queue) {
-  return queue->count == 0;
+bool empty_queue(queue* q) {
+  return q->count == 0;
 }
 
 /**
  * @brief queueのメモリを解放.
  */
-void release_queue(queue* queue) {
-  free(queue);
+void release_queue(queue* q) {
+  free(q);
 }
 
 /**
  * @brief キューの先頭にvalをエンキューし,queueを更新する.
  */
-void enter_queue(queue* queue, int val) {
-  if (queue->count >= SIZE) {
+void enter_queue(queue* q, int val) {
+  if (q->count >= SIZE) {
     printf("No more element can be enqueued into the queue.\n");
     return;
   }
 
-  queue->elements[queue->tail] = val;
-  queue->tail++;
+  q->elements[q->tail] = val;
+  q->tail++;
 
-  if (queue->tail >= SIZE) {
-    queue->tail = 0;
+  if (q->tail >= SIZE) {
+    q->tail = 0;
   }
 
-  queue->count++;
+  q->count++;
 }
 
 /**
  * @brief キューの先頭をデキューする.
  */
-void remove_queue(queue* queue, int* val) {
-  if (queue->count <= 0) {
+void remove_queue(queue* q, int* val) {
+  if (q->count <= 0) {
     printf("No more element can be dequeued from the queue.\n");
     return;
   }
 
-  *val = queue->elements[queue->head];
-  queue->head++;
+  *val = q->elements[q->head];
+  q->head++;
 
-  if (queue->head >= SIZE) {
-    queue->head = 0;
+  if (q->head >= SIZE) {
+    q->head = 0;
   }
 
-  queue->count--;
+  q->count--;
 }
 
 /**
  * @brief queue確認用プリント関数.
- * @param[in] queue プリントする配列をもつqueueのポインタ.
  */
-void print_queue(queue* queue) {
+void print_queue(queue* q) {
   printf("QUEUE: [ ");
-  int index = queue->head;
-  for (int count = 0; count < queue->count; count++) {
-    printf("%d ", queue->elements[index]);
+  int index = q->head;
+  for (int count = 0; count < q->count; count++) {
+    printf("%d ", q->elements[index]);
     index = (index + 1) % SIZE;
   }
   printf("]\n");
@@ -114,18 +113,18 @@ void print_queue(queue* queue) {
 }
 
 int main() {
-  queue* queue = init_queue();
+  queue* q = init_queue();
 
   for (int i = 0; i < 10; i++) {
-    enter_queue(queue, i);
+    enter_queue(q, i);
   }
-  print_queue(queue);
+  print_queue(q);
 
   int val;
-  remove_queue(queue, &val);
-  print_queue(queue);
+  remove_queue(q, &val);
+  print_queue(q);
 
-  release_queue(queue);
+  release_queue(q);
   return 0;
 }
 
