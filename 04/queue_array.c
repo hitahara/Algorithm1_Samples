@@ -101,15 +101,15 @@ void print_queue(queue* q) {
     index = (index + 1) % SIZE;
   }
   printf("]\n");
-  /* SIZEを8等にして操作の内容を変更し
-    リングバッファの様子を確認してみよう.
-  printf("ELEMENTS: [ ");
-  for(int i = 0; i < SIZE; i++ )
-  {
-    printf("%d ", queue->elements[i] );
-  }
-  printf("]\n");
-  */
+
+  // SIZEを8等にして操作の内容を変更し
+  // リングバッファの様子を確認してみよう.
+  // printf("ELEMENTS: [ ");
+  // for(int i = 0; i < SIZE; i++ )
+  // {
+  //   printf("%d ", q->elements[i] );
+  // }
+  // printf("]\n");
 }
 
 int main() {
