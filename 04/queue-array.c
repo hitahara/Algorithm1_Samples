@@ -4,15 +4,14 @@
 #include <string.h>
 
 /**
- * @def MAX_ELEMENTS_MEMORY
- * @brief queueの配列がとれる最大バイト数.
+ * @brief queueの配列がとれる最大要素数.
  */
 #define SIZE 1000
 
 /**
  * @brief キューの配列とメタ情報を保持する構造体.
  */
-typedef struct queue {
+typedef struct {
   size_t head;        /** キューの先頭のインデックス. */
   size_t tail;        /** キューの最後尾のインデックス. */
   size_t count;       /** 配列の長さ. */
@@ -21,7 +20,6 @@ typedef struct queue {
 
 /**
  * @brief queueの初期化.
- * @return 初期化されたqueueのポインタ.
  */
 queue* init_queue() {
   queue* s = (queue*)malloc(sizeof(queue));
@@ -33,7 +31,6 @@ queue* init_queue() {
 
 /**
  * @brief 引数のqueueのメタデータを0にする.
- * @param[in] queue 削除するqueueのポインタ.
  */
 void clear_queue(queue* queue) {
   queue->head = 0;
@@ -43,7 +40,6 @@ void clear_queue(queue* queue) {
 
 /**
  * @brief 引数のqueueが空か確認.
- * @param[in] queue 確認するqueueのポインタ.
  */
 bool empty_queue(queue* queue) {
   return queue->count == 0;
@@ -51,7 +47,6 @@ bool empty_queue(queue* queue) {
 
 /**
  * @brief queueのメモリを解放.
- * @param[in] queue メモリを解放するqueueのポインタ.
  */
 void release_queue(queue* queue) {
   free(queue);
@@ -59,8 +54,6 @@ void release_queue(queue* queue) {
 
 /**
  * @brief キューの先頭にvalをエンキューし,queueを更新する.
- * @param[in] queue 先頭にエンキューするqueueのポインタ.
- * @param[in] val エンキューするint型のデータ.
  */
 void enter_queue(queue* queue, int val) {
   if (queue->count >= SIZE) {
@@ -79,9 +72,7 @@ void enter_queue(queue* queue, int val) {
 }
 
 /**
- * @brief キューの先頭をデキューし,stackを更新する.
- * @param[in] queue 先頭をデキューするqueueのポインタ.
- * @param[out] val デキューした値の受けてとなるint型のポインタ
+ * @brief キューの先頭をデキューする.
  */
 void remove_queue(queue* queue, int* val) {
   if (queue->count <= 0) {
@@ -107,12 +98,13 @@ void print_queue(queue* queue) {
   printf("QUEUE: [ ");
   // int jはqueue->count==SIZEの時
   // queue->head==queue->tailとなるため存在
-  for (int i = queue->head, j = 0; j < queue->count; i = (i + 1) % SIZE, j++) {
-    printf("%d ", queue->elements[i]);
+  int index = queue->head;
+  for (int count = 0; count < queue->count; count++) {
+    printf("%d ", queue->elements[index]);
+    index = (index + 1) % SIZE;
   }
   printf("]\n");
-  /* MAX_ELEMENTS_MEMORYを sizeof(int) * 8 = 32等にして
-    操作の内容を変更し
+  /* SIZEを8等にして操作の内容を変更し
     リングバッファの様子を確認してみよう.
   printf("ELEMENTS: [ ");
   for(int i = 0; i < SIZE; i++ )
