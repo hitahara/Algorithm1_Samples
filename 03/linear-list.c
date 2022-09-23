@@ -31,9 +31,8 @@ cell* init_cell() {
  */
 void release_list(list* l) {
   cell* current = l->head;
-  cell* next = NULL;
-  while (next != NULL) {
-    next = current->next;
+  while (current != NULL) {
+    cell* next = current->next;
     free(current);
     current = next;
   }
