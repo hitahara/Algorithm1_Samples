@@ -7,17 +7,16 @@
  * @def MAX_ELEMENTS_MEMORY
  * @brief queueの配列がとれる最大バイト数.
  */
-#define MAX_ELEMENTS_MEMORY 65535
+#define SIZE 1000
 
 /**
  * @brief キューの配列とメタ情報を保持する構造体.
  */
 typedef struct queue {
-  size_t head;                                     /** キューの先頭のインデックス. */
-  size_t tail;                                     /** キューの最後尾のインデックス. */
-  size_t count;                                    /** 配列の長さ. */
-  size_t size;                                     /** 配列がとれる最大長. */
-  int elements[MAX_ELEMENTS_MEMORY / sizeof(int)]; /** int型で表された配列. */
+  size_t head;        /** キューの先頭のインデックス. */
+  size_t tail;        /** キューの最後尾のインデックス. */
+  size_t count;       /** 配列の長さ. */
+  int elements[SIZE]; /** int型で表された配列. */
 } queue;
 
 /**
@@ -29,7 +28,6 @@ queue* init_queue() {
   s->head = 0;
   s->tail = 0;
   s->count = 0;
-  s->size = MAX_ELEMENTS_MEMORY / sizeof(int);
   return s;
 }
 
@@ -65,7 +63,7 @@ void release_queue(queue* queue) {
  * @param[in] val エンキューするint型のデータ.
  */
 void enter_queue(queue* queue, int val) {
-  if (queue->count >= queue->size) {
+  if (queue->count >= SIZE) {
     printf("No more element can be enqueued into the queue.\n");
     return;
   }
@@ -73,7 +71,7 @@ void enter_queue(queue* queue, int val) {
   queue->elements[queue->tail] = val;
   queue->tail++;
 
-  if (queue->tail >= queue->size) {
+  if (queue->tail >= SIZE) {
     queue->tail = 0;
   }
 
@@ -94,7 +92,7 @@ void remove_queue(queue* queue, int* val) {
   *val = queue->elements[queue->head];
   queue->head++;
 
-  if (queue->head >= queue->size) {
+  if (queue->head >= SIZE) {
     queue->head = 0;
   }
 
@@ -107,9 +105,9 @@ void remove_queue(queue* queue, int* val) {
  */
 void print_queue(queue* queue) {
   printf("QUEUE: [ ");
-  // int jはqueue->count==queue->sizeの時
+  // int jはqueue->count==SIZEの時
   // queue->head==queue->tailとなるため存在
-  for (int i = queue->head, j = 0; j < queue->count; i = (i + 1) % queue->size, j++) {
+  for (int i = queue->head, j = 0; j < queue->count; i = (i + 1) % SIZE, j++) {
     printf("%d ", queue->elements[i]);
   }
   printf("]\n");
@@ -117,7 +115,7 @@ void print_queue(queue* queue) {
     操作の内容を変更し
     リングバッファの様子を確認してみよう.
   printf("ELEMENTS: [ ");
-  for(int i = 0; i < queue->size; i++ )
+  for(int i = 0; i < SIZE; i++ )
   {
     printf("%d ", queue->elements[i] );
   }
@@ -128,17 +126,19 @@ void print_queue(queue* queue) {
 int main() {
   queue* queue = init_queue();
 
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 10; i++) {
     enter_queue(queue, i);
   }
-
   print_queue(queue);
 
   int val;
   remove_queue(queue, &val);
-
   print_queue(queue);
 
   release_queue(queue);
   return 0;
 }
+
+// 実行結果
+// QUEUE: [ 0 1 2 3 4 5 6 7 8 9 ]
+// QUEUE: [ 1 2 3 4 5 6 7 8 9 ]
