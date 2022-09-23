@@ -9,7 +9,7 @@
  * @brief スタックの配列とメタ情報を保持する構造体.
  */
 typedef struct {
-  size_t pointer;     /** 配列の長さ. */
+  size_t length;      /** 配列の長さ. */
   int elements[SIZE]; /** 要素の配列. */
 } stack;
 
@@ -18,15 +18,15 @@ typedef struct {
  */
 stack* init_stack() {
   stack* s = (stack*)malloc(sizeof(stack));
-  s->pointer = 0;
+  s->length = 0;
   return s;
 }
 
 /**
- * @brief stack pointerを0にする.
+ * @brief stackの要素をクリアする.
  */
 void clear_stack(stack* stack) {
-  stack->pointer = 0;
+  stack->length = 0;
 }
 
 /**
@@ -40,26 +40,26 @@ void release_stack(stack* stack) {
  * @brief valをスタックにプッシュする.
  */
 void push(stack* stack, int val) {
-  if (stack->pointer >= SIZE) {
+  if (stack->length >= SIZE) {
     printf("No more element can be pushed into the stack.\n");
     return;
   }
 
-  stack->elements[stack->pointer] = val;
-  stack->pointer++;
+  stack->elements[stack->length] = val;
+  stack->length++;
 }
 
 /**
  * @brief スタックの先頭をポップする.
  */
 void pop(stack* stack, int* val) {
-  if (stack->pointer == 0) {
+  if (stack->length == 0) {
     printf("No more element can be popped from the elements.\n");
     return;
   }
 
-  stack->pointer--;
-  *val = stack->elements[stack->pointer];
+  stack->length--;
+  *val = stack->elements[stack->length];
 }
 
 /**
@@ -67,10 +67,10 @@ void pop(stack* stack, int* val) {
  */
 void print_stack(stack* stack) {
   printf("ELEMENTS: [ ");
-  for (int i = stack->pointer - 1; i >= 0; i--) {
+  for (int i = stack->length - 1; i >= 0; i--) {
     printf("%d ", stack->elements[i]);
   }
-  printf("]\nSTACK POINTER: %ld\n", stack->pointer);
+  printf("]\nSTACK POINTER: %ld\n", stack->length);
 }
 
 int main() {
@@ -87,6 +87,9 @@ int main() {
   print_stack(stack);
   printf("POP: %d\n", val);
 
+  clear_stack(stack);
+  print_stack(stack);
+
   release_stack(stack);
   return 0;
 }
@@ -99,3 +102,5 @@ int main() {
 // ELEMENTS: [ 8 7 6 5 4 3 2 1 0 ]
 // STACK POINTER: 9
 // POP: 9
+// ELEMENTS: [ ]
+// STACK POINTER: 0
