@@ -10,12 +10,11 @@
  */
 typedef struct {
   size_t pointer;     /** 配列の長さ. */
-  int elements[SIZE]; /** int型で表された配列. */
+  int elements[SIZE]; /** 要素の配列. */
 } stack;
 
 /**
  * @brief stackの初期化.
- * @return 初期化されたstackのポインタ.
  */
 stack* init_stack() {
   stack* s = (stack*)malloc(sizeof(stack));
@@ -24,8 +23,7 @@ stack* init_stack() {
 }
 
 /**
- * @brief stackのspを0にする.
- * @param[in] stack spを0にするstackのポインタ.
+ * @brief stack pointerを0にする.
  */
 void clear_stack(stack* stack) {
   stack->pointer = 0;
@@ -33,7 +31,6 @@ void clear_stack(stack* stack) {
 
 /**
  * @brief stackのメモリを解放.
- * @param[in] stack メモリを解放するstackのポインタ.
  */
 void release_stack(stack* stack) {
   free(stack);
@@ -41,8 +38,6 @@ void release_stack(stack* stack) {
 
 /**
  * @brief valをスタックにプッシュする.
- * @param[in] stack プッシュする配列をもつstackのポインタ.
- * @param[in] val int型のプッシュするデータ.
  */
 void push(stack* stack, int val) {
   if (stack->pointer >= SIZE) {
@@ -55,9 +50,7 @@ void push(stack* stack, int val) {
 }
 
 /**
- * @brief スタックの先頭をポップし,stackを更新する.
- * @param[in] stack ポップする配列をもつstackのポインタ.
- * @param[in] val ポップした値の受けてとなるint型のポインタ.
+ * @brief スタックの先頭をポップする.
  */
 void pop(stack* stack, int* val) {
   if (stack->pointer == 0) {
@@ -71,7 +64,6 @@ void pop(stack* stack, int* val) {
 
 /**
  * @brief stack確認用プリント関数.
- * @param[in] stack プリントする配列をもつstackのポインタ.
  */
 void print_stack(stack* stack) {
   printf("ELEMENTS: [ ");
