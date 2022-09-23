@@ -34,23 +34,25 @@ queue init_queue() {
   return q;
 }
 
-/**
- * @brief 引数のqueue_headが指すcellを削除する.
- * @param[in] queue_head 削除するキューの先頭.
- */
-void clear_queue(queue* q) {
+void release_queue(queue* q) {
   cell* current = q->head;
   while (current != NULL) {
     cell* next = current->next;
     free(current);
     current = next;
   }
+}
+
+/**
+ * @brief 引数のqueue_headが指すcellを削除する.
+ */
+void clear_queue(queue* q) {
   q->head = NULL;
   q->tail = NULL;
 }
 
 /**
- * @brief 引数のqueue_headが空か確認.
+ * @brief queueが空か確認.
  */
 bool empty_queue(queue* q) {
   return q->head == NULL;
@@ -114,6 +116,8 @@ int main() {
 
   clear_queue(&q);
   print_queue(q);
+
+  release_queue(&q);
   return 0;
 }
 
