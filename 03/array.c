@@ -11,8 +11,8 @@
  * @brief 配列とそのメタデータを保持する構造体.
  */
 typedef struct {
-  size_t length;                    /** 配列の長さ. */
-  int elements[SIZE / sizeof(int)]; /** int型で表された配列. */
+  size_t length;      /** 配列の長さ. */
+  int elements[SIZE]; /** int型で表された配列. */
 } sequence;
 
 /**
