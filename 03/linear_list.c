@@ -18,7 +18,7 @@ typedef struct
   cell* head;
 } list;
 
-void release(list* l) {
+void clear(list* l) {
   cell* current = l->head;
   while (current != NULL) {
     cell* next = current->next;
@@ -84,7 +84,7 @@ int main() {
   erase_head(&l);
   print(l);
 
-  release(&l);
+  clear(&l);
   print(l);
 
   return 0;

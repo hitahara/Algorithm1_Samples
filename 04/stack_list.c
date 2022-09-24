@@ -12,7 +12,7 @@ typedef struct
   cell* head;
 } stack;
 
-void release(stack* s) {
+void clear(stack* s) {
   cell* current = s->head;
   while (current != NULL) {
     cell* next = current->next;
@@ -63,7 +63,7 @@ int main() {
   print(s);
   printf("POP: %d\n", val);
 
-  release(&s);
+  clear(&s);
   return 0;
 }
 
