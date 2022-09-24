@@ -54,9 +54,9 @@ void remove_head(list* l) {
   free(target);
 }
 
-void print(list l) {
+void print(list* l) {
   printf("LIST: [ ");
-  cell* current = l.head;
+  cell* current = l->head;
   while (current != NULL) {
     printf("%d ", current->element);
     current = current->next;
@@ -73,19 +73,19 @@ int main() {
     if (i == 6)
       c = l.head;
   }
-  print(l);
+  print(&l);
 
   insert(c, 100);
-  print(l);
+  print(&l);
 
   remove(c);
-  print(l);
+  print(&l);
 
   remove_head(&l);
-  print(l);
+  print(&l);
 
   clear(&l);
-  print(l);
+  print(&l);
 
   return 0;
 }

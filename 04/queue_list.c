@@ -3,12 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * @brief データと次のアイテムを保持する構造体.
- */
 typedef struct _cell {
-  int element;        /** int型で表されたデータ. */
-  struct _cell* next; /** 次のcellを指すポインタ. */
+  int element;
+  struct _cell* next;
 } cell;
 
 typedef struct {
@@ -16,57 +13,27 @@ typedef struct {
   cell* tail;
 } queue;
 
-/**
- * @brief cellの初期化.
- */
-cell* init_cell() {
-  cell* c = (cell*)malloc(sizeof(cell));
-  return c;
-}
-
-/**
- * @brief listの初期化.
- */
-queue init_queue() {
-  queue q;
-  q.head = NULL;
-  q.tail = NULL;
-  return q;
-}
-
-void release_queue(queue* q) {
+void clear(queue* q) {
   cell* current = q->head;
   while (current != NULL) {
     cell* next = current->next;
     free(current);
     current = next;
   }
-}
-
-/**
- * @brief 引数のqueue_headが指すcellを削除する.
- */
-void clear_queue(queue* q) {
   q->head = NULL;
   q->tail = NULL;
 }
 
-/**
- * @brief queueが空か確認.
- */
-bool empty_queue(queue* q) {
+bool empty(queue* q) {
   return q->head == NULL;
 }
 
-/**
- * @brief キューの先頭にvalをエンキューする.
- */
-void enter_queue(queue* q, int val) {
-  cell* c = init_cell();
+void enter(queue* q, int val) {
+  cell* c = (cell*)malloc(sizeof(cell));
   c->element = val;
   c->next = NULL;
 
-  if (empty_queue(q)) {
+  if (empty(q)) {
     q->head = c;
   } else {
     q->tail->next = c;
@@ -75,10 +42,7 @@ void enter_queue(queue* q, int val) {
   q->tail = c;
 }
 
-/**
- * @brief キューの先頭をデキューする.
- */
-void remove_queue(queue* q, int* val) {
+void remove(queue* q, int* val) {
   if (empty_queue(q)) {
     printf("No more element can be dequeued from the queue.\n");
     return;
@@ -89,10 +53,7 @@ void remove_queue(queue* q, int* val) {
   free(c);
 }
 
-/**
- * @brief 配列のデータがint型と前提にした,確認用プリント関数.
- */
-void print_queue(queue q) {
+void print(queue q) {
   printf("QUEUE: [ ");
   cell* current = q.head;
   while (current != NULL) {
@@ -103,7 +64,7 @@ void print_queue(queue q) {
 }
 
 int main() {
-  queue q = init_queue();
+  queue q = {NULL, NULL};
 
   for (int i = 0; i < 10; i++) {
     enter_queue(&q, i);
