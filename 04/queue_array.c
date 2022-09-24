@@ -3,59 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * @brief queueの配列がとれる最大要素数.
- */
 #define SIZE 1000
 
-/**
- * @brief キューの配列とメタ情報を保持する構造体.
- */
 typedef struct {
-  int head;           /** キューの先頭のインデックス. */
-  int tail;           /** キューの最後尾のインデックス. */
-  int count;          /** 配列の長さ. */
-  int elements[SIZE]; /** int型で表された配列. */
+  int head;
+  int tail;
+  int count;
+  int elements[SIZE];
 } queue;
 
-/**
- * @brief queueの初期化.
- */
-queue* init_queue() {
-  queue* q = (queue*)malloc(sizeof(queue));
-  q->head = 0;
-  q->tail = 0;
-  q->count = 0;
-  return q;
-}
-
-/**
- * @brief 引数のqueueのメタデータを0にする.
- */
-void clear_queue(queue* q) {
+void clear(queue* q) {
   q->head = 0;
   q->tail = 0;
   q->count = 0;
 }
 
-/**
- * @brief 引数のqueueが空か確認.
- */
-bool empty_queue(queue* q) {
+bool empty(queue* q) {
   return q->count == 0;
 }
 
-/**
- * @brief queueのメモリを解放.
- */
-void release_queue(queue* q) {
-  free(q);
-}
-
-/**
- * @brief キューの先頭にvalをエンキューし,queueを更新する.
- */
-void enter_queue(queue* q, int val) {
+void enqueue(queue* q, int val) {
   if (q->count >= SIZE) {
     printf("No more element can be enqueued into the queue.\n");
     return;
@@ -71,10 +38,7 @@ void enter_queue(queue* q, int val) {
   q->count++;
 }
 
-/**
- * @brief キューの先頭をデキューする.
- */
-void remove_queue(queue* q, int* val) {
+void dequeue(queue* q, int* val) {
   if (q->count <= 0) {
     printf("No more element can be dequeued from the queue.\n");
     return;
@@ -90,10 +54,7 @@ void remove_queue(queue* q, int* val) {
   q->count--;
 }
 
-/**
- * @brief queue確認用プリント関数.
- */
-void print_queue(queue* q) {
+void print(queue* q) {
   printf("QUEUE: [ ");
   int index = q->head;
   for (int count = 0; count < q->count; count++) {
@@ -102,8 +63,8 @@ void print_queue(queue* q) {
   }
   printf("]\n");
 
-  // SIZEを8等にして操作の内容を変更し
-  // リングバッファの様子を確認してみよう.
+  // SIZE を 8 程度にして操作の内容を変更して
+  // リングバッファの様子を確認してみましょう
   // printf("ELEMENTS: [ ");
   // for(int i = 0; i < SIZE; i++ )
   // {
@@ -113,21 +74,23 @@ void print_queue(queue* q) {
 }
 
 int main() {
-  queue* q = init_queue();
+  queue q = {0, 0, 0, {0}};
 
   for (int i = 0; i < 10; i++) {
-    enter_queue(q, i);
+    enqueue(&q, i);
   }
-  print_queue(q);
+  print(&q);
 
   int val;
-  remove_queue(q, &val);
-  print_queue(q);
+  dequeue(&q, &val);
+  print(&q);
 
-  release_queue(q);
+  clear(&q);
+  print(&q);
   return 0;
 }
 
 // 実行結果
 // QUEUE: [ 0 1 2 3 4 5 6 7 8 9 ]
 // QUEUE: [ 1 2 3 4 5 6 7 8 9 ]
+// QUEUE: [ ]

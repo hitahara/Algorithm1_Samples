@@ -28,7 +28,7 @@ bool empty(queue* q) {
   return q->head == NULL;
 }
 
-void enter(queue* q, int val) {
+void enqueue(queue* q, int val) {
   cell* c = (cell*)malloc(sizeof(cell));
   c->element = val;
   c->next = NULL;
@@ -42,8 +42,7 @@ void enter(queue* q, int val) {
   q->tail = c;
 }
 
-// NOTE: `remove` は stdio.h で使われているので erase と書きます
-void erase(queue* q, int* val) {
+void dequeue(queue* q, int* val) {
   if (empty(q)) {
     printf("No more element can be dequeued from the queue.\n");
     return;
@@ -68,12 +67,12 @@ int main() {
   queue q = {NULL, NULL};
 
   for (int i = 0; i < 10; i++) {
-    enter(&q, i);
+    enqueue(&q, i);
   }
   print(&q);
 
   int val;
-  erase(&q, &val);
+  dequeue(&q, &val);
   print(&q);
 
   clear(&q);
