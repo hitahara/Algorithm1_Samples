@@ -51,8 +51,7 @@ void print(stack s) {
 }
 
 int main() {
-  stack s;
-  s.head = NULL;
+  stack s = {NULL};
 
   for (int i = 0; i < 10; i++) {
     push(&s, i);
