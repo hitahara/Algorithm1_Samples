@@ -12,6 +12,7 @@ jobs:
   action:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - run: pwd
       - run: gcc -Wall -Wextra ./01/gcd_iterative.c
       - run: gcc -Wall -Wextra ./01/gcd_recursive.c
