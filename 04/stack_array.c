@@ -9,7 +9,7 @@ typedef struct {
   int elements[SIZE];
 } stack;
 
-void clear_stack(stack* stack) {
+void clear(stack* stack) {
   stack->length = 0;
 }
 
@@ -33,7 +33,7 @@ void pop(stack* stack, int* val) {
   *val = stack->elements[stack->length];
 }
 
-void print_stack(stack* s) {
+void print(stack* s) {
   printf("ELEMENTS: [ ");
   for (int i = s->length - 1; i >= 0; i--) {
     printf("%d ", s->elements[i]);
@@ -45,27 +45,24 @@ void print_stack(stack* s) {
 int main() {
   stack s;
   s.length = 0;
-  print_stack(&s);
 
   for (int i = 0; i < 10; i++) {
     push(&s, i);
   }
-  print_stack(&s);
+  print(&s);
 
   int val;
   pop(&s, &val);
-  print_stack(&s);
+  print(&s);
   printf("POP: %d\n", val);
 
-  clear_stack(&s);
-  print_stack(&s);
+  clear(&s);
+  print(&s);
 
   return 0;
 }
 
 // 実行結果
-// ELEMENTS: [ ]
-// STACK POINTER: 0
 // ELEMENTS: [ 9 8 7 6 5 4 3 2 1 0 ]
 // STACK POINTER: 10
 // ELEMENTS: [ 8 7 6 5 4 3 2 1 0 ]
