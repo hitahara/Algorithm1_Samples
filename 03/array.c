@@ -17,14 +17,12 @@ void insert_element(sequence* seq, int pos, int val) {
   for (int i = seq->length - 1; i >= pos; i--) {
     seq->elements[i + 1] = seq->elements[i];
   }
-
   seq->length++;
   seq->elements[pos] = val;
 }
 
 void delete_element(sequence* seq, int pos) {
   seq->length--;
-
   for (int i = pos; i < seq->length; i++) {
     seq->elements[i] = seq->elements[i + 1];
   }
@@ -35,20 +33,21 @@ void print_sequence(sequence* seq) {
   for (int i = 0; i < seq->length; i++) {
     printf("%d ", seq->elements[i]);
   }
-  printf("]\nLENGTH  : %d\n", seq->length);
+  printf("]\n");
+  printf("LENGTH  : %d\n", seq->length);
 }
 
 int main() {
-  sequence array;
-  array.length = 0;
+  sequence seq;
+  seq.length = 0;
 
   for (int i = 0; i < 10; i++) {
-    insert_element(&array, i, i);
+    insert_element(&seq, i, i);
   }
-  print_sequence(&array);
+  print_sequence(&seq);
 
-  delete_element(&array, 5);
-  print_sequence(&array);
+  delete_element(&seq, 5);
+  print_sequence(&seq);
 
   return 0;
 }

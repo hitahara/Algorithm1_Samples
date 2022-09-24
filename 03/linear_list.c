@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/**
- * @brief データと次のデータへのポインタを保持する構造体.
- */
 typedef struct _cell {
   int element;
   struct _cell* next;
@@ -14,19 +11,6 @@ typedef struct
   cell* head;
 } list;
 
-/**
- * @brief cellの初期化.
- */
-cell* init_cell() {
-  cell* c = (cell*)malloc(sizeof(cell));
-  c->element = 0;
-  c->next = NULL;
-  return c;
-}
-
-/**
- * @brief listのをメモリを解放する.
- */
 void release_list(list* l) {
   cell* current = l->head;
   while (current != NULL) {
@@ -37,53 +21,38 @@ void release_list(list* l) {
   l->head = NULL;
 }
 
-/**
- * @brief previousの後ろにvalを挿入する. Program 1.3.4
- */
 void insert_cell(cell* previous, int val) {
-  cell* q = init_cell();
-  q->element = val;
-  q->next = previous->next;
-  previous->next = q;
+  cell* c = (cell*)malloc(sizeof(cell));
+  c->element = val;
+  c->next = previous->next;
+  previous->next = c;
 }
 
-/**
- * @brief リストの先頭にvalを挿入する. Program 1.3.6
- */
 void insert_head(list* l, int val) {
-  cell* q = init_cell();
-  q->element = val;
-  q->next = l->head;
-  l->head = q;
+  cell* c = (cell*)malloc(sizeof(cell));
+  c->element = val;
+  c->next = l->head;
+  l->head = c;
 }
 
-/**
- * @brief previousの後ろのcellを削除する. Program 1.3.7
- */
 void delete_cell(cell* previous) {
-  cell* q = previous->next;
-  previous->next = q->next;
-  free(q);
+  cell* target = previous->next;
+  previous->next = target->next;
+  free(target);
 }
 
-/**
- * @brief リストの先頭を削除する. Program 1.3.9
- */
 void delete_head(list* l) {
-  cell* q = l->head;
-  l->head = q->next;
-  free(q);
+  cell* target = l->head;
+  l->head = target->next;
+  free(target);
 }
 
-/**
- * @brief list確認用プリント関数.
- */
 void print_list(list l) {
   printf("LIST: [ ");
-  cell* c = l.head;
-  while (c != NULL) {
-    printf("%d ", c->element);
-    c = c->next;
+  cell* current = l.head;
+  while (current != NULL) {
+    printf("%d ", current->element);
+    current = current->next;
   }
   printf("]\n");
 }
@@ -92,18 +61,18 @@ int main() {
   list l;
   l.head = NULL;
 
-  cell* example_cell;
+  cell* c;
   for (int i = 0; i < 10; i++) {
     insert_head(&l, i);
     if (i == 6)
-      example_cell = l.head;
+      c = l.head;
   }
   print_list(l);
 
-  insert_cell(example_cell, 100);
+  insert_cell(c, 100);
   print_list(l);
 
-  delete_cell(example_cell);
+  delete_cell(c);
   print_list(l);
 
   delete_head(&l);
