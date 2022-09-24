@@ -71,4 +71,4 @@ int main() {
 // 実行結果
 // LIST CELLS: [ 9 8 7 6 5 4 3 2 1 0 ]
 // LIST CELLS: [ 8 7 6 5 4 3 2 1 0 ]
-// 9
+// POP: 9
