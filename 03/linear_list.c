@@ -42,13 +42,13 @@ void insert_head(list* l, int val) {
   l->head = c;
 }
 
-void remove(cell* previous) {
+void erase(cell* previous) {
   cell* target = previous->next;
   previous->next = target->next;
   free(target);
 }
 
-void remove_head(list* l) {
+void erase_head(list* l) {
   cell* target = l->head;
   l->head = target->next;
   free(target);
@@ -78,10 +78,10 @@ int main() {
   insert(c, 100);
   print(&l);
 
-  remove(c);
+  erase(c);
   print(&l);
 
-  remove_head(&l);
+  erase_head(&l);
   print(&l);
 
   clear(&l);
