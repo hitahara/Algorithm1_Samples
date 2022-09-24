@@ -7,14 +7,12 @@ typedef struct _cell {
 } cell;
 
 // NOTE:
-// 講義スライドでは list は cell* の別名ですが、
-// このコードでは typedef cell* list; としていません。
-// 別名としてしまうと、 head のポインタ自体を変更する操作で
-// 暗黙の pointer to pointer が必要となるうえ、
-// dereference が発生するためです。
-// これは初心者の方を混乱させるうえに可読性が低いです。
-// list の内部に cell* を持つ設計にすることで上記の問題が解決されるうえ、
-// head と tail の両方を持つようなデータ構造にも容易に拡張できます。
+// 講義スライドでは list は cell* の別名ですが、このコードでは
+// 別の構造体としています。別名としてしまうと head のポインタ
+// 自体を変更する操作で pointer to pointer とdereference が
+// 必要になり、可読性が損なわれます。それに対して list の内部に
+// cell* を持つ設計にすると上記の問題が解決されるうえ、head と
+// tail の両方を持つようなデータ構造にも容易に拡張できます。
 typedef struct
 {
   cell* head;
