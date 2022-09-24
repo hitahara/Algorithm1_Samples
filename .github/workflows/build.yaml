@@ -20,3 +20,5 @@ jobs:
       - run: gcc -Wall -Wextra -Werror ./02/binary_search.c
       - run: gcc -Wall -Wextra -Werror ./03/array.c
       - run: gcc -Wall -Wextra -Werror ./03/linear_list.c
+      - run: gcc -Wall -Wextra -Werror ./04/stack_array.c
+      - run: gcc -Wall -Wextra -Werror ./04/stack_list.c
