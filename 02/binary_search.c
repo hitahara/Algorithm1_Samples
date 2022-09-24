@@ -4,19 +4,19 @@
 #include <time.h>
 
 int binary_search(int* table, int length, int x) {
-  int lo = 0;
-  int hi = length - 1;
+  int low = 0;
+  int high = length - 1;
 
-  while (lo <= hi) {
-    int mid = (lo + hi) / 2;
-    if (x < table[mid]) {
-      hi = mid - 1;
+  while (low <= high) {
+    int middle = (low + high) / 2;
+    if (x < table[middle]) {
+      high = middle - 1;
     } else {
-      lo = mid + 1;
+      low = middle + 1;
     }
   }
 
-  return (hi >= 0) && (x == table[hi]);
+  return (high >= 0) && (x == table[high]);
 }
 
 int main() {
