@@ -36,35 +36,35 @@
 typedef struct record record;
 typedef struct sequence sequence;
 
-record *init_record(size_t key, char *field);
+record *init_record(int key, char *field);
 sequence *init_sequence();
 void release_record(record **rec);
 void release_sequence(sequence **seq);
 
 bool is_record_a_larger_than_b(record *a, record *b);
-bool is_a_larger_than_b_records(record **records, size_t a, size_t b);
-bool is_a_larger_than_b_sequence(sequence *seq, size_t a, size_t b);
+bool is_a_larger_than_b_records(record **records, int a, int b);
+bool is_a_larger_than_b_sequence(sequence *seq, int a, int b);
 
 void insert_tail(sequence *seq, record *rec);
 
-void binary_search_existence_and_index(sequence *seq, size_t target, bool *found, size_t *index);
+void binary_search_existence_and_index(sequence *seq, int target, bool *found, int *index);
 
 void quick_sort(sequence *seq);
-void q_sort_refined(sequence *seq, size_t left, size_t right);
+void q_sort_refined(sequence *seq, int left, int right);
 
 void print_record(record *rec);
 void print_sequence(sequence *seq);
 
 void run_sort_algorithm(sequence *seq, void (*sort_algorithm)(sequence *));
 
-void fisher_yates_shuffle(size_t *array, size_t array_size);
+void fisher_yates_shuffle(int *array, int array_size);
 void check_seq_sorted(sequence *seq);
 
 /**
  * @brief レコード：keyとfieldをもった構造体
  */
 struct record {
-  size_t key;                 /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
+  int key;                    /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_SIZE]; /** データを保持するchar型の配列. */
 };
 
@@ -72,9 +72,9 @@ struct record {
  * @brief 配列とそのメタデータを保持する構造体.
  */
 struct sequence {
-  size_t elements_length; /** 配列の長さ. */
-  size_t size;            /** 配列がとれる最大長. */
-  size_t elements_chunk_size;
+  int elements_length; /** 配列の長さ. */
+  int size;            /** 配列がとれる最大長. */
+  int elements_chunk_size;
   record ***elements_chunk; /** recordのポインタの配列. */
 };
 
@@ -85,7 +85,7 @@ struct sequence {
  * サイズはMAX_FIELD_SIZEで定義.初期化時に指定するフィールド.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, char *field) {
+record *init_record(int key, char *field) {
   if (strlen(field) > MAX_FIELD_SIZE) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
@@ -113,11 +113,11 @@ sequence *init_sequence() {
     exit(1);
   }
   s->size = MAX_RECORDS_SIZE;
-  size_t elements_chunk_size = ((MAX_RECORDS_SIZE - 1) >= 0 ? (MAX_RECORDS_SIZE - 1) : 0) / CHUNK_SIZE + 1;
+  int elements_chunk_size = ((MAX_RECORDS_SIZE - 1) >= 0 ? (MAX_RECORDS_SIZE - 1) : 0) / CHUNK_SIZE + 1;
   s->elements_chunk_size = elements_chunk_size;
 
   s->elements_chunk = (record ***)malloc(sizeof(record **) * elements_chunk_size);
-  for (size_t i = 0; i < elements_chunk_size; ++i) {
+  for (int i = 0; i < elements_chunk_size; ++i) {
     s->elements_chunk[i] = (record **)malloc(sizeof(record *) * CHUNK_SIZE);
   }
   printf("elements_chunk_size=%zu\n", s->elements_chunk_size);
@@ -140,8 +140,8 @@ void release_record(record **rec) {
  */
 void release_sequence(sequence **seq) {
   // seq内のmallocで生成されたrecord群のメモリも解放.
-  for (size_t j = 0; j < (*seq)->elements_chunk_size; ++j) {
-    for (size_t i = 0; i < CHUNK_SIZE; i++) {
+  for (int j = 0; j < (*seq)->elements_chunk_size; ++j) {
+    for (int i = 0; i < CHUNK_SIZE; i++) {
       if ((*seq)->elements_chunk[j][i] != NULL) {
         release_record(&(*seq)->elements_chunk[j][i]);
       }
@@ -153,11 +153,11 @@ void release_sequence(sequence **seq) {
   *seq = NULL;
 }
 
-record **get_record_index(sequence *seq, size_t index) {
+record **get_record_index(sequence *seq, int index) {
   return &(seq->elements_chunk[index / CHUNK_SIZE][index % CHUNK_SIZE]);
 }
 
-void insert_record_index(sequence *seq, size_t index, record *rec) {
+void insert_record_index(sequence *seq, int index, record *rec) {
   seq->elements_chunk[index / CHUNK_SIZE][index % CHUNK_SIZE] = rec;
 }
 
@@ -178,7 +178,7 @@ bool is_record_a_larger_than_b(record *a, record *b) {
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  * @return a>bの場合:true,a<bの場合:false.
  */
-bool is_a_larger_than_b_records(record **records, size_t a, size_t b) {
+bool is_a_larger_than_b_records(record **records, int a, int b) {
   return is_record_a_larger_than_b(records[a], records[b]);
 }
 
@@ -189,7 +189,7 @@ bool is_a_larger_than_b_records(record **records, size_t a, size_t b) {
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  * @return a>bの場合:true,a<bの場合:false.
  */
-bool is_a_larger_than_b_sequence(sequence *seq, size_t a, size_t b) {
+bool is_a_larger_than_b_sequence(sequence *seq, int a, int b) {
   return is_record_a_larger_than_b(*get_record_index(seq, a), *get_record_index(seq, b));
 }
 
@@ -220,7 +220,7 @@ void insert_tail(sequence *seq, record *rec) {
  * @param[in] seq ソートするsequenceのポインタ.
  */
 void quick_sort(sequence *seq) {
-  size_t left = 0, right = seq->elements_length - 1;
+  int left = 0, right = seq->elements_length - 1;
 
   printf("Using version: " STRINGFY(q_sort_refined) "\n");
   q_sort_refined(seq, left, right);
@@ -232,11 +232,11 @@ void quick_sort(sequence *seq) {
  * @param[in] left 処理を行う塊のなかで最も小さいインデックス.
  * @param[in] right 処理を行う塊のなかで最も大きいインデックス.
  */
-void q_sort_refined(sequence *seq, size_t left, size_t right) {
+void q_sort_refined(sequence *seq, int left, int right) {
   if (left < right) {
-    size_t pivot_index = (left + right) / 2;
+    int pivot_index = (left + right) / 2;
     record *pivot_record = *get_record_index(seq, pivot_index);
-    size_t i = left, j = right;
+    int i = left, j = right;
     do {
       for (; is_record_a_larger_than_b(pivot_record, *get_record_index(seq, i)); ++i)
         ;
@@ -251,7 +251,7 @@ void q_sort_refined(sequence *seq, size_t left, size_t right) {
         *b = t;
 
         i++;
-        j = (j - 1) % (size_t)-1;
+        j = (j - 1) % (int)-1;
       }
     } while (i <= j);
 
@@ -284,7 +284,7 @@ void print_sequence(sequence *seq) {
     printf("================================\n");
     printf("Printing sequence\n");
     printf("================================\n");
-    for (size_t i = 0; i < seq->elements_length; i++) {
+    for (int i = 0; i < seq->elements_length; i++) {
       print_record(*get_record_index(seq, i));
     }
     printf("================================\n");
@@ -310,8 +310,8 @@ void run_sort_algorithm(sequence *seq, void (*sort_algorithm)(sequence *)) {
  */
 void check_seq_sorted(sequence *seq) {
   bool sorted = true;
-  size_t former = 0;
-  for (size_t i = 0; i < seq->elements_length && sorted; ++i) {
+  int former = 0;
+  for (int i = 0; i < seq->elements_length && sorted; ++i) {
     if (former > (*get_record_index(seq, i))->key) {
       sorted = false;
     } else {
@@ -322,17 +322,17 @@ void check_seq_sorted(sequence *seq) {
   printf("Sequence is ... %s\n", sorted ? "in sort." : "not in sort.");
 }
 
-size_t keys[MAX_RECORDS_SIZE];
+int keys[MAX_RECORDS_SIZE];
 
 int main() {
-  for (size_t i = 0; i < MAX_RECORDS_SIZE; i++) {
+  for (int i = 0; i < MAX_RECORDS_SIZE; i++) {
     keys[i] = i;
   }
 
-  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(size_t));
+  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
 
   sequence *seq = init_sequence();
-  for (size_t i = 0; i < MAX_RECORDS_SIZE; i++) {
+  for (int i = 0; i < MAX_RECORDS_SIZE; i++) {
     insert_tail(seq, init_record(keys[i], (char *)"AAA"));
   }
 
@@ -348,14 +348,14 @@ int main() {
 }
 
 /**
- * @brief 指定されたsize_tのポインタにある配列にfiesher-yates shuffle.
- * @param[in,out] array シャフルする配列であるsize_tのポインタ.
+ * @brief 指定されたintのポインタにある配列にfiesher-yates shuffle.
+ * @param[in,out] array シャフルする配列であるintのポインタ.
  * @param[in] array_size シャッフルする配列のサイズ
  */
-void fisher_yates_shuffle(size_t *array, size_t array_size) {
-  size_t i = array_size;
+void fisher_yates_shuffle(int *array, int array_size) {
+  int i = array_size;
   while (i > 1) {
-    size_t j = rand() % i;
+    int j = rand() % i;
     i--;
     int t = array[i];
     array[i] = array[j];

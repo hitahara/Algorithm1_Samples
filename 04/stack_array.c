@@ -9,7 +9,7 @@
  * @brief スタックの配列とメタ情報を保持する構造体.
  */
 typedef struct {
-  size_t length;      /** 配列の長さ. */
+  int length;         /** 配列の長さ. */
   int elements[SIZE]; /** 要素の配列. */
 } stack;
 

@@ -9,24 +9,24 @@ typedef struct internal_data internal_data;
 typedef struct b_node b_node;
 typedef b_node *b_tree;
 
-record *init_record(size_t key, const char *field);
+record *init_record(int key, const char *field);
 key_branch_pair *init_pair();
 internal_data *init_internal_data();
 b_node *init_b_node_leaf(record *rec);
 b_node *init_b_node_internal();
 
-void shift_b_node_internal(b_node *shifting_node, size_t min_condition_key);
+void shift_b_node_internal(b_node *shifting_node, int min_condition_key);
 void b_node_ins(b_node **bn, record *inserting_rec, key_branch_pair **parent_pair, bool *parent_expanded);
 void b_node_insert(b_tree *b_rt, record *inserting_rec);
 
-void binary_search_existence_and_index(b_node *n, size_t target, bool *found, size_t *index);
+void binary_search_existence_and_index(b_node *n, int target, bool *found, int *index);
 
 void print_record(record *rec);
 void print_leaf_node(b_node *n);
 void print_internal_node(b_node *n);
-void print_tree_recursion(b_tree p, size_t depth);
+void print_tree_recursion(b_tree p, int depth);
 void print_tree(b_tree rt);
-void print_search_node(b_tree rt, size_t target);
+void print_search_node(b_tree rt, int target);
 
 record *cli_record();
 void cli_insert(b_tree *rt);
@@ -53,7 +53,7 @@ void cli_insert(b_tree *rt);
  * @brief レコード：keyとfieldをもった構造体
  */
 struct record {
-  size_t key;                   /** size_t型のキー. key==-1==2^64-1を例外処理に用いている. */
+  int key;                      /** int型のキー. key==-1==2^64-1を例外処理に用いている. */
   char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
 };
 
@@ -74,7 +74,7 @@ typedef enum node_type {
  * 挿入の分割でノードの親へkeyを渡す際に使用される.
  */
 struct key_branch_pair {
-  size_t key;     /** 区間を示す値. */
+  int key;        /** 区間を示す値. */
   b_node *branch; /** 枝を示すnodeのポインタ. */
 };
 
@@ -88,7 +88,7 @@ struct key_branch_pair {
  * 逆にポインタでなければ直書きでも良い.
  */
 struct internal_data {
-  size_t count;
+  int count;
   key_branch_pair pairs[M];
 };
 
@@ -110,7 +110,7 @@ struct b_node {
  * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, const char *field) {
+record *init_record(int key, const char *field) {
   if (strlen(field) > MAX_FIELD_MEMORY + 1) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
@@ -187,8 +187,8 @@ b_node *init_b_node_leaf(record *rec) {
  * @param[in,out] shifting_node ずらすb_nodeのポインタ.
  * @param[in] min_condition_key 下限となるインデックス.
  */
-void shift_b_node_internal(b_node *shifting_node, size_t min_condition_key) {
-  for (size_t i = shifting_node->internal->count + ((shifting_node->internal->count == M) ? -1 : 0); i >= min_condition_key + 1; i--) {
+void shift_b_node_internal(b_node *shifting_node, int min_condition_key) {
+  for (int i = shifting_node->internal->count + ((shifting_node->internal->count == M) ? -1 : 0); i >= min_condition_key + 1; i--) {
     shifting_node->internal->pairs[i] = shifting_node->internal->pairs[i - 1];
   }
 }
@@ -219,7 +219,7 @@ void b_node_ins(b_node **bn, record *inserting_rec, key_branch_pair **parent_pai
     }
   } else {
     bool dummy;
-    size_t inserting_index;
+    int inserting_index;
     binary_search_existence_and_index(*bn, inserting_rec->key, &dummy, &inserting_index);
     inserting_index--;
 
@@ -238,19 +238,19 @@ void b_node_ins(b_node **bn, record *inserting_rec, key_branch_pair **parent_pai
         // split
         // split_index以降が新しく生成されたノードへ
         b_node *split_result_node = init_b_node_internal();
-        size_t split_index = (M + 1) / 2;
+        int split_index = (M + 1) / 2;
 
         if (inserting_index >= split_index) {
-          for (size_t i = split_index; i < inserting_index; i++) {
+          for (int i = split_index; i < inserting_index; i++) {
             split_result_node->internal->pairs[i - split_index] = (*bn)->internal->pairs[i];
           }
           split_result_node->internal->pairs[inserting_index - split_index] = *new_pair;
           //挿入したため,1インデックス分後ろを指定している.
-          for (size_t i = inserting_index; i < M; i++) {
+          for (int i = inserting_index; i < M; i++) {
             split_result_node->internal->pairs[i - split_index + 1] = (*bn)->internal->pairs[i];
           }
         } else {
-          for (size_t i = split_index - 1; i < M; i++) {
+          for (int i = split_index - 1; i < M; i++) {
             split_result_node->internal->pairs[i - (split_index - 1)] = (*bn)->internal->pairs[i];
           }
           printf("KEY %zu\n", new_pair->branch->leaf->key);
@@ -303,15 +303,15 @@ void b_node_insert(b_tree *b_rt, record *inserting_rec) {
  * @param[out] found targetがtab内に存在するかの真理値.
  * @param[out] index targetが存在する場合キーのインデックスを指す,無い場合はtarget以上の最小キー.
  */
-void binary_search_existence_and_index(b_node *n, size_t target, bool *found, size_t *index) {
+void binary_search_existence_and_index(b_node *n, int target, bool *found, int *index) {
   if (n->tag == LEAF) {
     *found = false;
     *index = -1;
     return;
   }
-  size_t ng = 0;
-  size_t ok = n->internal->count;  // tab->records[tab->records_length - 1].key < targetのことを考えて
-  size_t mid;
+  int ng = 0;
+  int ok = n->internal->count;  // tab->records[tab->records_length - 1].key < targetのことを考えて
+  int mid;
   while (ok - ng > 1) {
     mid = (ok + ng) / 2;
     if (target <= n->internal->pairs[mid].key) {
@@ -332,11 +332,11 @@ void binary_search_existence_and_index(b_node *n, size_t target, bool *found, si
  * @param[out] found targetがtab内に存在するかの真理値.
  * @param[out] target_rec 探索する対象のキーを持ったrecord.
  */
-void search_existence_and_record(b_tree rt, size_t target, bool *found, record **target_rec) {
+void search_existence_and_record(b_tree rt, int target, bool *found, record **target_rec) {
   *found = false;
   b_tree p = rt;
   // for文の最初でi==0になる
-  for (size_t i = 0; p != NULL && p->tag != LEAF; i = 0) {
+  for (int i = 0; p != NULL && p->tag != LEAF; i = 0) {
     binary_search_existence_and_index(p, target, found, &i);
     if (*found) {
       p = p->internal->pairs[i].branch;
@@ -377,7 +377,7 @@ void print_internal_node(b_node *n) {
     return;
   }
   printf("[");
-  for (size_t i = 1; i < n->internal->count; i++) {
+  for (int i = 1; i < n->internal->count; i++) {
     printf("%zu, ", n->internal->pairs[i].key);
   }
   printf("]\n");
@@ -388,14 +388,14 @@ void print_internal_node(b_node *n) {
  * @param[in] p 操作する対象のtree.
  * @param[in] depth 再帰呼び出しの深さ.
  */
-void print_tree_recursion(b_tree p, size_t depth) {
+void print_tree_recursion(b_tree p, int depth) {
   if (p != NULL) {
-    for (size_t i = 0; i < depth; i++) {
+    for (int i = 0; i < depth; i++) {
       printf("   ");
     }
     if (p->tag == INTERNAL) {
       print_internal_node(p);
-      for (size_t i = 0; i < p->internal->count; i++) {
+      for (int i = 0; i < p->internal->count; i++) {
         print_tree_recursion(p->internal->pairs[i].branch, depth + 1);
       }
     } else {
@@ -408,7 +408,7 @@ void print_tree_recursion(b_tree p, size_t depth) {
  * @param[in] rt 操作する対象のtree.
  */
 void print_tree(b_tree rt) {
-  size_t depth = 0;
+  int depth = 0;
   printf("VISUALISING TREE\n");
   printf("================================\n");
   print_tree_recursion(rt, depth);
@@ -420,7 +420,7 @@ void print_tree(b_tree rt) {
  * @param[in] rt targetが存在するか調べるtree.
  * @param[in] target 調べるキー.
  */
-void print_search_node(b_tree rt, size_t target) {
+void print_search_node(b_tree rt, int target) {
   bool found;
   record *target_rec = NULL;
 
@@ -439,7 +439,7 @@ void print_search_node(b_tree rt, size_t target) {
  */
 record *cli_record() {
   record *rec;
-  size_t key = -1;
+  int key = -1;
   char field[MAX_FIELD_MEMORY];
 
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
@@ -465,7 +465,7 @@ void cli_insert(b_tree *rt) {
   while (true) {
     scanned_rec = cli_record();
     bool found;
-    size_t dummy;
+    int dummy;
     binary_search_existence_and_index(*rt, scanned_rec->key, &found, &dummy);
     if (found) {
       printf("The key is already used.\n");
@@ -482,7 +482,7 @@ int main() {
   // https://www.cs.usfca.edu/~galles/visualization/BTree.html
   b_tree rt = NULL;
 
-  for (size_t i = 0; i < 15; i++) {
+  for (int i = 0; i < 15; i++) {
     b_node_insert(&rt, init_record(i, "AAAA"));
   }
 

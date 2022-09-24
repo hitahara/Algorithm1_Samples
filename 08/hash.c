@@ -7,18 +7,18 @@ typedef struct record record;
 typedef struct hash_record hash_record;
 typedef struct hash hash;
 
-record *init_record(size_t key, const char *field);
+record *init_record(int key, const char *field);
 hash_record *init_hash_record(record *rec);
 hash *init_hash();
 void release_hash(hash *h);
 
-size_t hash_func(size_t i, size_t max_size);
+int hash_func(int i, int max_size);
 void insert(hash *has, record *rec);
-void search_existence_and_record(hash *has, size_t target, bool *found, record **target_rec);
+void search_existence_and_record(hash *has, int target, bool *found, record **target_rec);
 
 void print_record(record *rec);
 void print_hash(hash *h);
-void print_search_existence(hash *has, size_t target);
+void print_search_existence(hash *has, int target);
 
 record *cli_record();
 
@@ -48,7 +48,7 @@ record *cli_record();
  * @brief レコード：keyとfieldをもった構造体
  */
 struct record {
-  size_t key;                   /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
+  int key;                      /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
 };
 
@@ -73,8 +73,8 @@ struct hash_record {
  * @brief ハッシュの開番地法,線形走査で.
  */
 struct hash {
-  size_t size; /** 配列がとれる最大長. */
-  size_t filled_size;
+  int size; /** 配列がとれる最大長. */
+  int filled_size;
   hash_record table[MAX_ARRAY_MEMORY / sizeof(hash_record)]; /** record型で表された配列. */
 };
 
@@ -84,7 +84,7 @@ struct hash {
  * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, const char *field) {
+record *init_record(int key, const char *field) {
   if (strlen(field) > MAX_FIELD_MEMORY + 1) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
@@ -121,7 +121,7 @@ hash *init_hash() {
  * @param[in] h メモリを開放するhash.
  */
 void release_hash(hash *h) {
-  for (size_t i = 0; i < h->size; i++) {
+  for (int i = 0; i < h->size; i++) {
     if (h->table[i].mark == FREE) {
       continue;
     }
@@ -136,14 +136,14 @@ void release_hash(hash *h) {
  * @param[in] i 変換するインデックス.
  * @param[in] max_size hashがとれる最大のインデックス+1.
  */
-size_t hash_func(size_t i, size_t max_size) {
+int hash_func(int i, int max_size) {
   double m = i;
   m = (3.14 / i) * 10000;
   // printf("%lf\n", m);
-  i = (size_t)m % max_size;
+  i = (int)m % max_size;
   // printf("%zu\n", i);
 
-  return (size_t)i;
+  return (int)i;
 }
 
 /**
@@ -156,7 +156,7 @@ void insert(hash *has, record *rec) {
     fprintf(stderr, "ERROR: The hash table is full.\n");
     return;
   } else {
-    size_t h = hash_func(rec->key, has->size);
+    int h = hash_func(rec->key, has->size);
     while (has->table[h].mark == USED) {
       if (rec->key == has->table[h].data->key) {
         fprintf(stderr, "ERROR: The key already exists in the hash table.\n");
@@ -178,9 +178,9 @@ void insert(hash *has, record *rec) {
  * @param[out] found targetがhash内に存在するかの真理値を返す.
  * @param[out] target_rec target==target_rec->keyのrecordを返す.
  */
-void search_existence_and_record(hash *has, size_t target, bool *found, record **target_rec) {
-  size_t pos = hash_func(target, has->size);
-  size_t loop = 0;
+void search_existence_and_record(hash *has, int target, bool *found, record **target_rec) {
+  int pos = hash_func(target, has->size);
+  int loop = 0;
   while (has->table[pos].mark == USED && target != has->table[pos].data->key) {
     pos = (pos + 1) % has->size;
     loop++;
@@ -209,7 +209,7 @@ void print_record(record *rec) {
 void print_hash(hash *h) {
   printf("================================\n");
   printf("TABLE: [\n");
-  for (size_t i = 0; i < h->size; i++) {
+  for (int i = 0; i < h->size; i++) {
     if (h->table[i].mark == FREE) {
       printf("Index %zu is FREE.\n", i);
       continue;
@@ -225,7 +225,7 @@ void print_hash(hash *h) {
  * @param[in] has targetが存在するか調べるhash.
  * @param[in] target 調べるキー.
  */
-void print_search_existence(hash *has, size_t target) {
+void print_search_existence(hash *has, int target) {
   bool found;
   record *target_rec;
   search_existence_and_record(has, target, &found, &target_rec);
@@ -243,7 +243,7 @@ void print_search_existence(hash *has, size_t target) {
  */
 record *cli_record() {
   record *rec;
-  size_t key = -1;
+  int key = -1;
   char field[MAX_FIELD_MEMORY];
 
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
@@ -261,7 +261,7 @@ record *cli_record() {
 
 int main() {
   hash *has = init_hash();
-  for (size_t i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     insert(has, init_record(i, "AAAA"));
   }
 

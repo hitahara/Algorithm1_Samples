@@ -42,7 +42,7 @@ bool sameRoot(int x, int y);
 
 void init_graph();
 
-void down_heap(size_t target_node_index, size_t end_node_index);
+void down_heap(int target_node_index, int end_node_index);
 
 adj_mat GRAPH;
 edgEDGE_LIST EDGE_LIST;
@@ -156,10 +156,10 @@ int main() {
   kruskalAlgo();
 }
 
-void down_heap(size_t target_node_index, size_t end_node_index) {
+void down_heap(int target_node_index, int end_node_index) {
   // top min
   while (true) {
-    size_t comparing_node_index = 2 * target_node_index + 1;
+    int comparing_node_index = 2 * target_node_index + 1;
     if (comparing_node_index > end_node_index) {
       break;
     }

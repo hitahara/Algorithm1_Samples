@@ -21,15 +21,15 @@ typedef struct edge_cell edge_cell;
 typedef struct adjacency_matrix adj_mat;
 typedef struct adjacency_list adj_list;
 void dfs_mat(adj_mat *mat);
-void visit_mat(adj_mat *mat, bool *visit_list, size_t v);
+void visit_mat(adj_mat *mat, bool *visit_list, int v);
 void dfs_list(adj_list *list);
-void visit_lst(adj_list *list, bool *visit_list, size_t v);
+void visit_lst(adj_list *list, bool *visit_list, int v);
 
 /**
  * @brief レコード：keyとfieldをもった構造体
  */
 struct record {
-  size_t key;                 /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
+  int key;                    /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_SIZE]; /** データを保持するchar型の配列. */
 };
 
@@ -40,7 +40,7 @@ struct record {
  * サイズはMAX_FIELD_SIZEで定義.初期化時に指定するフィールド.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, char *field) {
+record *init_record(int key, char *field) {
   if (strlen(field) > MAX_FIELD_SIZE) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
@@ -88,7 +88,7 @@ adj_mat *init_adj_mat() {
 }
 
 struct edge_cell {
-  size_t destination;
+  int destination;
   edge_cell *next;
 };
 
@@ -98,13 +98,13 @@ struct adjacency_list {
 
 adj_list *init_adj_list() {
   adj_list *l = (adj_list *)malloc(sizeof(adj_list));
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+  for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
     l->adj_list[i] = NULL;
   }
   return l;
 }
 
-edge_cell *init_edge_cell(size_t dest) {
+edge_cell *init_edge_cell(int dest) {
   edge_cell *c = (edge_cell *)malloc(sizeof(edge_cell));
   c->destination = dest;
   c->next = NULL;
@@ -114,10 +114,10 @@ edge_cell *init_edge_cell(size_t dest) {
 void dfs_mat(adj_mat *mat) {
   bool visit_list[MAX_GRAPH_SIZE];
 
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+  for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
     visit_list[i] = false;
   }
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+  for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
     if (visit_list[i] == false) {
       visit_mat(mat, visit_list, i);
     }
@@ -126,10 +126,10 @@ void dfs_mat(adj_mat *mat) {
   printf("\n");
 }
 
-void visit_mat(adj_mat *mat, bool *visit_list, size_t v) {
+void visit_mat(adj_mat *mat, bool *visit_list, int v) {
   visit_list[v] = true;
 
-  for (size_t z = 0; z < MAX_GRAPH_SIZE; ++z) {
+  for (int z = 0; z < MAX_GRAPH_SIZE; ++z) {
     if (mat->M[v][z] && visit_list[z] == false) {
       printf("%zu - %zu\n", v, z);
       visit_mat(mat, visit_list, z);
@@ -140,22 +140,22 @@ void visit_mat(adj_mat *mat, bool *visit_list, size_t v) {
 void dfs_list(adj_list *list) {
   bool visit_list[MAX_GRAPH_SIZE];
 
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+  for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
     visit_list[i] = false;
   }
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
+  for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
     if (visit_list[i] == false) {
       visit_lst(list, visit_list, i);
     }
   }
 }
 
-void visit_lst(adj_list *list, bool *visit_list, size_t v) {
+void visit_lst(adj_list *list, bool *visit_list, int v) {
   visit_list[v] = true;
 
   edge_cell *p = list->adj_list[v];
   while (p != NULL) {
-    size_t z = p->destination;
+    int z = p->destination;
 
     if (visit_list[z] == false) {
       printf("%zu - %zu\n", v, z);
@@ -167,8 +167,8 @@ void visit_lst(adj_list *list, bool *visit_list, size_t v) {
 
 int main() {
   adj_mat *mat = init_adj_mat();
-  for (size_t i = 0; i < MAX_GRAPH_SIZE; ++i) {
-    for (size_t j = 0; j < MAX_GRAPH_SIZE; ++j) {
+  for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
+    for (int j = 0; j < MAX_GRAPH_SIZE; ++j) {
       mat->M[i][j] = false;
     }
   }

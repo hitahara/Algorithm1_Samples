@@ -12,9 +12,9 @@
  * @brief キューの配列とメタ情報を保持する構造体.
  */
 typedef struct {
-  size_t head;        /** キューの先頭のインデックス. */
-  size_t tail;        /** キューの最後尾のインデックス. */
-  size_t count;       /** 配列の長さ. */
+  int head;           /** キューの先頭のインデックス. */
+  int tail;           /** キューの最後尾のインデックス. */
+  int count;          /** 配列の長さ. */
   int elements[SIZE]; /** int型で表された配列. */
 } queue;
 

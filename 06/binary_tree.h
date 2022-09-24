@@ -6,7 +6,7 @@
 typedef struct node node;
 typedef node *tree;
 typedef struct record record;
-record *init_record(size_t key, const char *field);
+record *init_record(int key, const char *field);
 node *init_node(record *rec);
 void dispose(node *n);
 void release_tree(tree *rt);
@@ -17,15 +17,15 @@ void post_order(tree p, void (*something)(node *));
 
 void insert_node(tree *rt, node *np);
 tree extract_max_node(tree *rt);
-void delete_node(tree *rt, size_t target);
-node *search_node(tree rt, size_t target);
+void delete_node(tree *rt, int target);
+node *search_node(tree rt, int target);
 
 record *cli_record();
 void cli_insert(tree *rt);
 void print_record(record *rec);
 void print_node(node *n);
-void print_search_node(tree rt, size_t target);
-void print_tree_recursion(tree p, size_t depth);
+void print_search_node(tree rt, int target);
+void print_tree_recursion(tree p, int depth);
 void print_tree(tree rt);
 
 #endif

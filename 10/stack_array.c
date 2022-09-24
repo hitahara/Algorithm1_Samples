@@ -10,23 +10,23 @@ typedef struct stack stack;
 
 stack *init_stack();
 void release_stack(stack **stack);
-void push_stack(stack *stack, size_t left, size_t right);
-void pop_stack(stack *stack, size_t *left, size_t *right);
+void push_stack(stack *stack, int left, int right);
+void pop_stack(stack *stack, int *left, int *right);
 
 /**
  * @brief スタックの配列とメタ情報を保持する構造体.
  */
 struct stack_data {
-  size_t left;
-  size_t right;
+  int left;
+  int right;
 };
 
 /**
  * @brief スタックの配列とメタ情報を保持する構造体.
  */
 struct stack {
-  size_t sp;                           /** 配列の長さ. */
-  size_t size;                         /** 配列がとれる最大長. */
+  int sp;                              /** 配列の長さ. */
+  int size;                            /** 配列がとれる最大長. */
   stack_data elements[MAX_STACK_SIZE]; /** int型で表された配列. */
 };
 
@@ -56,7 +56,7 @@ void release_stack(stack **stack) {
  * @param[in] stack プッシュする配列をもつstackのポインタ.
  * @param[in] data stack_data型のプッシュするデータ.
  */
-void push_stack(stack *stack, size_t left, size_t right) {
+void push_stack(stack *stack, int left, int right) {
   if (stack->sp >= stack->size) {
     printf("No more element can be pushed into the stack.\n");
     return;
@@ -72,7 +72,7 @@ void push_stack(stack *stack, size_t left, size_t right) {
  * @param[in] stack ポップする配列をもつstackのポインタ.
  * @param[in] data ポップした値の受けてとなるstack_data型のポインタ.
  */
-void pop_stack(stack *stack, size_t *left, size_t *right) {
+void pop_stack(stack *stack, int *left, int *right) {
   if (stack->sp == 0) {
     printf("No more element can be popped from the elements.\n");
     return;

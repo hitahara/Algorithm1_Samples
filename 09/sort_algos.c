@@ -43,18 +43,18 @@
 typedef struct record record;
 typedef struct sequence sequence;
 
-record *init_record(size_t key, char *field);
+record *init_record(int key, char *field);
 sequence *init_sequence();
 void release_record(record **rec);
 void release_sequence(sequence **seq);
 
 bool is_record_a_larger_than_b(record *a, record *b);
-bool is_a_larger_than_b(record **records, size_t a, size_t b);
-void compare_and_swap(record **records, size_t a, size_t b);
+bool is_a_larger_than_b(record **records, int a, int b);
+void compare_and_swap(record **records, int a, int b);
 
 void insert_tail(sequence *seq, record *rec);
 
-void binary_search_existence_and_index(sequence *seq, size_t target, bool *found, size_t *index);
+void binary_search_existence_and_index(sequence *seq, int target, bool *found, int *index);
 
 void simple_sort(sequence *seq);
 void bubble_sort(sequence *seq);
@@ -63,19 +63,19 @@ void insertion_sort(sequence *seq);
 
 void print_record(record *rec);
 void print_sequence(sequence *seq);
-void print_search_existence_and_index(sequence *seq, size_t target);
+void print_search_existence_and_index(sequence *seq, int target);
 
 record *cli_record();
 void cli_insert(sequence *seq);
 void run_sort_algorithm(sequence *seq, void (*sort_algorithm)(sequence *));
 
-void fisher_yates_shuffle(size_t *array, size_t array_size);
+void fisher_yates_shuffle(int *array, int array_size);
 
 /**
  * @brief レコード：keyとfieldをもった構造体
  */
 struct record {
-  size_t key;                 /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
+  int key;                    /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_SIZE]; /** データを保持するchar型の配列. */
 };
 
@@ -83,8 +83,8 @@ struct record {
  * @brief 配列とそのメタデータを保持する構造体.
  */
 struct sequence {
-  size_t elements_length;            /** 配列の長さ. */
-  size_t size;                       /** 配列がとれる最大長. */
+  int elements_length;               /** 配列の長さ. */
+  int size;                          /** 配列がとれる最大長. */
   record *elements[MAX_RECORD_SIZE]; /** recordのポインタの配列. */
 };
 
@@ -95,7 +95,7 @@ struct sequence {
  * サイズはMAX_FIELD_SIZEで定義.初期化時に指定するフィールド.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, char *field) {
+record *init_record(int key, char *field) {
   if (strlen(field) > MAX_FIELD_SIZE) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
@@ -124,7 +124,7 @@ sequence *init_sequence() {
   }
   s->size = MAX_RECORD_SIZE;
   /*初期化時にすべてのインデックスに対してNULLになっているはず.
-  for (size_t i = 0; i < s->size; i++)
+  for (int i = 0; i < s->size; i++)
   {
     s->elements[i] = NULL;
   }
@@ -147,7 +147,7 @@ void release_record(record **rec) {
  */
 void release_sequence(sequence **seq) {
   // seq内のmallocで生成されたrecord群のメモリも解放.
-  for (size_t i = 0; i < (*seq)->size; i++) {
+  for (int i = 0; i < (*seq)->size; i++) {
     if ((*seq)->elements[i] != NULL) {
       release_record(&(*seq)->elements[i]);
     }
@@ -173,7 +173,7 @@ bool is_record_a_larger_than_b(record *a, record *b) {
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  * @return a>bの場合:true,a<bの場合:false.
  */
-bool is_a_larger_than_b(record **records, size_t a, size_t b) {
+bool is_a_larger_than_b(record **records, int a, int b) {
   return is_record_a_larger_than_b(records[a], records[b]);
 }
 
@@ -183,7 +183,7 @@ bool is_a_larger_than_b(record **records, size_t a, size_t b) {
  * @param[in] a 評価するインデックスのなかで最小(a<b).
  * @param[in] b 評価するインデックスのなかで最大(a<b).
  */
-void compare_and_swap(record **records, size_t a, size_t b) {
+void compare_and_swap(record **records, int a, int b) {
   if (is_a_larger_than_b(records, a, b)) {
     SWAP(record *, records[a], records[b])
   }
@@ -216,13 +216,13 @@ void insert_tail(sequence *seq, record *rec) {
  * @param[in] seq key==targetを削除するsequenceのポインタ.
  * @param[in] target 削除するキー.
  */
-void delete_target_record(sequence *seq, size_t target) {
+void delete_target_record(sequence *seq, int target) {
   bool found;
-  size_t target_index;
+  int target_index;
   binary_search_existence_and_index(seq, target, &found, &target_index);
   if (found) {
     release_record(&seq->elements[target_index]);
-    for (size_t i = target_index; i < seq->elements_length - 1; i++) {
+    for (int i = target_index; i < seq->elements_length - 1; i++) {
       seq->elements[i] = seq->elements[i + 1];
     }
     seq->elements[seq->elements_length - 1] = NULL;
@@ -239,10 +239,10 @@ void delete_target_record(sequence *seq, size_t target) {
  * @param[out] found targetがtab内に存在するかの真理値.
  * @param[out] index sequenceのなかで,target以上であり最小のキー.
  */
-void binary_search_existence_and_index(sequence *seq, size_t target, bool *found, size_t *index) {
-  size_t ng = -1;
-  size_t ok = seq->elements_length;
-  size_t mid;
+void binary_search_existence_and_index(sequence *seq, int target, bool *found, int *index) {
+  int ng = -1;
+  int ok = seq->elements_length;
+  int mid;
   while (ok - ng > 1) {
     mid = (ok + ng) / 2;
     if (target <= seq->elements[mid]->key) {
@@ -261,8 +261,8 @@ void binary_search_existence_and_index(sequence *seq, size_t target, bool *found
  * @param[in] seq ソートするsequenceのポインタ.
  */
 void simple_sort(sequence *seq) {
-  for (size_t i = 0; i < seq->elements_length - 1; i++) {
-    for (size_t j = i + 1; j < seq->elements_length; j++) {
+  for (int i = 0; i < seq->elements_length - 1; i++) {
+    for (int j = i + 1; j < seq->elements_length; j++) {
       compare_and_swap(seq->elements, i, j);
     }
   }
@@ -273,8 +273,8 @@ void simple_sort(sequence *seq) {
  * @param[in] seq ソートするsequenceのポインタ.
  */
 void bubble_sort(sequence *seq) {
-  for (size_t i = 0; i < seq->elements_length - 1; i++) {
-    for (size_t j = seq->elements_length - 1; j > i; j--) {
+  for (int i = 0; i < seq->elements_length - 1; i++) {
+    for (int j = seq->elements_length - 1; j > i; j--) {
       compare_and_swap(seq->elements, j - 1, j);
     }
   }
@@ -285,10 +285,10 @@ void bubble_sort(sequence *seq) {
  * @param[in] seq ソートするsequenceのポインタ.
  */
 void selection_sort(sequence *seq) {
-  size_t min_pos;
-  for (size_t i = 0; i < seq->elements_length - 1; i++) {
+  int min_pos;
+  for (int i = 0; i < seq->elements_length - 1; i++) {
     min_pos = i;
-    for (size_t j = i + 1; j < seq->elements_length; j++) {
+    for (int j = i + 1; j < seq->elements_length; j++) {
       if (is_a_larger_than_b(seq->elements, min_pos, j)) {
         min_pos = j;
       }
@@ -303,12 +303,12 @@ void selection_sort(sequence *seq) {
  */
 void insertion_sort(sequence *seq) {
   record *inserting_record;
-  size_t j = 0;
+  int j = 0;
 
-  for (size_t i = 1; i < seq->elements_length; i++) {
+  for (int i = 1; i < seq->elements_length; i++) {
     inserting_record = seq->elements[i];
     /**
-     * long unsigned int / size_tのためj>=0をj!=-1に
+     * long unsigned int / intのためj>=0をj!=-1に
      * 番兵にしていないため,jに関する条件式が必要.
      * 番兵にしたければ:
      * 1.挿入などを1オリジンにしてインデックス0を番兵に使えるようにする.
@@ -317,7 +317,7 @@ void insertion_sort(sequence *seq) {
      * また番兵を用いる事を考えるならば,
      * MAX_RECORD_SIZEの定義に+1をし,番兵分をつくる.
      * */
-    for (j = i - 1; j != (size_t)-1; j--) {
+    for (j = i - 1; j != (int)-1; j--) {
       /** 挿入するrecord->key以上かつ最小のインデックスを探すまで,後ろにシフト*/
       if (is_record_a_larger_than_b(seq->elements[j], inserting_record)) {
         seq->elements[j + 1] = seq->elements[j];
@@ -354,7 +354,7 @@ void print_sequence(sequence *seq) {
     printf("================================\n");
     printf("Printing sequence\n");
     printf("================================\n");
-    for (size_t i = 0; i < seq->elements_length; i++) {
+    for (int i = 0; i < seq->elements_length; i++) {
       print_record(seq->elements[i]);
     }
     printf("================================\n");
@@ -369,12 +369,12 @@ void print_sequence(sequence *seq) {
  * @param[in] tab targetが存在するか調べるsequence.
  * @param[in] target 調べるキー.
  */
-void print_search_existence_and_index(sequence *seq, size_t target) {
+void print_search_existence_and_index(sequence *seq, int target) {
   printf("\n");
   printf("================================\n");
 
   bool found = false;
-  size_t target_index;
+  int target_index;
   binary_search_existence_and_index(seq, target, &found, &target_index);
   printf("\"%zu\" was %s\n", target, found ? "FOUND." : "NOT FOUND.");
   if (found) {
@@ -391,7 +391,7 @@ void print_search_existence_and_index(sequence *seq, size_t target) {
  */
 record *cli_record() {
   record *rec;
-  size_t key = -1;
+  int key = -1;
   char field[MAX_FIELD_SIZE];
 
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
@@ -399,7 +399,7 @@ record *cli_record() {
 
   while (true) {
     scanf("%zu", &key);
-    if (key == (size_t)-1) {
+    if (key == (int)-1) {
       getchar();
       printf("ERROR: Try again from the key.\n");
       continue;
@@ -425,7 +425,7 @@ void cli_insert(sequence *seq) {
     scanned_rec = cli_record();
     // 同じキーが既に存在しているか確認.
     bool found;
-    size_t dummy;
+    int dummy;
     binary_search_existence_and_index(seq, scanned_rec->key, &found, &dummy);
     if (found) {
       printf("The key is already used.\n");
@@ -453,15 +453,15 @@ void run_sort_algorithm(sequence *seq, void (*sort_algorithm)(sequence *)) {
 }
 
 int main() {
-  size_t keys[MAX_RECORD_SIZE];
-  for (size_t i = 0; i < MAX_RECORD_SIZE; i++) {
+  int keys[MAX_RECORD_SIZE];
+  for (int i = 0; i < MAX_RECORD_SIZE; i++) {
     keys[i] = i;
   }
 
-  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(size_t));
+  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
 
   sequence *seq = init_sequence();
-  for (size_t i = 0; i < MAX_RECORD_SIZE; i++) {
+  for (int i = 0; i < MAX_RECORD_SIZE; i++) {
     insert_tail(seq, init_record(keys[i], (char *)"AAAAAAAA"));
   }
 
@@ -483,14 +483,14 @@ int main() {
 }
 
 /**
- * @brief 指定されたsize_tのポインタにある配列にfiesher-yates shuffle.
- * @param[in,out] array シャフルする配列であるsize_tのポインタ.
+ * @brief 指定されたintのポインタにある配列にfiesher-yates shuffle.
+ * @param[in,out] array シャフルする配列であるintのポインタ.
  * @param[in] array_size シャッフルする配列のサイズ
  */
-void fisher_yates_shuffle(size_t *array, size_t array_size) {
-  size_t i = array_size;
+void fisher_yates_shuffle(int *array, int array_size) {
+  int i = array_size;
   while (i > 1) {
-    size_t j = rand() % i;
+    int j = rand() % i;
     i--;
     int t = array[i];
     array[i] = array[j];

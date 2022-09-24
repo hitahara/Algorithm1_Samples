@@ -2,17 +2,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// size_t型: 恐らく64bitのシステムだとlong unsigned int, 32bitのシステムだとunsigned int.
+// int型: 恐らく64bitのシステムだとlong unsigned int, 32bitのシステムだとunsigned int.
 
 /**
- * @brief 指定されたsize_tのポインタにある配列にfiesher-yates shuffle.
- * @param[in,out] array シャフルする配列であるsize_tのポインタ.
+ * @brief 指定されたintのポインタにある配列にfiesher-yates shuffle.
+ * @param[in,out] array シャフルする配列であるintのポインタ.
  * @param[in] array_size シャッフルする配列のサイズ
  */
-void fisher_yates_shuffle(size_t* array, size_t array_size) {
-  size_t i = array_size;
+void fisher_yates_shuffle(int* array, int array_size) {
+  int i = array_size;
   while (i > 1) {
-    size_t j = rand() % i;
+    int j = rand() % i;
     i--;
     int t = array[i];
     array[i] = array[j];
@@ -42,7 +42,7 @@ void fisher_yates_shuffle(size_t* array, size_t array_size) {
  * @brief レコード：keyとfieldをもった構造体.
  */
 typedef struct record {
-  size_t key;                   /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
+  int key;                      /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
 } record;
 
@@ -73,7 +73,7 @@ typedef struct table {
  * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
  * @return 初期化されたrecordのポインタ.
  */
-record* init_record(size_t key, const char* field) {
+record* init_record(int key, const char* field) {
   if (strlen(field) > MAX_FIELD_MEMORY + 1) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
@@ -174,7 +174,7 @@ void insert_head_record(table* tab, record* rec) {
  * @param[in] target 調べるキー.
  * @return targetがrecords内に存在するかを示すbool.
  */
-bool search_existence(table* tab, size_t target) {
+bool search_existence(table* tab, int target) {
   tab->sentinel->rec->key = target;
   list previous = tab->header;
   list p = tab->header->next;
@@ -196,7 +196,7 @@ bool search_existence(table* tab, size_t target) {
  * @param[in] target 調べるキー.
  * @return targetを示すlistを指すlistを返す.
  */
-list search_previous(table* tab, size_t target) {
+list search_previous(table* tab, int target) {
   tab->sentinel->rec->key = target;
   list previous = tab->header;
   list p = tab->header->next;
@@ -223,7 +223,7 @@ void delete_next(table* tab, list previous) {
  * @param[in] tab targetが存在するか調べるtable.
  * @param[in] target 削除するキー.
  */
-void delete_target(table* tab, size_t target) {
+void delete_target(table* tab, int target) {
   list prev_l = search_previous(tab, target);
   delete_next(tab, prev_l);
 }
@@ -234,7 +234,7 @@ void delete_target(table* tab, size_t target) {
  */
 record* cli_record() {
   record* rec;
-  size_t key = -1;
+  int key = -1;
   char field[MAX_FIELD_MEMORY];
 
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
@@ -281,7 +281,7 @@ void print_record(record* rec) {
  * @param[in] tab プリントするリストをもつtableのポインタ.
  */
 void print_table(table* tab) {
-  size_t record_count = 0;
+  int record_count = 0;
   printf("================================\n");
   printf("TABLE: [\n");
   for (list c = tab->header->next; c != tab->sentinel; c = c->next, record_count++) {
@@ -296,21 +296,21 @@ void print_table(table* tab) {
  * @param[in] tab targetが存在するか調べるtable.
  * @param[in] target 調べるキー.
  */
-void print_search_existence(table* tab, size_t target) {
+void print_search_existence(table* tab, int target) {
   bool b = search_existence(tab, target);
   printf("\"%zu\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
 }
 
 int main() {
-  size_t keys[SAMPLE_RECORDS_SIZE];
-  for (size_t i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
+  int keys[SAMPLE_RECORDS_SIZE];
+  for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
     keys[i] = i;
   }
-  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(size_t));
+  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
 
   table* tab = init_table();
   record* rec = NULL;
-  for (size_t i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
+  for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
     rec = init_record(keys[i], "AAA");
     insert_head_record(tab, rec);
   }

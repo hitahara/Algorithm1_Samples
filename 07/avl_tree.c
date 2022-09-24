@@ -39,7 +39,7 @@ typedef enum direction {
  * @brief レコード：keyとfieldをもった構造体
  */
 typedef struct record {
-  size_t key;                   /** size_t型のキー. key==-1or2^64-1を例外処理に用いている*/
+  int key;                      /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
   char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
 } record;
 
@@ -55,7 +55,7 @@ struct node {
  * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
  * @return 初期化されたrecordのポインタ.
  */
-record *init_record(size_t key, const char *field) {
+record *init_record(int key, const char *field) {
   if (strlen(field) > MAX_FIELD_MEMORY + 1) {
     fprintf(stderr, "ERROR: \"field\" is too large.\n");
     exit(1);
@@ -368,7 +368,7 @@ tree extract_max(tree *rt, bool *shrinked) {
  * @param[in] target 調べるrec->key.
  * @param[in,out] shrinked 部分木が縮小したかどうかを反映.
  */
-void delete_node(tree *rt, size_t target, bool *shrinked) {
+void delete_node(tree *rt, int target, bool *shrinked) {
   //ノードの削除が可能な関数にsを渡し,戻って来た際に,リバランスが必要かどうか見る.
   // sは呼び出された関数内で条件式に用いる.
   // shrinkedは呼び出した関数内で条件式に用いる/ここではdelete_nodeを呼び出した関数内.
@@ -415,7 +415,7 @@ void delete_node(tree *rt, size_t target, bool *shrinked) {
  * @param[in] target 調べるキー.
  * @return 存在する場合:対応するnodeのポインタ,存在しない場合:NULL.
  */
-node *search_node(tree rt, size_t target) {
+node *search_node(tree rt, int target) {
   tree p = rt;
   while (p != NULL) {
     if (target == p->rec->key) {
@@ -449,7 +449,7 @@ void print_node(node *n) {
  * @param[in] rt targetが存在するか調べるtree.
  * @param[in] target 調べるキー.
  */
-void print_search_node(tree rt, size_t target) {
+void print_search_node(tree rt, int target) {
   tree search_result_node = search_node(rt, target);
   printf("\"%zu\" was %s\n", target, search_result_node != NULL ? "FOUND." : "NOT FOUND.");
 }
@@ -459,11 +459,11 @@ void print_search_node(tree rt, size_t target) {
  * @param[in] p プリントする対象のtree.
  * @param[in] depth 再帰呼び出しの深さ.
  */
-void print_tree_recursion(tree p, size_t depth) {
+void print_tree_recursion(tree p, int depth) {
   if (p != NULL) {
     print_tree_recursion(p->child[RIGHT], depth + 1);
 
-    for (size_t i = 0; i < depth; i++) {
+    for (int i = 0; i < depth; i++) {
       printf(" ");
     }
     printf("+-%3zu, \"%s\"\n", p->rec->key, p->rec->field);
@@ -476,7 +476,7 @@ void print_tree_recursion(tree p, size_t depth) {
  * @param[in] rt 操作する対象のtree.
  */
 void print_tree(tree rt) {
-  size_t depth = 0;
+  int depth = 0;
   printf("VISUALISING TREE\n");
   printf("================================\n");
   print_tree_recursion(rt, depth);
@@ -489,13 +489,13 @@ void print_tree(tree rt) {
  */
 record *cli_record() {
   record *rec;
-  size_t key = -1;
+  int key = -1;
   char field[MAX_FIELD_MEMORY];
 
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
-  while (key == (size_t)-1) {
+  while (key == (int)-1) {
     scanf("%zu", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
@@ -526,11 +526,11 @@ void cli_insert(tree *rt) {
 }
 
 int main() {
-  size_t tmp[] = {1, 3, 2};
+  int tmp[] = {1, 3, 2};
   tree rt = NULL;
   bool dummy;
 
-  for (size_t i = 0; i < sizeof(tmp) / sizeof(size_t); i++) {
+  for (int i = 0; i < sizeof(tmp) / sizeof(int); i++) {
     insert_node(&rt, init_node(init_record(tmp[i], "AAAA")), &dummy);
   }
   print_tree(rt);

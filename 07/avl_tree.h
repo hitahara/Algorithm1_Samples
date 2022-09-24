@@ -8,7 +8,7 @@ typedef enum direction direction;
 typedef struct node node;
 typedef node *tree;
 
-record *init_record(size_t key, const char *field);
+record *init_record(int key, const char *field);
 node *init_node(record *rec);
 void dispose(node *n);
 void release_tree(tree *rt);
@@ -26,14 +26,14 @@ tree single_rotation_for_delete(tree rt, direction deleted_dir, bool *shrinked);
 tree double_rotation_for_delete(tree rt, direction deleted_dir, bool *shrinked);
 void rebalance_for_delete(tree *rt, direction deleted_dir, bool *shrinked);
 tree extract_max(tree *rt, bool *shrinked);
-void delete_node(tree *rt, size_t target, bool *shrinked);
+void delete_node(tree *rt, int target, bool *shrinked);
 
-node *search_node(tree rt, size_t target);
+node *search_node(tree rt, int target);
 
 void print_record(record *rec);
 void print_node(node *n);
-void print_search_node(tree rt, size_t target);
-void print_tree_recursion(tree p, size_t depth);
+void print_search_node(tree rt, int target);
+void print_tree_recursion(tree p, int depth);
 void print_tree(tree rt);
 record *cli_record();
 void cli_insert(tree *rt);
