@@ -18,7 +18,7 @@ typedef struct
   cell* head;
 } list;
 
-void release_list(list* l) {
+void release(list* l) {
   cell* current = l->head;
   while (current != NULL) {
     cell* next = current->next;
@@ -28,7 +28,7 @@ void release_list(list* l) {
   l->head = NULL;
 }
 
-void insert_cell(cell* previous, int val) {
+void insert(cell* previous, int val) {
   cell* c = (cell*)malloc(sizeof(cell));
   c->element = val;
   c->next = previous->next;
@@ -42,19 +42,19 @@ void insert_head(list* l, int val) {
   l->head = c;
 }
 
-void delete_cell(cell* previous) {
+void erase(cell* previous) {
   cell* target = previous->next;
   previous->next = target->next;
   free(target);
 }
 
-void delete_head(list* l) {
+void erase_head(list* l) {
   cell* target = l->head;
   l->head = target->next;
   free(target);
 }
 
-void print_list(list l) {
+void print(list l) {
   printf("LIST: [ ");
   cell* current = l.head;
   while (current != NULL) {
@@ -74,19 +74,19 @@ int main() {
     if (i == 6)
       c = l.head;
   }
-  print_list(l);
+  print(l);
 
-  insert_cell(c, 100);
-  print_list(l);
+  insert(c, 100);
+  print(l);
 
-  delete_cell(c);
-  print_list(l);
+  erase(c);
+  print(l);
 
-  delete_head(&l);
-  print_list(l);
+  erase_head(&l);
+  print(l);
 
-  release_list(&l);
-  print_list(l);
+  release(&l);
+  print(l);
 
   return 0;
 }

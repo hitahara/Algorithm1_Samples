@@ -8,7 +8,7 @@ typedef struct {
   int elements[SIZE];
 } sequence;
 
-void insert_element(sequence* seq, int pos, int val) {
+void insert(sequence* seq, int pos, int val) {
   if (seq->length >= SIZE) {
     printf("No more element can be inserted into elements.\n");
     return;
@@ -21,14 +21,14 @@ void insert_element(sequence* seq, int pos, int val) {
   seq->elements[pos] = val;
 }
 
-void delete_element(sequence* seq, int pos) {
+void erase(sequence* seq, int pos) {
   seq->length--;
   for (int i = pos; i < seq->length; i++) {
     seq->elements[i] = seq->elements[i + 1];
   }
 }
 
-void print_sequence(sequence* seq) {
+void print(sequence* seq) {
   printf("ELEMENTS: [ ");
   for (int i = 0; i < seq->length; i++) {
     printf("%d ", seq->elements[i]);
@@ -42,12 +42,12 @@ int main() {
   seq.length = 0;
 
   for (int i = 0; i < 10; i++) {
-    insert_element(&seq, i, i);
+    insert(&seq, i, i);
   }
-  print_sequence(&seq);
+  print(&seq);
 
-  delete_element(&seq, 5);
-  print_sequence(&seq);
+  erase(&seq, 5);
+  print(&seq);
 
   return 0;
 }
