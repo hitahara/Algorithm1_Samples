@@ -42,10 +42,10 @@ void pop(stack* s, int* val) {
 
 void print(stack s) {
   printf("LIST CELLS: [ ");
-  cell* c = s.head;
-  while (c != NULL) {
-    printf("%d ", c->element);
-    c = c->next;
+  cell* current = s.head;
+  while (current != NULL) {
+    printf("%d ", current->element);
+    current = current->next;
   }
   printf("]\n");
 }
