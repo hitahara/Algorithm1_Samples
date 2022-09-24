@@ -42,8 +42,9 @@ void enter(queue* q, int val) {
   q->tail = c;
 }
 
-void remove(queue* q, int* val) {
-  if (empty_queue(q)) {
+// NOTE: `remove` は stdio.h で使われているので erase と書きます
+void erase(queue* q, int* val) {
+  if (empty(q)) {
     printf("No more element can be dequeued from the queue.\n");
     return;
   }
@@ -53,9 +54,9 @@ void remove(queue* q, int* val) {
   free(c);
 }
 
-void print(queue q) {
+void print(queue* q) {
   printf("QUEUE: [ ");
-  cell* current = q.head;
+  cell* current = q->head;
   while (current != NULL) {
     printf("%d ", current->element);
     current = current->next;
@@ -67,18 +68,16 @@ int main() {
   queue q = {NULL, NULL};
 
   for (int i = 0; i < 10; i++) {
-    enter_queue(&q, i);
+    enter(&q, i);
   }
-  print_queue(q);
+  print(&q);
 
   int val;
-  remove_queue(&q, &val);
-  print_queue(q);
+  erase(&q, &val);
+  print(&q);
 
-  clear_queue(&q);
-  print_queue(q);
-
-  release_queue(&q);
+  clear(&q);
+  print(&q);
   return 0;
 }
 

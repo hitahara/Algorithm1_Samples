@@ -40,9 +40,9 @@ void pop(stack* s, int* val) {
   free(c);
 }
 
-void print(stack s) {
+void print(stack* s) {
   printf("LIST CELLS: [ ");
-  cell* current = s.head;
+  cell* current = s->head;
   while (current != NULL) {
     printf("%d ", current->element);
     current = current->next;
@@ -56,11 +56,11 @@ int main() {
   for (int i = 0; i < 10; i++) {
     push(&s, i);
   }
-  print(s);
+  print(&s);
 
   int val;
   pop(&s, &val);
-  print(s);
+  print(&s);
   printf("POP: %d\n", val);
 
   clear(&s);
