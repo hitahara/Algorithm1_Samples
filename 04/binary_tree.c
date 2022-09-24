@@ -9,12 +9,12 @@ typedef struct _node {
   struct _node* right;
 } node;
 
-// NOTE:
+// WARNING:
 // 03/linear_list.c と同様に、node と tree を別の構造体
 // としており、講義スライドと異なるため注意してください。
 // pointer to pointer と dereference を省くことで可読性を
 // 上げていますが、再帰関数に対してはデメリットがあり、
-// tree 自体を渡すことができません。よって関数には
+// tree 自体を渡すことができません。よって再帰関数には
 // tree.root を渡しています。
 typedef struct {
   node* root;

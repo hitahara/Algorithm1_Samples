@@ -6,13 +6,13 @@ typedef struct _cell {
   struct _cell* next;
 } cell;
 
-// NOTE:
+// WARNING:
 // 講義スライドでは list は cell* の別名ですが、このコードでは
-// 別の構造体としています。別名としてしまうと head のポインタ
-// 自体を変更する操作で pointer to pointer と dereference が
-// 必要になり、可読性が損なわれます。それに対して list の内部に
-// cell* を持つ設計にすると上記の問題が解決されるうえ、head と
-// tail の両方を持つようなデータ構造にも容易に拡張できます。
+// 別の構造体としているため注意してください。別名としてしまうと
+// head のポインタ自体を変更する操作で pointer to pointer と
+// dereference が必要になり、可読性が損なわれます。それに対して
+// list の内部に cell* を持つ設計にすると上記の問題が解決されるうえ、
+// head とtail の両方を持つようなデータ構造にも容易に拡張できます。
 typedef struct
 {
   cell* head;
