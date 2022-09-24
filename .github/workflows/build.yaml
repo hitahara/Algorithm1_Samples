@@ -12,5 +12,6 @@ jobs:
   action:
     runs-on: ubuntu-latest
     steps:
-      - run: gcc -Wall -Wextra 01/gcd_iterative.c
-      - run: gcc -Wall -Wextra 01/gcd_recursive.c
+      - run: pwd
+      - run: gcc -Wall -Wextra ./01/gcd_iterative.c
+      - run: gcc -Wall -Wextra ./01/gcd_recursive.c
