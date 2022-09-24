@@ -45,3 +45,31 @@ int main() {
 
   return 0;
 }
+
+// 実行結果
+// Type in the length of the array...
+// 5
+// Type in the table numbers (number >= 0)...
+// 1
+// 3
+// 3
+// 5
+// 9
+//
+// Type in the target number... (Type in number < 0 to exit)
+// 3
+// CPU execution time: 0.00000100 s.
+// Is target in the table: Yes
+//
+// Type in the target number... (Type in number < 0 to exit)
+// 5
+// CPU execution time: 0.00000100 s.
+// Is target in the table: Yes
+//
+// Type in the target number... (Type in number < 0 to exit)
+// 8
+// CPU execution time: 0.00000100 s.
+// Is target in the table: No
+//
+// Type in the target number... (Type in number < 0 to exit)
+// -1
