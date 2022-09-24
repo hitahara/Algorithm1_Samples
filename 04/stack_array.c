@@ -19,8 +19,8 @@ void push(stack* stack, int val) {
     return;
   }
 
-  stack->elements[stack->length] = val;
   stack->length++;
+  stack->elements[stack->length] = val;
 }
 
 void pop(stack* stack, int* val) {
