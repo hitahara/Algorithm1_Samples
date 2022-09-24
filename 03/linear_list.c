@@ -6,6 +6,15 @@ typedef struct _cell {
   struct _cell* next;
 } cell;
 
+// NOTE:
+// 講義スライドでは list は cell* の別名ですが、
+// このコードでは typedef cell* list; としていません。
+// 別名としてしまうと、 head のポインタ自体を変更する操作で
+// 暗黙の pointer to pointer が必要となるうえ、
+// dereference が発生するためです。
+// これは初心者の方を混乱させるうえに可読性が低いです。
+// list の内部に cell* を持つ設計にすることで上記の問題が解決されるうえ、
+// head と tail の両方を持つようなデータ構造にも容易に拡張できます。
 typedef struct
 {
   cell* head;
