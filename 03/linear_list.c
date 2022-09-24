@@ -65,8 +65,7 @@ void print(list l) {
 }
 
 int main() {
-  list l;
-  l.head = NULL;
+  list l = {NULL};
 
   cell* c;
   for (int i = 0; i < 10; i++) {

@@ -38,8 +38,7 @@ void print(sequence* seq) {
 }
 
 int main() {
-  sequence seq;
-  seq.length = 0;
+  sequence seq = {0};
 
   for (int i = 0; i < 10; i++) {
     insert(&seq, i, i);
