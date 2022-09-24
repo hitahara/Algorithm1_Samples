@@ -3,140 +3,107 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * @brief データと二分木の2つの枝を保持する構造体.
- */
-typedef struct node node;
+typedef struct _node {
+  char element;
+  struct _node* left;
+  struct _node* right;
+} node;
 
-/**
- * @brief nodeのポインタ.
- */
-typedef node* tree;
+// NOTE:
+// 03/linear_list.c と同様に、node と tree を別の構造体
+// としており、講義スライドと異なるため注意してください。
+// pointer to pointer と dereference を省くことで可読性を
+// 上げていますが、再帰関数に対してはデメリットがあり、
+// tree 自体を渡すことができません。よって関数には
+// tree.root を渡しています。
+typedef struct {
+  node* root;
+} tree;
 
-struct node {
-  char element; /** char型で表されたデータ. */
-  tree left;    /** 左の枝のnodeのポインタ/tree. */
-  tree right;   /** 右の枝のnodeのポインタ/tree. */
-};
-
-/**
- * @brief nodeの初期化.
- * @return 初期化された,データやポインタが代入されていないnodeのポインタ.
- */
-node* init_node() {
-  node* c = (node*)malloc(sizeof(node));
-  return c;
+node* init_node(char element) {
+  node* n = (node*)malloc(sizeof(node));
+  n->element = element;
+  n->left = NULL;
+  n->right = NULL;
+  return n;
 }
 
-/**
- * @brief 引数のtreeをメモリ解放する.
- * @param[in] tree メモリ解放するtreeのポインタ.
- */
-void release_tree(tree* tree) {
-  if (*tree != NULL) {
-    release_tree(&(*tree)->left);
-    release_tree(&(*tree)->right);
-    free(*tree);
+void clear_node(node* n) {
+  if (n != NULL) {
+    clear_node(n->left);
+    clear_node(n->right);
+    free(n);
   }
-  (*tree) = NULL;
 }
 
-/**
- * @brief 事前決定された木の生成.
- * @return 生成された木の根本tree．
- */
+void clear_tree(tree* t) {
+  clear_node(t->root);
+  t->root = NULL;
+}
+
 tree create_tree() {
-  tree tree = init_node();
-  tree->element = '*';
-
-  node* l = init_node();
-  node* r = init_node();
-  tree->left = l;
-  tree->right = r;
-  l->element = '+';
-  r->element = '-';
-
-  l = init_node();
-  r = init_node();
-  tree->left->left = l;
-  tree->left->right = r;
-  l->element = 'a';
-  r->element = 'b';
-
-  l = init_node();
-  r = init_node();
-  tree->right->left = l;
-  tree->right->right = r;
-  l->element = 'c';
-  r->element = '/';
-
-  l = init_node();
-  r = init_node();
-  tree->right->right->left = l;
-  tree->right->right->right = r;
-  l->element = 'd';
-  r->element = 'e';
-
-  return tree;
+  tree t;
+  t.root = init_node('*');
+  t.root->left = init_node('+');
+  t.root->right = init_node('-');
+  t.root->left->left = init_node('a');
+  t.root->left->right = init_node('b');
+  t.root->right->left = init_node('c');
+  t.root->right->right = init_node('/');
+  t.root->right->right->left = init_node('d');
+  t.root->right->right->right = init_node('e');
+  return t;
 }
 
-/**
- * @brief 前順操作.
- * @param[in] p 操作する対象のtree.
- */
-void pre_order(tree p) {
+void pre_order(node* p) {
   if (p != NULL) {
-    // something
     printf("%c ", p->element);
-    // something
     pre_order(p->left);
     pre_order(p->right);
   }
 }
 
-/**
- * @brief 間順操作.
- * @param[in] p 操作する対象のtree.
- */
-void in_order(tree p) {
+void in_order(node* p) {
   if (p != NULL) {
     in_order(p->left);
-    // something
     printf("%c ", p->element);
-    // something
     in_order(p->right);
   }
 }
 
-/**
- * @brief 後順操作.
- * @param[in] p 操作する対象のtree.
- */
-void post_order(tree p) {
+void post_order(node* p) {
   if (p != NULL) {
     post_order(p->left);
     post_order(p->right);
-    // something
     printf("%c ", p->element);
-    // something
   }
 }
 
 int main() {
-  tree tree = create_tree();
+  tree t = create_tree();
 
-  pre_order(tree);
-  printf("\n");
+  printf("TREE: [ ");
+  pre_order(t.root);
+  printf("]\n");
 
-  in_order(tree);
-  printf("\n");
+  printf("TREE: [ ");
+  in_order(t.root);
+  printf("]\n");
 
-  post_order(tree);
-  printf("\n");
+  printf("TREE: [ ");
+  post_order(t.root);
+  printf("]\n");
 
-  release_tree(&tree);
-  pre_order(tree);
-  printf("\n");
+  clear_tree(&t);
+
+  printf("TREE: [ ");
+  pre_order(t.root);
+  printf("]\n");
 
   return 0;
 }
+
+// 実行結果
+// * + a b - c / d e
+// a + b * c - d / e
+// a b + c d e / - *
