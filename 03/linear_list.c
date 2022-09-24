@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 /**
  * @brief データと次のデータへのポインタを保持する構造体.
