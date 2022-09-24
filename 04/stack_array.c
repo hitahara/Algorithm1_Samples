@@ -19,8 +19,8 @@ void push(stack* stack, int val) {
     return;
   }
 
-  stack->length++;
   stack->elements[stack->length] = val;
+  stack->length++;
 }
 
 void pop(stack* stack, int* val) {
@@ -43,8 +43,7 @@ void print(stack* s) {
 }
 
 int main() {
-  stack s;
-  s.length = 0;
+  stack s = {0};
 
   for (int i = 0; i < 10; i++) {
     push(&s, i);
