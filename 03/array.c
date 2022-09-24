@@ -21,8 +21,8 @@ void insert(sequence* seq, int pos, int val) {
   seq->elements[pos] = val;
 }
 
-// NOTE: `delete` は C++ の予約語なので、念のため erase と書きます
-void erase(sequence* seq, int pos) {
+// NOTE: `delete` は C++ の予約語なので、念のため remove と書きます
+void remove(sequence* seq, int pos) {
   seq->length--;
   for (int i = pos; i < seq->length; i++) {
     seq->elements[i] = seq->elements[i + 1];
@@ -46,7 +46,7 @@ int main() {
   }
   print(&seq);
 
-  erase(&seq, 5);
+  remove(&seq, 5);
   print(&seq);
 
   return 0;
