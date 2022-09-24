@@ -16,3 +16,7 @@ jobs:
       - run: pwd
       - run: gcc -Wall -Wextra ./01/gcd_iterative.c
       - run: gcc -Wall -Wextra ./01/gcd_recursive.c
+      - run: gcc -Wall -Wextra ./02/linear_search.c
+      - run: gcc -Wall -Wextra ./02/binary_search.c
+      - run: gcc -Wall -Wextra ./03/array.c
+      - run: gcc -Wall -Wextra ./03/linear_list.c
