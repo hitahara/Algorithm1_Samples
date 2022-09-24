@@ -8,16 +8,6 @@ typedef struct {
   int elements[SIZE];
 } sequence;
 
-sequence* init_sequence() {
-  sequence* s = (sequence*)malloc(sizeof(sequence));
-  s->length = 0;
-  return s;
-}
-
-void release_sequence(sequence* seq) {
-  free(seq);
-}
-
 void insert_element(sequence* seq, int pos, int val) {
   if (seq->length >= SIZE) {
     printf("No more element can be inserted into elements.\n");
@@ -49,17 +39,17 @@ void print_sequence(sequence* seq) {
 }
 
 int main() {
-  sequence* array = init_sequence();
+  sequence array;
+  array.length = 0;
 
   for (int i = 0; i < 10; i++) {
-    insert_element(array, i, i);
+    insert_element(&array, i, i);
   }
-  print_sequence(array);
+  print_sequence(&array);
 
-  delete_element(array, 5);
-  print_sequence(array);
+  delete_element(&array, 5);
+  print_sequence(&array);
 
-  release_sequence(array);
   return 0;
 }
 
