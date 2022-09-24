@@ -43,7 +43,7 @@ void print(stack* s) {
 }
 
 int main() {
-  stack s = {0};
+  stack s = {0, {0}};
 
   for (int i = 0; i < 10; i++) {
     push(&s, i);
