@@ -44,13 +44,13 @@ int search(table* tab, int target) {
   return index < tab->length ? index : -1;
 }
 
-void insert_tail(table* tab, record* rec) {
+void insert_tail(table* tab, record rec) {
   if (tab->length >= MAX_RECORDS - 1) {
     printf("ERROR: No more record can be inserted into table.\n");
     return;
   }
 
-  tab->records[tab->length] = *rec;
+  tab->records[tab->length] = rec;
   tab->length++;
 }
 
@@ -69,7 +69,7 @@ void cli_insert_tail(table* tab) {
     if (search(tab, rec.key) != -1) {
       printf("The key is already used.\n");
     } else {
-      insert_tail(tab, &rec);
+      insert_tail(tab, rec);
       return;
     }
   }
@@ -96,7 +96,7 @@ int main() {
   table tab = {0};
   for (int i = 0; i < SAMPLE_RECORDS; i++) {
     record rec = {keys[i], "AAA"};
-    insert_tail(&tab, &rec);
+    insert_tail(&tab, rec);
   }
   print(&tab);
 
