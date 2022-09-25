@@ -75,7 +75,7 @@ void cli_insert_tail(table* tab) {
   }
 }
 
-void print_table(table* tab) {
+void print(table* tab) {
   printf("TABLE: [ ");
   for (int i = 0; i < tab->length; i++) {
     printf("{%d, %s} ", tab->records[i].key, tab->records[i].value);
@@ -98,11 +98,11 @@ int main() {
     record rec = {keys[i], "AAA"};
     insert_tail(&tab, &rec);
   }
-  print_table(&tab);
+  print(&tab);
 
   // insert user input
   cli_insert_tail(&tab);
-  print_table(&tab);
+  print(&tab);
 
   // search 3
   int index = search(&tab, 3);
@@ -111,7 +111,7 @@ int main() {
 
   // erase 3
   erase(&tab, index);
-  print_table(&tab);
+  print(&tab);
 
   // search 3
   index = search(&tab, 3);
@@ -120,3 +120,18 @@ int main() {
 
   return 0;
 }
+
+// 実行結果
+// TABLE: [ {4, AAA} {1, AAA} {0, AAA} {2, AAA} {3, AAA} ]
+// LENGTH: 5
+//
+// Type in a key (>= 0) and a field. (example: "100 BBB")
+// 100 B
+// TABLE: [ {4, AAA} {1, AAA} {0, AAA} {2, AAA} {3, AAA} {100, B} ]
+// LENGTH: 6
+//
+// 3 was AAA
+// TABLE: [ {4, AAA} {1, AAA} {0, AAA} {2, AAA} {100, B} ]
+// LENGTH: 5
+//
+// 3 was NOT FOUND.
