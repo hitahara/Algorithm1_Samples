@@ -25,3 +25,5 @@ jobs:
       - run: gcc -Wall -Wextra -Werror ./04/queue_array.c
       - run: gcc -Wall -Wextra -Werror ./04/queue_list.c
       - run: gcc -Wall -Wextra -Werror ./04/binary_tree.c
+      - run: gcc -Wall -Wextra -Werror ./05/linear_search_array.c
+      - run: gcc -Wall -Wextra -Werror ./05/linear_search_list.c
