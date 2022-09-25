@@ -42,13 +42,14 @@ record* init_record(int key, const char* value) {
 }
 
 void clear(table* tab) {
-  record* current = tab->header;
+  record* current = tab->header->next;
   while (current != tab->sentinel) {
     record* next = current->next;
     free(current);
     current = next;
   }
 
+  free(tab->header);
   free(tab->sentinel);
   tab->header = NULL;
   tab->sentinel = NULL;
@@ -104,10 +105,12 @@ void cli_insert_head(table* tab) {
 }
 
 void print(table* tab) {
-  int length = 0;
   printf("TABLE: [ ");
-  for (record* c = tab->header->next; c != tab->sentinel; c = c->next) {
-    printf("{%d, %s} ", c->key, c->value);
+  int length = 0;
+  record* current = tab->header->next;
+  while (current != tab->sentinel) {
+    printf("{%d, %s} ", current->key, current->value);
+    current = current->next;
     length++;
   }
   printf("]\n");
@@ -138,9 +141,9 @@ int main() {
   print(&tab);
 
   // search 3
-  record* ptr = search_previous(&tab, 3);
-  bool found = ptr != NULL;
-  printf("3 was %s\n", found ? ptr->value : "NOT FOUND.");
+  record* previous = search_previous(&tab, 3);
+  bool found = previous != NULL;
+  printf("3 was %s\n", found ? previous->next->value : "NOT FOUND.");
   print(&tab);
 
   // erase 3
@@ -148,9 +151,9 @@ int main() {
   print(&tab);
 
   // search 3
-  ptr = search_previous(&tab, 3);
-  found = ptr != NULL;
-  printf("3 was %s\n", found ? ptr->value : "NOT FOUND.");
+  previous = search_previous(&tab, 3);
+  found = previous != NULL;
+  printf("3 was %s\n", found ? previous->next->value : "NOT FOUND.");
 
   clear(&tab);
   return 0;
@@ -161,15 +164,15 @@ int main() {
 // LENGTH: 5
 //
 // Type in a key (>= 0) and a field. (example: "100 BBB")
-// 100 b
-// TABLE: [ {100, b} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
+// 100 B
+// TABLE: [ {100, B} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
 // LENGTH: 6
 //
-// 3 was b
-// TABLE: [ {100, b} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
+// 3 was AAA
+// TABLE: [ {100, B} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
 // LENGTH: 6
 //
-// TABLE: [ {100, b} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
+// TABLE: [ {100, B} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
 // LENGTH: 5
 //
 // 3 was NOT FOUND.
