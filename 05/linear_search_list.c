@@ -78,15 +78,11 @@ record* search_previous(table* tab, int target) {
   return found ? previous : NULL;
 }
 
-void erase_next(record* previous) {
-  record* p = previous->next;
-  previous->next = p->next;
-  free(p);
-}
-
 void erase_target(table* tab, int target) {
   record* previous = search_previous(tab, target);
-  erase_next(previous);
+  record* current = previous->next;
+  previous->next = current->next;
+  free(current);
 }
 
 void cli_insert_head(table* tab) {
