@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// int型: 恐らく64bitのシステムだとlong unsigned int, 32bitのシステムだとunsigned int.
 
 /**
  * @brief 指定されたintのポインタにある配列にfiesher-yates shuffle.
@@ -212,7 +211,7 @@ list search_previous(table* tab, int target) {
  * @brief tableからpreviousの次のlist／cellのポインタを削除
  * @param[in] previous previous->next==削除するlist／cellのポインタ
  */
-void delete_next(table* tab, list previous) {
+void delete_next(list previous) {
   list p = previous->next;
   previous->next = p->next;
   dispose(p);
@@ -225,7 +224,7 @@ void delete_next(table* tab, list previous) {
  */
 void delete_target(table* tab, int target) {
   list prev_l = search_previous(tab, target);
-  delete_next(tab, prev_l);
+  delete_next(prev_l);
 }
 
 /**
@@ -240,8 +239,8 @@ record* cli_record() {
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
-  while (key == (long unsigned int)-1) {
-    scanf("%zu", &key);
+  while (key == -1) {
+    scanf("%d", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
 
@@ -273,7 +272,7 @@ void cli_insert_head(table* tab) {
  * @param[in] rec プリントするrecordのポインタ.
  */
 void print_record(record* rec) {
-  printf("%08zu, %s\n", rec->key, rec->field);
+  printf("%d, %s\n", rec->key, rec->field);
 }
 
 /**
@@ -287,7 +286,7 @@ void print_table(table* tab) {
   for (list c = tab->header->next; c != tab->sentinel; c = c->next, record_count++) {
     print_record(c->rec);
   }
-  printf("]\nTABLE LENGTH: %ld\n", record_count);
+  printf("]\nTABLE LENGTH: %d\n", record_count);
   printf("================================\n");
 }
 
@@ -298,7 +297,7 @@ void print_table(table* tab) {
  */
 void print_search_existence(table* tab, int target) {
   bool b = search_existence(tab, target);
-  printf("\"%zu\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
+  printf("\"%d\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
 }
 
 int main() {
