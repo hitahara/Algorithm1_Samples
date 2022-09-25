@@ -2,15 +2,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// int型: 恐らく64bitのシステムだとlong unsigned int, 32bitのシステムだとunsigned int.
+
+void fisher_yates_shuffle(int* array, int array_size);
+
+typedef struct record record;
+typedef struct table table;  // array用のtable,list用と異なる.
+
+record* init_record(int key, const char* field);
+
+void insert_tail(table* tab, record* rec);
+void delete_record(table* tab, int pos);
+
+bool search_existence(table* tab, int target);
+int search_index(table* tab, int target);
+
+record* cli_record();
+void cli_insert_tail(table* tab);
+void print_record(record* rec);
+void print_table(table* tab);
+void print_search_existence(table* tab, int target);
 
 /**
- * @brief 指定されたintのポインタにある配列にfiesher-yates shuffle.
- * @param[in,out] array シャフルする配列であるintのポインタ.
- * @param[in] array_size シャッフルする配列のサイズ
+ * @brief 配列を fisher-yates shuffle.
  */
-void fisher_yates_shuffle(int* array, int array_size) {
-  int i = array_size;
+void fisher_yates_shuffle(int* array, int length) {
+  int i = length;
   while (i > 1) {
     int j = rand() % i;
     i--;
@@ -29,34 +45,18 @@ void fisher_yates_shuffle(int* array, int array_size) {
  */
 #define DEF_STRINGFY(def) STRINGFY(def)
 
-/**
- * @brief 配列がとれる最大バイト数.
- */
-#define MAX_ARRAY_MEMORY 65535
-/**
- * @brief レコードのフィールドのデータが占有できる最大バイト数.
- */
+#define MAX_RECORDS 1000
 #define MAX_FIELD_MEMORY 32
-/**
- * @brief サンプルで使用するrecordsの量
- */
 #define SAMPLE_RECORDS_SIZE 10
 
-/**
- * @brief レコード：keyとfieldをもった構造体
- */
 typedef struct record {
-  int key;                      /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
-  char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
+  int key;
+  char field[MAX_FIELD_MEMORY];
 } record;
 
-/**
- * @brief 表：recordの配列とそのメタデータを保持する構造体.
- */
 typedef struct table {
-  int records_length;                                /** 配列の長さ. */
-  int size;                                          /** 配列がとれる最大長. */
-  record records[MAX_ARRAY_MEMORY / sizeof(record)]; /** record型で表された配列. */
+  int length;
+  record records[MAX_RECORDS];
 } table;
 
 /**
@@ -79,54 +79,30 @@ record* init_record(int key, const char* field) {
 }
 
 /**
- * @brief tableの初期化.
- * @return 初期化されたtableのポインタ.
- */
-table* init_table() {
-  table* tab = (table*)malloc(sizeof(table));
-  tab->records_length = 0;
-  tab->size = MAX_ARRAY_MEMORY / sizeof(record);
-  return tab;
-}
-
-/**
- * @brief tableのメモリを解放.
- * @param[in] tab メモリを開放するtable.
- */
-void release_table(table* tab) {
-  free(tab);
-  tab = NULL;
-}
-
-/**
  * @brief tableのrecordsにtargetが存在するか調べる.
  * @param[in] tab targetが存在するか調べるtable.
  * @param[in] target 調べるキー.
  * @return targetがrecords内に存在するかを示すbool.
  */
 bool search_existence(table* tab, int target) {
-  tab->records[tab->records_length].key = target;
+  tab->records[tab->length].key = target;
   int searching_pos = 0;
-  // while(searching_pos < tab->records_length && target != tab->records[searching_pos].key)
   while (target != tab->records[searching_pos].key) {
     searching_pos++;
   }
-  return searching_pos < tab->records_length;
+  return searching_pos < tab->length;
 }
 
 /**
  * @brief tableのrecordsにtargetが存在するか調べ,存在する場合該当するキー,存在しない場合-1==2^64-1を返す.
- * @param[in] tab targetが存在するか調べるtable.
- * @param[in] target 調べるキー.
- * @return targetを指すキーか,無い場合は-1==2^64-1,恐らくシステムが32bitか64bitで変化(あくまで予想).
  */
 int search_index(table* tab, int target) {
-  tab->records[tab->records_length].key = target;
+  tab->records[tab->length].key = target;
   int searching_pos = 0;
   while (target != tab->records[searching_pos].key) {
     searching_pos++;
   }
-  return searching_pos < tab->records_length ? searching_pos : -1;
+  return searching_pos < tab->length ? searching_pos : -1;
 }
 
 /**
@@ -135,14 +111,13 @@ int search_index(table* tab, int target) {
  * @param[in] rec 挿入するrecord.
  */
 void insert_tail(table* tab, record* rec) {
-  if (tab->records_length >= tab->size - 1) {
+  if (tab->length >= MAX_RECORDS - 1) {
     printf("ERROR: No more record can be inserted into table.\n");
     return;
   }
 
-  // 0オリジン
-  tab->records[tab->records_length] = *rec;
-  tab->records_length++;
+  tab->records[tab->length] = *rec;
+  tab->length++;
 }
 
 /**
@@ -151,40 +126,24 @@ void insert_tail(table* tab, record* rec) {
  * @param[in] pos 削除するrecordsの位置.
  */
 void delete_record(table* tab, int pos) {
-  for (int i = pos; i < tab->records_length - 1; i++) {
+  for (int i = pos; i < tab->length - 1; i++) {
     tab->records[i] = tab->records[i + 1];
   }
-  tab->records_length--;
+  tab->length--;
 }
 
-/**
- * @brief cliからrecordの内容を読み取りrecordに格納.
- * @return cliから読み取った内容で生成したrecordのポインタ
- */
 record* cli_record() {
-  record* rec;
-  int key = -1;
-  char field[MAX_FIELD_MEMORY];
-
-  printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
-  printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
-
-  while (key == (long unsigned int)-1) {
-    scanf("%zu", &key);
-  }
-  scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
-
-  rec = init_record(key, field);
-
+  printf("Type in a key (>= 0) and a field. (example: \"100 BBB\")\n");
+  record* rec = (record*)malloc(sizeof(record));
+  scanf("%d %s", &rec->key, rec->field);
   return rec;
 }
 
 /**
  * @brief cliからrecordの内容を読み取り,tableの末尾に挿入.
- * @param[in] tab 挿入対象のrecordsをもつtableのポインタ.
  */
 void cli_insert_tail(table* tab) {
-  printf("ENETER A RECORD THAT WILL BE INSERTED AT THE TAIL.\n");
+  printf("Enter a record that will be inserted at the tail.\n");
   record* scanned_rec = NULL;
   while (true) {
     scanned_rec = cli_record();
@@ -197,36 +156,26 @@ void cli_insert_tail(table* tab) {
   insert_tail(tab, scanned_rec);
 }
 
-/**
- * @brief record確認用プリント関数.
- * @param[in] rec プリントするrecordのポインタ.
- */
 void print_record(record* rec) {
-  printf("%08zu, %s\n", rec->key, rec->field);
+  printf("%d, %s\n", rec->key, rec->field);
 }
 
-/**
- * @brief table確認用プリント関数.
- * @param[in] tab プリントする配列をもつtableのポインタ.
- */
 void print_table(table* tab) {
   printf("================================\n");
   printf("TABLE: [\n");
-  for (int i = 0; i < tab->records_length; i++) {
+  for (int i = 0; i < tab->length; i++) {
     print_record(&tab->records[i]);
   }
-  printf("]\nTABLE LENGTH: %ld\n", tab->records_length);
+  printf("]\nLENGTH: %d\n", tab->length);
   printf("================================\n");
 }
 
 /**
  * @brief search_existence確認用プリント関数.
- * @param[in] tab targetが存在するか調べるtable.
- * @param[in] target 調べるキー.
  */
 void print_search_existence(table* tab, int target) {
   bool b = search_existence(tab, target);
-  printf("\"%zu\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
+  printf("\"%d\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
 }
 
 int main() {
@@ -236,23 +185,24 @@ int main() {
   }
   fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
 
-  table* tab = init_table();
+  table tab;
+  tab.length = 0;
+
   record* rec = NULL;
   for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
     rec = init_record(keys[i], "AAA");
-    insert_tail(tab, rec);
+    insert_tail(&tab, rec);
   }
 
-  cli_insert_tail(tab);
+  cli_insert_tail(&tab);
 
-  print_table(tab);
-  print_search_existence(tab, 5);
+  print_table(&tab);
+  print_search_existence(&tab, 5);
 
-  delete_record(tab, search_index(tab, 5));
+  delete_record(&tab, search_index(&tab, 5));
 
-  print_table(tab);
-  print_search_existence(tab, 5);
+  print_table(&tab);
+  print_search_existence(&tab, 5);
 
-  release_table(tab);
   return 0;
 }
