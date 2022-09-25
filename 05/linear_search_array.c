@@ -11,7 +11,7 @@ typedef struct table table;  // array用のtable,list用と異なる.
 record* init_record(int key, const char* field);
 
 void insert_tail(table* tab, record* rec);
-void delete_record(table* tab, int pos);
+void erase(table* tab, int pos);
 
 bool search_existence(table* tab, int target);
 int search_index(table* tab, int target);
@@ -61,9 +61,6 @@ typedef struct table {
 
 /**
  * @brief recordの初期化.
- * @param[in] key 指定するキー.
- * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
- * @return 初期化されたrecordのポインタ.
  */
 record* init_record(int key, const char* field) {
   if (strlen(field) > MAX_FIELD_MEMORY + 1) {
@@ -125,7 +122,7 @@ void insert_tail(table* tab, record* rec) {
  * @param[in] tab 削除対象のrecordsをもつtableのポインタ.
  * @param[in] pos 削除するrecordsの位置.
  */
-void delete_record(table* tab, int pos) {
+void erase(table* tab, int pos) {
   for (int i = pos; i < tab->length - 1; i++) {
     tab->records[i] = tab->records[i + 1];
   }
@@ -144,16 +141,15 @@ record* cli_record() {
  */
 void cli_insert_tail(table* tab) {
   printf("Enter a record that will be inserted at the tail.\n");
-  record* scanned_rec = NULL;
   while (true) {
-    scanned_rec = cli_record();
-    if (search_existence(tab, scanned_rec->key)) {
+    record* rec = cli_record();
+    if (search_existence(tab, rec->key)) {
       printf("The key is already used.\n");
     } else {
-      break;
+      insert_tail(tab, rec);
+      return;
     }
   }
-  insert_tail(tab, scanned_rec);
 }
 
 void print_record(record* rec) {
@@ -185,12 +181,10 @@ int main() {
   }
   fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
 
-  table tab;
-  tab.length = 0;
+  table tab = {.length = 0};
 
-  record* rec = NULL;
   for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
-    rec = init_record(keys[i], "AAA");
+    record* rec = init_record(keys[i], "AAA");
     insert_tail(&tab, rec);
   }
 
@@ -199,7 +193,7 @@ int main() {
   print_table(&tab);
   print_search_existence(&tab, 5);
 
-  delete_record(&tab, search_index(&tab, 5));
+  erase(&tab, search_index(&tab, 5));
 
   print_table(&tab);
   print_search_existence(&tab, 5);
