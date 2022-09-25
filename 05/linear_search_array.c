@@ -3,39 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void fisher_yates_shuffle(int* array, int array_size);
-
-typedef struct record record;
-typedef struct table table;  // array用のtable,list用と異なる.
-
-record* init_record(int key, const char* field);
-
-void insert_tail(table* tab, record* rec);
-void erase(table* tab, int pos);
-
-bool search_existence(table* tab, int target);
-int search_index(table* tab, int target);
-
-record* cli_record();
-void cli_insert_tail(table* tab);
-void print_record(record* rec);
-void print_table(table* tab);
-void print_search_existence(table* tab, int target);
-
-/**
- * @brief 配列を fisher-yates shuffle.
- */
-void fisher_yates_shuffle(int* array, int length) {
-  int i = length;
-  while (i > 1) {
-    int j = rand() % i;
-    i--;
-    int t = array[i];
-    array[i] = array[j];
-    array[j] = t;
-  }
-}
-
 /**
  * @brief 文字列化.
  */
@@ -59,20 +26,31 @@ typedef struct table {
   record records[MAX_RECORDS];
 } table;
 
+void fisher_yates_shuffle(int* array, int array_size);
+
+void insert_tail(table* tab, record* rec);
+void erase(table* tab, int pos);
+
+bool search_existence(table* tab, int target);
+int search_index(table* tab, int target);
+
+record* cli_record();
+void cli_insert_tail(table* tab);
+void print_table(table* tab);
+void print_search_existence(table* tab, int target);
+
 /**
- * @brief recordの初期化.
+ * @brief 配列を fisher-yates shuffle.
  */
-record* init_record(int key, const char* field) {
-  if (strlen(field) > MAX_FIELD_MEMORY + 1) {
-    fprintf(stderr, "ERROR: \"field\" is too large.\n");
-    exit(1);
+void fisher_yates_shuffle(int* array, int length) {
+  int i = length;
+  while (i > 1) {
+    int j = rand() % i;
+    i--;
+    int t = array[i];
+    array[i] = array[j];
+    array[j] = t;
   }
-
-  record* rec = (record*)malloc(sizeof(record));
-  rec->key = key;
-  strncpy(rec->field, field, MAX_FIELD_MEMORY);
-
-  return rec;
 }
 
 /**
@@ -104,8 +82,6 @@ int search_index(table* tab, int target) {
 
 /**
  * @brief tableのrecordsの末尾にデータを挿入する.
- * @param[in] tab 挿入対象のrecordsをもつtableのポインタ.
- * @param[in] rec 挿入するrecord.
  */
 void insert_tail(table* tab, record* rec) {
   if (tab->length >= MAX_RECORDS - 1) {
@@ -119,8 +95,6 @@ void insert_tail(table* tab, record* rec) {
 
 /**
  * @brief tableのrecordsの位置posを削除する.
- * @param[in] tab 削除対象のrecordsをもつtableのポインタ.
- * @param[in] pos 削除するrecordsの位置.
  */
 void erase(table* tab, int pos) {
   for (int i = pos; i < tab->length - 1; i++) {
@@ -152,18 +126,13 @@ void cli_insert_tail(table* tab) {
   }
 }
 
-void print_record(record* rec) {
-  printf("%d, %s\n", rec->key, rec->field);
-}
-
 void print_table(table* tab) {
-  printf("================================\n");
-  printf("TABLE: [\n");
+  printf("TABLE: [ ");
   for (int i = 0; i < tab->length; i++) {
-    print_record(&tab->records[i]);
+    printf("{%d, %s} ", tab->records[i].key, tab->records[i].field);
   }
-  printf("]\nLENGTH: %d\n", tab->length);
-  printf("================================\n");
+  printf("]\n");
+  printf("LENGTH: %d\n", tab->length);
 }
 
 /**
@@ -181,21 +150,22 @@ int main() {
   }
   fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
 
-  table tab = {.length = 0};
+  table tab = {0};
 
+  // add default records
   for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
-    record* rec = init_record(keys[i], "AAA");
-    insert_tail(&tab, rec);
+    record rec = {keys[i], "AAA"};
+    insert_tail(&tab, &rec);
   }
+  print_table(&tab);
 
   cli_insert_tail(&tab);
-
   print_table(&tab);
+
   print_search_existence(&tab, 5);
-
   erase(&tab, search_index(&tab, 5));
-
   print_table(&tab);
+
   print_search_existence(&tab, 5);
 
   return 0;
