@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// NOTE:
+// この構造体ではメンバにこの構造体自身を持たせる必要があります。
+// いままでのように typedef struct {} name; と書くと、メンバ
+// 宣言時点で構造体の名前が存在しないため定義できません。よって
+// 仮の構造体名を先に付けておき、あとから typedef で正しい名前を
+// つけています。
 typedef struct _cell {
   int element;
   struct _cell* next;
