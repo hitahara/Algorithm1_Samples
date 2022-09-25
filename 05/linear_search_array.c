@@ -13,12 +13,12 @@
 #define DEF_STRINGFY(def) STRINGFY(def)
 
 #define MAX_RECORDS 1000
-#define MAX_FIELD_MEMORY 32
+#define MAX_VALUE_SIZE 32
 #define SAMPLE_RECORDS_SIZE 10
 
 typedef struct record {
   int key;
-  char field[MAX_FIELD_MEMORY];
+  char value[MAX_VALUE_SIZE];
 } record;
 
 typedef struct table {
@@ -26,18 +26,15 @@ typedef struct table {
   record records[MAX_RECORDS];
 } table;
 
-void fisher_yates_shuffle(int* array, int array_size);
+void fisher_yates_shuffle(int*, int);
 
-void insert_tail(table* tab, record* rec);
-void erase(table* tab, int pos);
+void insert_tail(table*, record*);
+void erase(table*, int);
 
-bool search_existence(table* tab, int target);
-int search_index(table* tab, int target);
+int search(table*, int);
 
-record* cli_record();
-void cli_insert_tail(table* tab);
-void print_table(table* tab);
-void print_search_existence(table* tab, int target);
+void cli_insert_tail(table*);
+void print_table(table*);
 
 /**
  * @brief 配列を fisher-yates shuffle.
@@ -54,24 +51,9 @@ void fisher_yates_shuffle(int* array, int length) {
 }
 
 /**
- * @brief tableのrecordsにtargetが存在するか調べる.
- * @param[in] tab targetが存在するか調べるtable.
- * @param[in] target 調べるキー.
- * @return targetがrecords内に存在するかを示すbool.
- */
-bool search_existence(table* tab, int target) {
-  tab->records[tab->length].key = target;
-  int searching_pos = 0;
-  while (target != tab->records[searching_pos].key) {
-    searching_pos++;
-  }
-  return searching_pos < tab->length;
-}
-
-/**
  * @brief tableのrecordsにtargetが存在するか調べ,存在する場合該当するキー,存在しない場合-1==2^64-1を返す.
  */
-int search_index(table* tab, int target) {
+int search(table* tab, int target) {
   tab->records[tab->length].key = target;
   int searching_pos = 0;
   while (target != tab->records[searching_pos].key) {
@@ -103,24 +85,18 @@ void erase(table* tab, int pos) {
   tab->length--;
 }
 
-record* cli_record() {
-  printf("Type in a key (>= 0) and a field. (example: \"100 BBB\")\n");
-  record* rec = (record*)malloc(sizeof(record));
-  scanf("%d %s", &rec->key, rec->field);
-  return rec;
-}
-
 /**
  * @brief cliからrecordの内容を読み取り,tableの末尾に挿入.
  */
 void cli_insert_tail(table* tab) {
-  printf("Enter a record that will be inserted at the tail.\n");
+  printf("Type in a key (>= 0) and a field. (example: \"100 BBB\")\n");
   while (true) {
-    record* rec = cli_record();
-    if (search_existence(tab, rec->key)) {
+    record rec;
+    scanf("%d %s", &rec.key, rec.value);
+    if (search(tab, rec.key) != -1) {
       printf("The key is already used.\n");
     } else {
-      insert_tail(tab, rec);
+      insert_tail(tab, &rec);
       return;
     }
   }
@@ -129,18 +105,10 @@ void cli_insert_tail(table* tab) {
 void print_table(table* tab) {
   printf("TABLE: [ ");
   for (int i = 0; i < tab->length; i++) {
-    printf("{%d, %s} ", tab->records[i].key, tab->records[i].field);
+    printf("{%d, %s} ", tab->records[i].key, tab->records[i].value);
   }
   printf("]\n");
-  printf("LENGTH: %d\n", tab->length);
-}
-
-/**
- * @brief search_existence確認用プリント関数.
- */
-void print_search_existence(table* tab, int target) {
-  bool b = search_existence(tab, target);
-  printf("\"%d\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
+  printf("LENGTH: %d\n\n", tab->length);
 }
 
 int main() {
@@ -148,7 +116,7 @@ int main() {
   for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
     keys[i] = i;
   }
-  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
+  fisher_yates_shuffle(keys, SAMPLE_RECORDS_SIZE);
 
   table tab = {0};
 
@@ -162,11 +130,14 @@ int main() {
   cli_insert_tail(&tab);
   print_table(&tab);
 
-  print_search_existence(&tab, 5);
-  erase(&tab, search_index(&tab, 5));
+  bool found = search(&tab, 5) != -1;
+  printf("5 was %s\n", found ? "FOUND." : "NOT FOUND.");
+
+  erase(&tab, search(&tab, 5));
   print_table(&tab);
 
-  print_search_existence(&tab, 5);
+  found = search(&tab, 5) != -1;
+  printf("5 was %s\n", found ? "FOUND." : "NOT FOUND.");
 
   return 0;
 }
