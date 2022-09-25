@@ -3,328 +3,173 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * @brief 指定されたintのポインタにある配列にfiesher-yates shuffle.
- * @param[in,out] array シャフルする配列であるintのポインタ.
- * @param[in] array_size シャッフルする配列のサイズ
- */
-void fisher_yates_shuffle(int* array, int array_size) {
-  int i = array_size;
+#define MAX_VALUE_SIZE 32
+#define SAMPLE_RECORDS_SIZE 5
+
+void swap(int* a, int* b) {
+  int tmp = *a;
+  *a = *b;
+  *b = tmp;
+  return;
+}
+
+// NOTE: Fisher–Yates shuffle というアルゴリズムを使います
+void shuffle(int* array, int length) {
+  int i = length;
   while (i > 1) {
-    int j = rand() % i;
-    i--;
-    int t = array[i];
-    array[i] = array[j];
-    array[j] = t;
+    int j = rand() % i--;
+    swap(&array[i], &array[j]);
   }
 }
 
-/**
- * @brief 文字列化.
- */
-#define STRINGFY(s) #s
-/**
- * @brief 定義された値に変化しSTRINGFY.
- */
-#define DEF_STRINGFY(def) STRINGFY(def)
-
-/**
- * @brief レコードのフィールドのデータが占有できる最大バイト数.
- */
-#define MAX_FIELD_MEMORY 32
-/**
- * @brief サンプルで使用するrecordsの量.
- */
-#define SAMPLE_RECORDS_SIZE 10
-
-/**
- * @brief レコード：keyとfieldをもった構造体.
- */
-typedef struct record {
-  int key;                      /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
-  char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
+typedef struct _record {
+  int key;
+  char value[MAX_VALUE_SIZE];
+  struct _record* next;
 } record;
 
-/**
- * @brief データと次のcellを保持する構造体.
- */
-typedef struct cell {
-  record* rec;       /** record型で表されたデータ. */
-  struct cell* next; /** 次のcellを指すポインタ. */
-} cell;
-
-/**
- * @brief cellのポインタの型.
- */
-typedef cell* list;
-
-/**
- * @brief  表：先頭と末尾のダミーlistを保持する構造体.
- */
-typedef struct table {
-  list header;
-  list sentinel;
+typedef struct {
+  record* header;
+  record* sentinel;
 } table;
 
-/**
- * @brief recordの初期化.
- * @param[in] key 指定するキー.
- * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
- * @return 初期化されたrecordのポインタ.
- */
-record* init_record(int key, const char* field) {
-  if (strlen(field) > MAX_FIELD_MEMORY + 1) {
-    fprintf(stderr, "ERROR: \"field\" is too large.\n");
-    exit(1);
-  }
-
+record* init_record(int key, const char* value) {
   record* rec = (record*)malloc(sizeof(record));
+  rec->next = NULL;
   rec->key = key;
-  strncpy(rec->field, field, MAX_FIELD_MEMORY);
-
+  strcpy(rec->value, value);
   return rec;
 }
 
-/**
- * @brief cellの初期化.
- * @return 初期化された,データやポインタが代入されていないcellのポインタ.
- */
-cell* init_cell(record* rec) {
-  cell* c = (cell*)malloc(sizeof(cell));
-  c->rec = rec;
-  return c;
-}
-
-/**
- * @brief listの初期化.
- * @return NULLのlist.
- */
-list init_list() {
-  record* rec = init_record(-1, "FAKE");
-  list l = init_cell(rec);
-  return l;
-}
-
-/**
- * @brief tableの初期化.
- * @return 初期化されたheaderとsentinelをもったtableのポインタ.
- */
-table* init_table() {
-  table* tab = (table*)malloc(sizeof(table));
-  tab->sentinel = init_list();
-  tab->header = init_list();
-  tab->header->next = tab->sentinel;
-  return tab;
-}
-
-/**
- * @brief 引数のcellを削除する.
- * @param[in] c 削除するcellのポインタ.
- */
-void dispose(cell* c) {
-  free(c->rec);
-  c->rec = NULL;
-  free(c);
-  c = NULL;
-}
-
-/**
- * @brief tableのメモリ解放する.
- * @param[in] tab メモリ解放するtableのポインタ.
- */
-void release_table(table* tab) {
-  list disposing_cell = tab->header->next;
-  list next_cell = NULL;
-  for (; disposing_cell != tab->sentinel;) {
-    next_cell = disposing_cell->next;
-    dispose(disposing_cell);
-    disposing_cell = next_cell;
+void clear(table* tab) {
+  record* current = tab->header;
+  while (current != tab->sentinel) {
+    record* next = current->next;
+    free(current);
+    current = next;
   }
 
-  dispose(tab->header);
-  dispose(tab->sentinel);
-
-  free(tab);
-  tab = NULL;
+  free(tab->sentinel);
+  tab->header = NULL;
+  tab->sentinel = NULL;
 }
 
-/**
- * @brief tableのリストの先頭にlist／cellのポインタを挿入する.
- * @param[in] tab 挿入対象のリストをもつtableのポインタ.
- * @param[in] p 挿入するlist／cellのポインタ.
- */
-void insert_head_list(table* tab, list p) {
+void insert_head(table* tab, record* p) {
   p->next = tab->header->next;
   tab->header->next = p;
 }
-/**
- * @brief tableのリストの先頭にデータを挿入する.
- * @param[in] tab 挿入対象のリストをもつtableのポインタ.
- * @param[in] rec 挿入するrecord.
- */
-void insert_head_record(table* tab, record* rec) {
-  list p = init_cell(rec);
-  insert_head_list(tab, p);
-}
 
-/**
- * @brief tableのリストにtargetが存在するか調べる.
- * @param[in] tab targetが存在するか調べるtable.
- * @param[in] target 調べるキー.
- * @return targetがrecords内に存在するかを示すbool.
- */
-bool search_existence(table* tab, int target) {
-  tab->sentinel->rec->key = target;
-  list previous = tab->header;
-  list p = tab->header->next;
-  while (target != p->rec->key) {
-    previous = p;
-    p = p->next;
+record* search_previous(table* tab, int target) {
+  tab->sentinel->key = target;
+  record* previous = tab->header;
+  record* current = tab->header->next;
+  while (target != current->key) {
+    previous = current;
+    current = current->next;
   }
-  bool found = p != tab->sentinel;
-  if (found) {
-    previous->next = p->next;
-    insert_head_list(tab, p);
-  }
-  return found;
-}
+  bool found = current != tab->sentinel;
 
-/**
- * @brief tableのリストにtargetを探し，存在する場合その前のlist／cellのポインタを返す.
- * @param[in] tab targetが存在するか調べるtable.
- * @param[in] target 調べるキー.
- * @return targetを示すlistを指すlistを返す.
- */
-list search_previous(table* tab, int target) {
-  tab->sentinel->rec->key = target;
-  list previous = tab->header;
-  list p = tab->header->next;
-  while (target != p->rec->key) {
-    previous = p;
-    p = p->next;
-  }
-  bool found = p != tab->sentinel;
+  // NOTE: コメントアウトを外すと自己再構成リストになります
+  // if (found) {
+  //   previous->next = current->next;
+  //   insert_head(tab, current);
+  // }
   return found ? previous : NULL;
 }
 
-/**
- * @brief tableからpreviousの次のlist／cellのポインタを削除
- * @param[in] previous previous->next==削除するlist／cellのポインタ
- */
-void delete_next(list previous) {
-  list p = previous->next;
+void erase_next(record* previous) {
+  record* p = previous->next;
   previous->next = p->next;
-  dispose(p);
+  free(p);
 }
 
-/**
- * @brief tableのリストにtargetを探し，存在する場合はリストから削除.
- * @param[in] tab targetが存在するか調べるtable.
- * @param[in] target 削除するキー.
- */
-void delete_target(table* tab, int target) {
-  list prev_l = search_previous(tab, target);
-  delete_next(prev_l);
+void erase_target(table* tab, int target) {
+  record* previous = search_previous(tab, target);
+  erase_next(previous);
 }
 
-/**
- * @brief cliからrecordの内容をsscanf_s.
- * @return cliから読み取った内容で生成したrecordのポインタ
- */
-record* cli_record() {
-  record* rec;
-  int key = -1;
-  char field[MAX_FIELD_MEMORY];
-
-  printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
-  printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
-
-  while (key == -1) {
-    scanf("%d", &key);
-  }
-  scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
-
-  rec = init_record(key, field);
-
-  return rec;
-}
-
-/**
- * @brief cliからrecordの内容を読み取り,tableの先頭に挿入.
- * @param[in] tab 挿入対象のrecordsをもつtableのポインタ.
- */
 void cli_insert_head(table* tab) {
-  printf("ENETER A RECORD THAT WILL BE INSERTED AT THE HEAD.\n");
-  record* scanned_rec = NULL;
+  printf("Type in a key (>= 0) and a field. (example: \"100 BBB\")\n");
   while (true) {
-    scanned_rec = cli_record();
-    if (search_existence(tab, scanned_rec->key)) {
+    record* rec = init_record(-1, "");
+    scanf("%d %s", &rec->key, rec->value);
+
+    if (search_previous(tab, rec->key) != NULL) {
       printf("The key is already used.\n");
     } else {
-      break;
+      insert_head(tab, rec);
+      return;
     }
   }
-  insert_head_record(tab, scanned_rec);
 }
 
-/**
- * @brief record確認用プリント関数.
- * @param[in] rec プリントするrecordのポインタ.
- */
-void print_record(record* rec) {
-  printf("%d, %s\n", rec->key, rec->field);
-}
-
-/**
- * @brief table確認用プリント関数.
- * @param[in] tab プリントするリストをもつtableのポインタ.
- */
-void print_table(table* tab) {
-  int record_count = 0;
-  printf("================================\n");
-  printf("TABLE: [\n");
-  for (list c = tab->header->next; c != tab->sentinel; c = c->next, record_count++) {
-    print_record(c->rec);
+void print(table* tab) {
+  int length = 0;
+  printf("TABLE: [ ");
+  for (record* c = tab->header->next; c != tab->sentinel; c = c->next) {
+    printf("{%d, %s} ", c->key, c->value);
+    length++;
   }
-  printf("]\nTABLE LENGTH: %d\n", record_count);
-  printf("================================\n");
-}
-
-/**
- * @brief search_existence確認用プリント関数.
- * @param[in] tab targetが存在するか調べるtable.
- * @param[in] target 調べるキー.
- */
-void print_search_existence(table* tab, int target) {
-  bool b = search_existence(tab, target);
-  printf("\"%d\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
+  printf("]\n");
+  printf("LENGTH: %d\n\n", length);
 }
 
 int main() {
+  // shuffle keys ([0...4])
   int keys[SAMPLE_RECORDS_SIZE];
   for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
     keys[i] = i;
   }
-  fisher_yates_shuffle(keys, sizeof(keys) / sizeof(int));
+  shuffle(keys, sizeof(keys) / sizeof(int));
 
-  table* tab = init_table();
-  record* rec = NULL;
+  // create table
+  table tab;
+  tab.sentinel = init_record(-1, "");
+  tab.header = init_record(-1, "");
+  tab.header->next = tab.sentinel;
   for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
-    rec = init_record(keys[i], "AAA");
-    insert_head_record(tab, rec);
+    record* rec = init_record(keys[i], "AAA");
+    insert_head(&tab, rec);
   }
+  print(&tab);
 
-  cli_insert_head(tab);
+  // insert user input
+  cli_insert_head(&tab);
+  print(&tab);
 
-  print_table(tab);
-  print_search_existence(tab, 5);
-  print_table(tab);
+  // search 3
+  record* ptr = search_previous(&tab, 3);
+  bool found = ptr != NULL;
+  printf("3 was %s\n", found ? ptr->value : "NOT FOUND.");
+  print(&tab);
 
-  delete_target(tab, 5);
+  // erase 3
+  erase_target(&tab, 3);
+  print(&tab);
 
-  print_table(tab);
-  print_search_existence(tab, 5);
+  // search 3
+  ptr = search_previous(&tab, 3);
+  found = ptr != NULL;
+  printf("3 was %s\n", found ? ptr->value : "NOT FOUND.");
 
-  release_table(tab);
+  clear(&tab);
   return 0;
 }
+
+// 実行結果
+// TABLE: [ {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
+// LENGTH: 5
+//
+// Type in a key (>= 0) and a field. (example: "100 BBB")
+// 100 b
+// TABLE: [ {100, b} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
+// LENGTH: 6
+//
+// 3 was b
+// TABLE: [ {100, b} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
+// LENGTH: 6
+//
+// TABLE: [ {100, b} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
+// LENGTH: 5
+//
+// 3 was NOT FOUND.
