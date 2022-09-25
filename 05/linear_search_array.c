@@ -7,12 +7,12 @@
 #define MAX_VALUE_SIZE 32
 #define SAMPLE_RECORDS 5
 
-typedef struct record {
+typedef struct {
   int key;
   char value[MAX_VALUE_SIZE];
 } record;
 
-typedef struct table {
+typedef struct {
   int length;
   record records[MAX_RECORDS];
 } table;
