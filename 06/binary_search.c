@@ -180,7 +180,7 @@ void insert_record(table *tab, record *rec) {
  */
 void delete_record(table *tab, int pos) {
   if (pos == (int)-1) {
-    printf("Valid pos was not set to delte. pos=\"%zu\".\n", pos);
+    printf("Valid pos was not set to delte. pos=\"%d\".\n", pos);
     return;
   }
   for (int i = pos; i < tab->records_length - 1; i++) {
@@ -201,8 +201,8 @@ record *cli_record() {
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
-  while (key == (long unsigned int)-1) {
-    scanf("%zu", &key);
+  while (key == -1) {
+    scanf("%d", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
 
@@ -237,7 +237,7 @@ void cli_insert(table *tab) {
  * @param[in] rec プリントするrecordのポインタ.
  */
 void print_record(record *rec) {
-  printf("%08zu, \"%s\"\n", rec->key, rec->field);
+  printf("%d, \"%s\"\n", rec->key, rec->field);
 }
 
 /**
@@ -250,7 +250,7 @@ void print_table(table *tab) {
   for (int i = 0; i < tab->records_length; i++) {
     print_record(&tab->records[i]);
   }
-  printf("]\nTABLE LENGTH: %ld\n", tab->records_length);
+  printf("]\nTABLE LENGTH: %d\n", tab->records_length);
   printf("================================\n");
 }
 
@@ -263,7 +263,7 @@ void print_search_existence(table *tab, int target) {
   bool b = false;
   int dummy;
   binary_search_existence_and_index(tab, target, &b, &dummy);
-  printf("\"%zu\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
+  printf("\"%d\" was %s\n", target, b ? "FOUND." : "NOT FOUND.");
 }
 
 int main() {
