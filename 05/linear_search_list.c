@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define MAX_VALUE_SIZE 32
-#define SAMPLE_RECORDS_SIZE 5
+#define INITIAL_NUM_RECORDS 5
 
 void swap(int* a, int* b) {
   int tmp = *a;
@@ -115,8 +115,8 @@ void print(table* tab) {
 
 int main() {
   // shuffle keys ([0...4])
-  int keys[SAMPLE_RECORDS_SIZE];
-  for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
+  int keys[INITIAL_NUM_RECORDS];
+  for (int i = 0; i < INITIAL_NUM_RECORDS; i++) {
     keys[i] = i;
   }
   shuffle(keys, sizeof(keys) / sizeof(int));
@@ -126,7 +126,7 @@ int main() {
   tab.sentinel = init_record(-1, "");
   tab.header = init_record(-1, "");
   tab.header->next = tab.sentinel;
-  for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
+  for (int i = 0; i < INITIAL_NUM_RECORDS; i++) {
     record* rec = init_record(keys[i], "AAA");
     insert_head(&tab, rec);
   }

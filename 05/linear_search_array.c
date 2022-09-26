@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_RECORDS 1000
+#define MAX_NUM_RECORDS 1000
 #define MAX_VALUE_SIZE 32
 #define SAMPLE_RECORDS 5
 
@@ -14,7 +14,7 @@ typedef struct {
 
 typedef struct {
   int length;
-  record records[MAX_RECORDS];
+  record records[MAX_NUM_RECORDS];
 } table;
 
 void swap(int* a, int* b) {
@@ -45,7 +45,7 @@ int search(table* tab, int target) {
 }
 
 void insert_tail(table* tab, record rec) {
-  if (tab->length >= MAX_RECORDS - 1) {
+  if (tab->length >= MAX_NUM_RECORDS - 1) {
     printf("ERROR: No more record can be inserted into table.\n");
     return;
   }

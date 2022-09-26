@@ -23,7 +23,7 @@
 /**
  * @brief サンプルで使用するrecordsの量
  */
-#define SAMPLE_RECORDS_SIZE 10
+#define INITIAL_NUM_RECORDS 10
 
 /**
  * @brief レコード：keyとfieldをもった構造体
@@ -269,7 +269,7 @@ void print_search_existence(table *tab, int target) {
 int main() {
   table *tab = init_table();
   record *rec = NULL;
-  for (int i = 0; i < SAMPLE_RECORDS_SIZE; i++) {
+  for (int i = 0; i < INITIAL_NUM_RECORDS; i++) {
     rec = init_record(i, "AAA");
     insert_record(tab, rec);
   }

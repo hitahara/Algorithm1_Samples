@@ -42,7 +42,7 @@ record *cli_record();
 /**
  * @brief サンプルで使用するrecordsの量
  */
-#define SAMPLE_RECORDS_SIZE 10
+#define INITIAL_NUM_RECORDS 10
 
 /**
  * @brief レコード：keyとfieldをもった構造体
