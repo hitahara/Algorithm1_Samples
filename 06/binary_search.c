@@ -17,27 +17,6 @@ typedef struct {
   record records[MAX_NUM_RECORDS];
 } table;
 
-void swap(int* a, int* b) {
-  int tmp = *a;
-  *a = *b;
-  *b = tmp;
-  return;
-}
-
-// NOTE: Fisher–Yates shuffle というアルゴリズムを使います
-void shuffle(int* array, int length) {
-  int i = length;
-  while (i > 1) {
-    int j = rand() % i--;
-    swap(&array[i], &array[j]);
-  }
-}
-
-typedef struct {
-  bool found;
-  int index;
-} result;
-
 // NOTE: key 以上となる値が現れる最小の index を返します
 // もし index が tab->length であれば条件を満たす値が存在しません
 // この仕様は C++ の std::lower_bound に準拠しています
