@@ -3,22 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+// NOTE: list では 可読性のために node と list を
+// 別の構造体にしていました。しかし、別の構造体に
+// すると再帰関数を定義できないというデメリットがあります。
+// 今回の木構造では再帰関数が多用されるため別の構造体に
+// しません。サンプルでは混乱回避のために tree 自体を定義
+// しませんが typedef を使うと講義スライドと同様になります。
 typedef struct _node {
   char element;
   struct _node* left;
   struct _node* right;
 } node;
-
-// WARNING:
-// 03/linear_list.c と同様に、node と tree を別の構造体
-// としており、講義スライドと異なるため注意してください。
-// pointer to pointer と dereference を省くことで可読性を
-// 上げていますが、再帰関数に対してはデメリットがあり、
-// tree 自体を渡すことができません。よって再帰関数には
-// tree.root を渡しています。
-typedef struct {
-  node* root;
-} tree;
 
 node* init_node(char element) {
   node* n = (node*)malloc(sizeof(node));
@@ -28,31 +23,18 @@ node* init_node(char element) {
   return n;
 }
 
-void clear_node(node* n) {
-  if (n != NULL) {
-    clear_node(n->left);
-    clear_node(n->right);
-    free(n);
+// NOTE: list では node と別の構造体にすることで
+// pointer to pinter と dereference を回避していました。
+// 木構造では、これらを回避するとかなりコードが肥大化
+// してしまうため、これらを使うことにしています。
+void clear(node** p_current) {
+  node* current = *p_current;
+  if (current != NULL) {
+    clear(&current->left);
+    clear(&current->right);
+    free(current);
+    *p_current = NULL;
   }
-}
-
-void clear_tree(tree* t) {
-  clear_node(t->root);
-  t->root = NULL;
-}
-
-tree create_tree() {
-  tree t;
-  t.root = init_node('*');
-  t.root->left = init_node('+');
-  t.root->right = init_node('-');
-  t.root->left->left = init_node('a');
-  t.root->left->right = init_node('b');
-  t.root->right->left = init_node('c');
-  t.root->right->right = init_node('/');
-  t.root->right->right->left = init_node('d');
-  t.root->right->right->right = init_node('e');
-  return t;
 }
 
 void pre_order(node* p) {
@@ -79,25 +61,38 @@ void post_order(node* p) {
   }
 }
 
+node* create_root() {
+  node* root = init_node('*');
+  root->left = init_node('+');
+  root->right = init_node('-');
+  root->left->left = init_node('a');
+  root->left->right = init_node('b');
+  root->right->left = init_node('c');
+  root->right->right = init_node('/');
+  root->right->right->left = init_node('d');
+  root->right->right->right = init_node('e');
+  return root;
+}
+
 int main() {
-  tree t = create_tree();
+  node* root = create_root();
 
   printf("TREE: [ ");
-  pre_order(t.root);
+  pre_order(root);
   printf("]\n");
 
   printf("TREE: [ ");
-  in_order(t.root);
+  in_order(root);
   printf("]\n");
 
   printf("TREE: [ ");
-  post_order(t.root);
+  post_order(root);
   printf("]\n");
 
-  clear_tree(&t);
+  clear(&root);
 
   printf("TREE: [ ");
-  pre_order(t.root);
+  pre_order(root);
   printf("]\n");
 
   return 0;
