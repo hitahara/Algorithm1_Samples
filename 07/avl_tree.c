@@ -434,7 +434,7 @@ node *search_node(tree rt, int target) {
  * @param[in] rec プリントするrecordのポインタ.
  */
 void print_record(record *rec) {
-  printf("%08zu, \"%s\"\n", rec->key, rec->field);
+  printf("%d, \"%s\"\n", rec->key, rec->field);
 }
 /**
  * @brief node確認用プリント関数.
@@ -451,7 +451,7 @@ void print_node(node *n) {
  */
 void print_search_node(tree rt, int target) {
   tree search_result_node = search_node(rt, target);
-  printf("\"%zu\" was %s\n", target, search_result_node != NULL ? "FOUND." : "NOT FOUND.");
+  printf("\"%d\" was %s\n", target, search_result_node != NULL ? "FOUND." : "NOT FOUND.");
 }
 
 /**
@@ -496,7 +496,7 @@ record *cli_record() {
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
   while (key == (int)-1) {
-    scanf("%zu", &key);
+    scanf("%d", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
 

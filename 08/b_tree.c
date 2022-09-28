@@ -253,7 +253,7 @@ void b_node_ins(b_node **bn, record *inserting_rec, key_branch_pair **parent_pai
           for (int i = split_index - 1; i < M; i++) {
             split_result_node->internal->pairs[i - (split_index - 1)] = (*bn)->internal->pairs[i];
           }
-          printf("KEY %zu\n", new_pair->branch->leaf->key);
+          printf("KEY %d\n", new_pair->branch->leaf->key);
 
           shift_b_node_internal(*bn, inserting_index);  //余計にsplit_index以降,(*bn)->internal->countまで走ってしまってる.
 
@@ -378,7 +378,7 @@ void print_internal_node(b_node *n) {
   }
   printf("[");
   for (int i = 1; i < n->internal->count; i++) {
-    printf("%zu, ", n->internal->pairs[i].key);
+    printf("%d, ", n->internal->pairs[i].key);
   }
   printf("]\n");
 }
@@ -426,7 +426,7 @@ void print_search_node(b_tree rt, int target) {
 
   search_existence_and_record(rt, target, &found, &target_rec);
 
-  printf("\"%zu\" was %s\n", target, found ? "FOUND." : "NOT FOUND.");
+  printf("\"%d\" was %s\n", target, found ? "FOUND." : "NOT FOUND.");
   if (found) {
     printf("Found data is...\n");
     print_record(target_rec);
@@ -446,7 +446,7 @@ record *cli_record() {
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
   while (key == (long unsigned int)-1) {
-    scanf("%zu", &key);
+    scanf("%d", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
 

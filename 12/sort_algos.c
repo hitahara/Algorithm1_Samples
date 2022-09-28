@@ -922,7 +922,7 @@ void print_sequence(sequence *seq) {
       print_record(seq->elements[i]);
     }
     printf("================================\n");
-    printf("Sequence size: (%zu/%zu)\n", seq->elements_length, seq->size);
+    printf("Sequence size: (%d/%d)\n", seq->elements_length, seq->size);
     printf("================================\n");
     printf("\n");
   }
@@ -940,7 +940,7 @@ void print_search_existence_and_index(sequence *seq, int target) {
   bool found = false;
   int target_index;
   binary_search_existence_and_index(seq, target, &found, &target_index);
-  printf("\"%zu\" was %s\n", target, found ? "FOUND." : "NOT FOUND.");
+  printf("\"%d\" was %s\n", target, found ? "FOUND." : "NOT FOUND.");
   if (found) {
     printf("The content of the target is...\n");
     print_record(seq->elements[target_index]);
@@ -962,7 +962,7 @@ record *cli_record() {
   printf(STRINGFY(MAX_FIELD_SIZE_WITHOUT_NULL_CHARACTER) "=" DEF_STRINGFY(MAX_FIELD_SIZE_WITHOUT_NULL_CHARACTER) "\n");
 
   while (true) {
-    scanf("%zu", &key);
+    scanf("%d", &key);
     if (key == (int)-1) {
       getchar();
       printf("ERROR: Try again from the key.\n");

@@ -131,7 +131,7 @@ void visit_mat(adj_mat *mat, bool *visit_list, int v) {
 
   for (int z = 0; z < MAX_GRAPH_SIZE; ++z) {
     if (mat->M[v][z] && visit_list[z] == false) {
-      printf("%zu - %zu\n", v, z);
+      printf("%d - %d\n", v, z);
       visit_mat(mat, visit_list, z);
     }
   }
@@ -158,7 +158,7 @@ void visit_lst(adj_list *list, bool *visit_list, int v) {
     int z = p->destination;
 
     if (visit_list[z] == false) {
-      printf("%zu - %zu\n", v, z);
+      printf("%d - %d\n", v, z);
       visit_lst(list, visit_list, z);
     }
     p = p->next;

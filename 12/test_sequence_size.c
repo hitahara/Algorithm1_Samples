@@ -120,7 +120,7 @@ sequence *init_sequence() {
   for (int i = 0; i < elements_chunk_size; ++i) {
     s->elements_chunk[i] = (record **)malloc(sizeof(record *) * CHUNK_SIZE);
   }
-  printf("elements_chunk_size=%zu\n", s->elements_chunk_size);
+  printf("elements_chunk_size=%d\n", s->elements_chunk_size);
 
   return s;
 }
@@ -288,7 +288,7 @@ void print_sequence(sequence *seq) {
       print_record(*get_record_index(seq, i));
     }
     printf("================================\n");
-    printf("Sequence size: (%zu/%zu)\n", seq->elements_length, seq->size);
+    printf("Sequence size: (%d/%d)\n", seq->elements_length, seq->size);
     printf("================================\n");
     printf("\n");
   }

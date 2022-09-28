@@ -141,7 +141,7 @@ int hash_func(int i, int max_size) {
   m = (3.14 / i) * 10000;
   // printf("%lf\n", m);
   i = (int)m % max_size;
-  // printf("%zu\n", i);
+  // printf("%d\n", i);
 
   return (int)i;
 }
@@ -211,12 +211,12 @@ void print_hash(hash *h) {
   printf("TABLE: [\n");
   for (int i = 0; i < h->size; i++) {
     if (h->table[i].mark == FREE) {
-      printf("Index %zu is FREE.\n", i);
+      printf("Index %d is FREE.\n", i);
       continue;
     }
     print_record(h->table[i].data);
   }
-  printf("]\nHASH SIZE: %ld\n", h->size);
+  printf("]\nHASH SIZE: %d\n", h->size);
   printf("================================\n");
 }
 
@@ -229,9 +229,9 @@ void print_search_existence(hash *has, int target) {
   bool found;
   record *target_rec;
   search_existence_and_record(has, target, &found, &target_rec);
-  printf("\"%zu\" was %s.\n", target, found ? "FOUND" : "NOT FOUND");
+  printf("\"%d\" was %s.\n", target, found ? "FOUND" : "NOT FOUND");
   if (found) {
-    printf("Hash table index is %zu.\n", hash_func(target, has->size));
+    printf("Hash table index is %d.\n", hash_func(target, has->size));
     printf("Found data is...\n");
     print_record(target_rec);
   }
@@ -250,7 +250,7 @@ record *cli_record() {
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
   while (key == (long unsigned int)-1) {
-    scanf("%zu", &key);
+    scanf("%d", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
 
