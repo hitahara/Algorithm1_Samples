@@ -4,12 +4,10 @@
 #include <string.h>
 
 #define MAX_NUM_RECORDS 1000
-#define MAX_VALUE_SIZE 32
-#define SAMPLE_RECORDS 5
 
 typedef struct {
   int key;
-  char value[MAX_VALUE_SIZE];
+  char value[32];
 } record;
 
 typedef struct {
@@ -82,7 +80,7 @@ void print(table* tab) {
 
 int main() {
   table tab = {0};
-  for (int i = 0; i < SAMPLE_RECORDS; i++) {
+  for (int i = 0; i < 5; i++) {
     record rec = {i, "AAA"};
     insert(&tab, rec);
   }

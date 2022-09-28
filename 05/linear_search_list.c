@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_VALUE_SIZE 32
-#define INITIAL_NUM_RECORDS 5
-
 void swap(int* a, int* b) {
   int tmp = *a;
   *a = *b;
@@ -24,7 +21,7 @@ void shuffle(int* array, int length) {
 
 typedef struct _record {
   int key;
-  char value[MAX_VALUE_SIZE];
+  char value[32];
   struct _record* next;
 } record;
 
@@ -114,19 +111,17 @@ void print(table* tab) {
 }
 
 int main() {
-  // shuffle keys ([0...4])
-  int keys[INITIAL_NUM_RECORDS];
-  for (int i = 0; i < INITIAL_NUM_RECORDS; i++) {
-    keys[i] = i;
-  }
-  shuffle(keys, sizeof(keys) / sizeof(int));
+  // shuffle keys
+  int keys[] = {0, 1, 2, 3, 4};
+  int num_keys = sizeof(keys) / sizeof(int);
+  shuffle(keys, num_keys);
 
   // create table
   table tab;
   tab.sentinel = init_record(-1, "");
   tab.header = init_record(-1, "");
   tab.header->next = tab.sentinel;
-  for (int i = 0; i < INITIAL_NUM_RECORDS; i++) {
+  for (int i = 0; i < num_keys; i++) {
     record* rec = init_record(keys[i], "AAA");
     insert_head(&tab, rec);
   }

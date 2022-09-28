@@ -4,12 +4,10 @@
 #include <string.h>
 
 #define MAX_NUM_RECORDS 1000
-#define MAX_VALUE_SIZE 32
-#define SAMPLE_RECORDS 5
 
 typedef struct {
   int key;
-  char value[MAX_VALUE_SIZE];
+  char value[32];
 } record;
 
 typedef struct {
@@ -86,15 +84,13 @@ void print(table* tab) {
 
 int main() {
   // shuffle keys ([0...4])
-  int keys[SAMPLE_RECORDS];
-  for (int i = 0; i < SAMPLE_RECORDS; i++) {
-    keys[i] = i;
-  }
-  shuffle(keys, SAMPLE_RECORDS);
+  int keys[] = {0, 1, 2, 3, 4};
+  int num_keys = sizeof(keys) / sizeof(int);
+  shuffle(keys, num_keys);
 
   // create table
   table tab = {0};
-  for (int i = 0; i < SAMPLE_RECORDS; i++) {
+  for (int i = 0; i < num_keys; i++) {
     record rec = {keys[i], "AAA"};
     insert_tail(&tab, rec);
   }
