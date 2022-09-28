@@ -9,10 +9,6 @@ typedef struct _node {
   struct _node* right;
 } node;
 
-typedef struct {
-  node* root;
-} tree;
-
 node* init_node(int key, const char* value) {
   node* n = (node*)malloc(sizeof(node));
   n->key = key;
@@ -125,16 +121,16 @@ int main() {
   // create tree
   int keys[] = {44, 55, 12, 42, 14, 18, 06, 67};
   int num_keys = sizeof(keys) / sizeof(int);
-  tree t = {NULL};
+  node* root = NULL;
   for (int i = 0; i < num_keys; i++) {
-    insert(&t.root, keys[i], "AAA");
+    insert(&root, keys[i], "AAA");
   }
   printf("TREE:\n");
-  print(t.root, 0);
+  print(root, 0);
 
   // search target
   int target = 44;
-  node* result = search(t.root, target);
+  node* result = search(root, target);
   if (result != NULL) {
     printf("%d is %s\n", target, result->value);
   } else {
@@ -142,20 +138,20 @@ int main() {
   }
 
   // erase target
-  erase(&t.root, target);
+  erase(&root, target);
   printf("%d was deleted.\n", target);
   printf("TREE:\n");
-  print(t.root, 0);
+  print(root, 0);
 
   // search target
-  result = search(t.root, target);
+  result = search(root, target);
   if (result != NULL) {
     printf("%d is %s\n", target, result->value);
   } else {
     printf("%d is not found\n", target);
   }
 
-  clear(&t.root);
+  clear(&root);
   return 0;
 }
 
