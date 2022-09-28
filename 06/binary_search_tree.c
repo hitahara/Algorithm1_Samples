@@ -1,338 +1,182 @@
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * @brief 文字列化.
- */
-#define STRINGFY(s) #s
-/**
- * @brief 定義された値に変化しSTRINGFY.
- */
-#define DEF_STRINGFY(def) STRINGFY(def)
-/**
- * @brief レコードのフィールドのデータが占有できる最大バイト数.
- */
-#define MAX_FIELD_MEMORY 32
+typedef struct _node {
+  int key;
+  char value[32];
+  struct _node* left;
+  struct _node* right;
+} node;
 
-/**
- * @brief データと二分木の2つの枝を保持する構造体.
- */
-typedef struct node node;
+typedef struct {
+  node* root;
+} tree;
 
-/**
- * @brief nodeのポインタ.
- */
-typedef node *tree;
-
-/**
- * @brief レコード：keyとfieldをもった構造体
- */
-typedef struct record {
-  int key;                      /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
-  char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
-} record;
-
-struct node {
-  record *rec;
-  tree left;  /** 左の枝のnodeのポインタ/tree. */
-  tree right; /** 右の枝のnodeのポインタ/tree. */
-};
-
-/**
- * @brief recordの初期化.
- * @param[in] key 指定するキー.
- * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
- * @return 初期化されたrecordのポインタ.
- */
-record *init_record(int key, const char *field) {
-  if (strlen(field) > MAX_FIELD_MEMORY + 1) {
-    fprintf(stderr, "ERROR: \"field\" is too large.\n");
-    exit(1);
-  }
-
-  record *rec = (record *)malloc(sizeof(record));
-  rec->key = key;
-  strncpy(rec->field, field, MAX_FIELD_MEMORY);
-
-  return rec;
+node* init_node(int key, const char* value) {
+  node* n = (node*)malloc(sizeof(node));
+  n->key = key;
+  n->left = NULL;
+  n->right = NULL;
+  strcpy(n->value, value);
+  return n;
 }
 
-/**
- * @brief nodeの初期化.
- * @return 初期化された,データやポインタが代入されていないnodeのポインタ.
- */
-node *init_node(record *rec) {
-  node *c = (node *)malloc(sizeof(node));
-  c->rec = rec;
-  c->left = NULL;
-  c->right = NULL;
-  return c;
-}
-
-/**
- * @brief 前順操作.
- * @param[in] p 操作する対象のtree.
- * @param[in] something 操作を実装した関数.
- */
-void pre_order(tree p, void (*something)(node *)) {
-  if (p != NULL) {
-    something(p);
-    pre_order(p->left, something);
-    pre_order(p->right, something);
+void clear(node** p_current) {
+  node* current = *p_current;
+  if (current != NULL) {
+    clear(&current->left);
+    clear(&current->right);
+    free(current);
+    *p_current = NULL;
   }
 }
 
-/**
- * @brief 間順操作.
- * @param[in] p 操作する対象のtree.
- * @param[in] something 操作を実装した関数.
- */
-void in_order(tree p, void (*something)(node *)) {
-  if (p != NULL) {
-    in_order(p->left, something);
-    something(p);
-    in_order(p->right, something);
+node* search(node* current, int target) {
+  if (current == NULL) {
+    return NULL;
+  }
+
+  if (target == current->key) {
+    return current;
+  }
+
+  if (target < current->key) {
+    return search(current->left, target);
+  } else {
+    return search(current->right, target);
   }
 }
 
-/**
- * @brief 後順操作.
- * @param[in] p 操作する対象のtree.
- * @param[in] something 操作を実装した関数.
- */
-void post_order(tree p, void (*something)(node *)) {
-  if (p != NULL) {
-    post_order(p->left, something);
-    post_order(p->right, something);
-    something(p);
+void insert(node** p_current, int key, const char* value) {
+  node* current = *p_current;
+  if (current == NULL) {
+    *p_current = init_node(key, value);
+    return;
+  }
+
+  if (key == current->key) {
+    printf("The key is already used.\n");
+    return;
+  }
+
+  if (key < current->key) {
+    insert(&current->left, key, value);
+  } else {
+    insert(&current->right, key, value);
   }
 }
 
-/**
- * @brief 引数のnodeを削除する.
- * @param[in] n 削除するnodeのポインタ.
- */
-void dispose(node *n) {
-  free(n);
-}
-/**
- * @brief treeのメモリを解放.
- * @param[in] tab メモリを開放するtreeのポインタ.
- */
-void release_tree(tree *rt) {
-  post_order(*rt, dispose);
-  *rt = NULL;
+node* extract_max(node** p_current) {
+  node* current = *p_current;
+  if (current->right == NULL) {
+    *p_current = current->left;
+    return current;
+  }
+  return extract_max(&current->right);
 }
 
-/**
- * @brief 二分探索木に挿入.
- * @param[in] rt 挿入対象のtreeのポインタ.
- * @param[in] np 挿入するnodeのポインタ.
- */
-void insert_node(tree *rt, node *np) {
-  tree *p = rt;
-  while (*p != NULL) {
-    if (np->rec->key == (*p)->rec->key) {
-      printf("The key is already used.\n");
-      return;
+void erase(node** p_current, int key) {
+  node* current = *p_current;
+  if (current == NULL) {
+    printf("This key does not exist.\n");
+    return;
+  }
+
+  if (key == current->key) {
+    if (current->left == NULL) {
+      *p_current = current->right;
+      free(current);
     } else {
-      if (np->rec->key < (*p)->rec->key) {
-        p = &(*p)->left;
-      } else {
-        p = &(*p)->right;
-      }
+      node* max = extract_max(&current->left);
+      max->left = current->left;
+      max->right = current->right;
+      *p_current = max;
+      free(current);
     }
-  }
-  *p = np;
-}
-
-/**
- * @brief 二分探索木の最大nodeを取り出す.
- * @param[in] rt 最大キーを調べるtreeのポインタ.
- * @return 最大キーをもつnodeを指すtree
- */
-tree extract_max_node(tree *rt) {
-  tree *p = rt;
-  for (; (*p)->right != NULL; p = &(*p)->right)
-    ;  //実体化していない時は木構造の内容に変化無し.
-
-  tree max = *p;
-  *p = (*p)->left;  //実体化している時に木構造の内容は変化.
-  return max;
-}
-
-/**
- * @brief 二分探索木内のtarget==rec->keyとするnodeを削除.
- * @param[in] rt 削除対象をもつtreeのポインタ.
- * @param[in] target 調べるrec->key.
- */
-void delete_node(tree *rt, int target) {
-  tree *p = rt;
-  while (*p != NULL) {
-    if (target != (*p)->rec->key) {
-      if (target < (*p)->rec->key) {
-        p = &(*p)->left;
-      } else {
-        p = &(*p)->right;
-      }
-    } else {
-      tree t;
-      if ((*p)->left == NULL) {
-        t = *p;
-        *p = (*p)->right;
-        dispose(t);
-      } else {
-        t = extract_max_node(&(*p)->left);
-        t->left = (*p)->left;
-        t->right = (*p)->right;
-        dispose((*p));
-        *p = t;
-      }
-
-      return;
-    }
+    return;
   }
 
-  printf("A key that does not exist in the tree and cannot be deleted.\n");
-}
-
-/**
- * @brief 二分探索木を探索.
- * @param[in] rt targetが存在するか調べるtree.
- * @param[in] target 調べるキー.
- * @return 存在する場合:対応するnode*,存在しない場合:NULL.
- */
-node *search_node(tree rt, int target) {
-  tree p = rt;
-  while (p != NULL) {
-    if (target == p->rec->key) {
-      return p;
-    } else if (target < p->rec->key) {
-      p = p->left;
-    } else {
-      p = p->right;
-    }
-  }
-  return NULL;
-}
-
-/**
- * @brief record確認用プリント関数.
- * @param[in] rec プリントするrecordのポインタ.
- */
-void print_record(record *rec) {
-  printf("%d, \"%s\"\n", rec->key, rec->field);
-}
-/**
- * @brief node確認用プリント関数.
- * @param[in] node プリントするnodeのポインタ.
- */
-void print_node(node *n) {
-  print_record(n->rec);
-}
-
-/**
- * @brief search_node確認用プリント関数.
- * @param[in] rt targetが存在するか調べるtree.
- * @param[in] target 調べるキー.
- */
-void print_search_node(tree rt, int target) {
-  tree search_result_node = search_node(rt, target);
-  printf("\"%d\" was %s\n", target, search_result_node != NULL ? "FOUND." : "NOT FOUND.");
-}
-
-/**
- * @brief 二分探索木を再帰でプリント.
- * @param[in] p 操作する対象のtree.
- * @param[in] depth 再帰呼び出しの深さ.
- */
-void print_tree_recursion(tree p, int depth) {
-  if (p != NULL) {
-    print_tree_recursion(p->right, depth + 1);
-
-    for (int i = 0; i < depth; i++) {
-      printf(" ");
-    }
-    printf("+-%d, \"%s\"\n", p->rec->key, p->rec->field);
-
-    print_tree_recursion(p->left, depth + 1);
+  if (key < current->key) {
+    erase(&current->left, key);
+  } else {
+    erase(&current->right, key);
   }
 }
-/**
- * @brief 二分探索木をプリント.
- * @param[in] rt 操作する対象のtree.
- */
-void print_tree(tree rt) {
-  int depth = 0;
-  printf("VISUALISING TREE\n");
-  printf("================================\n");
-  print_tree_recursion(rt, depth);
-  printf("================================\n");
-}
 
-/**
- * @brief cliからrecordの内容を読み取りrecordに格納.
- * @return cliから読み取った内容で生成したrecordのポインタ
- */
-record *cli_record() {
-  record *rec;
-  int key = -1;
-  char field[MAX_FIELD_MEMORY];
-
-  printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
-  printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
-
-  while (key == -1) {
-    scanf("%d", &key);
+void print(node* current, int depth) {
+  if (current == NULL) {
+    return;
   }
-  scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
+  // right
+  print(current->right, depth + 1);
 
-  rec = init_record(key, field);
-
-  return rec;
-}
-
-/**
- * @brief cliからrecordの内容を読み取り,tableの末尾に挿入.
- * @param[in] rt スキャンしたrecordを挿入するtreeのポインタ.
- */
-void cli_insert(tree *rt) {
-  printf("ENETER A RECORD THAT WILL BE INSERTED.\n");
-  record *scanned_rec = NULL;
-  while (true) {
-    scanned_rec = cli_record();
-    tree search_result_node = search_node(*rt, scanned_rec->key);
-    if (search_result_node != NULL) {
-      printf("The key is already used.\n");
-    } else {
-      break;
-    }
+  // current
+  for (int i = 0; i < depth; i++) {
+    printf("  ");
   }
-  insert_node(rt, init_node(scanned_rec));
+  printf("{ %d, %s}\n", current->key, current->value);
+
+  // left
+  print(current->left, depth + 1);
 }
 
 int main() {
-  int tmp[] = {44, 55, 12, 42, 14, 18, 06, 67};
-  tree rt = NULL;
-  for (unsigned long long i = 0; i < sizeof(tmp) / sizeof(int); i++) {
-    insert_node(&rt, init_node(init_record(tmp[i], "AAAA")));
+  // create tree
+  int keys[] = {44, 55, 12, 42, 14, 18, 06, 67};
+  int num_keys = sizeof(keys) / sizeof(int);
+  tree t = {NULL};
+  for (int i = 0; i < num_keys; i++) {
+    insert(&t.root, keys[i], "AAA");
   }
-  print_tree(rt);
+  printf("TREE:\n");
+  print(t.root, 0);
 
-  // cli_insert(&rt);
-  // print_tree(rt);
+  // search target
+  int target = 44;
+  node* result = search(t.root, target);
+  if (result != NULL) {
+    printf("%d is %s\n", target, result->value);
+  } else {
+    printf("%d is not found\n", target);
+  }
 
-  print_search_node(rt, 44);
-  delete_node(&rt, 44);
-  print_search_node(rt, 44);
+  // erase target
+  erase(&t.root, target);
+  printf("%d was deleted.\n", target);
+  printf("TREE:\n");
+  print(t.root, 0);
 
-  // pre_order(rt, print_node);
-  print_tree(rt);
+  // search target
+  result = search(t.root, target);
+  if (result != NULL) {
+    printf("%d is %s\n", target, result->value);
+  } else {
+    printf("%d is not found\n", target);
+  }
 
-  release_tree(&rt);
-  print_tree(rt);
-
+  clear(&t.root);
   return 0;
 }
+
+// 実行結果
+// TREE:
+//     { 67, AAA}
+//   { 55, AAA}
+// { 44, AAA}
+//     { 42, AAA}
+//         { 18, AAA}
+//       { 14, AAA}
+//   { 12, AAA}
+//     { 6, AAA}
+// 44 is AAA
+// 44 was deleted.
+// TREE:
+//     { 67, AAA}
+//   { 55, AAA}
+// { 42, AAA}
+//       { 18, AAA}
+//     { 14, AAA}
+//   { 12, AAA}
+//     { 6, AAA}
+// 44 is not found
