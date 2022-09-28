@@ -445,7 +445,7 @@ record *cli_record() {
   printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
   printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
 
-  while (key == (long unsigned int)-1) {
+  while (key == -1) {
     scanf("%d", &key);
   }
   scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);

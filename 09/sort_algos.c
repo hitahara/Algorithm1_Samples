@@ -118,8 +118,8 @@ record *init_record(int key, char *field) {
 sequence *init_sequence() {
   sequence *s = (sequence *)malloc(sizeof(sequence));
   s->elements_length = 0;
-  if (MAX_RECORD_SIZE >= (long unsigned int)-1) {
-    fprintf(stderr, "ERROR: \"MAX_ARRAY_MEMORY\" is too large. Must be under (long unsigned int)-1.\n");
+  if (MAX_RECORD_SIZE >= -1) {
+    fprintf(stderr, "ERROR: \"MAX_ARRAY_MEMORY\" is too large. Must be under -1.\n");
     exit(1);
   }
   s->size = MAX_RECORD_SIZE;
