@@ -466,7 +466,7 @@ void print_tree_recursion(tree p, int depth) {
     for (int i = 0; i < depth; i++) {
       printf(" ");
     }
-    printf("+-%3zu, \"%s\"\n", p->rec->key, p->rec->field);
+    printf("+-%d, \"%s\"\n", p->rec->key, p->rec->field);
 
     print_tree_recursion(p->child[LEFT], depth + 1);
   }

@@ -255,7 +255,7 @@ void print_tree_recursion(tree p, int depth) {
     for (int i = 0; i < depth; i++) {
       printf(" ");
     }
-    printf("+-%3zu, \"%s\"\n", p->rec->key, p->rec->field);
+    printf("+-%d, \"%s\"\n", p->rec->key, p->rec->field);
 
     print_tree_recursion(p->left, depth + 1);
   }
@@ -316,7 +316,7 @@ void cli_insert(tree *rt) {
 int main() {
   int tmp[] = {44, 55, 12, 42, 14, 18, 06, 67};
   tree rt = NULL;
-  for (int i = 0; i < sizeof(tmp) / sizeof(int); i++) {
+  for (unsigned long long i = 0; i < sizeof(tmp) / sizeof(int); i++) {
     insert_node(&rt, init_node(init_record(tmp[i], "AAAA")));
   }
   print_tree(rt);
