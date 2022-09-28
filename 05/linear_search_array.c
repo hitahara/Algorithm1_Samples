@@ -19,7 +19,6 @@ void swap(int* a, int* b) {
   int tmp = *a;
   *a = *b;
   *b = tmp;
-  return;
 }
 
 // NOTE: Fisher–Yates shuffle というアルゴリズムを使います
