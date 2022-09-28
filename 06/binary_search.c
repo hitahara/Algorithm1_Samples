@@ -18,7 +18,7 @@ typedef struct {
 } table;
 
 // NOTE: key 以上となる値が現れる最小の index を返します
-// もし index が tab->length であれば条件を満たす値が存在しません
+// もし条件を満たす値が存在しない場合は tab->length を返します
 // この仕様は C++ の std::lower_bound に準拠しています
 int search(table* tab, int target) {
   int low = 0;
