@@ -9,7 +9,6 @@ int linear_search(int* table, int length, int x) {
       return true;
     }
   }
-
   return false;
 }
 
