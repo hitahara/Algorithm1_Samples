@@ -1,18 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// NOTE:
 // この構造体ではメンバにこの構造体自身を持たせる必要があります。
 // いままでのように typedef struct {} name; と書くと、メンバ
 // 宣言時点で構造体の名前が存在しないため定義できません。よって
-// 仮の構造体名を先に付けておき、あとから typedef で正しい名前を
-// つけています。
+// 仮の構造体名 _cell を先に付けておき、あとから typedef で
+// 正しい名前 cell をつけています。
 typedef struct _cell {
   int element;
   struct _cell* next;
 } cell;
 
-// WARNING:
 // 講義スライドでは list は cell* の別名ですが、このコードでは
 // 別の構造体としているため注意してください。別名としてしまうと
 // head のポインタ自体を変更する操作で pointer to pointer と

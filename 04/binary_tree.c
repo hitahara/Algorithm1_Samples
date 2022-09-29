@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// NOTE: list では 可読性のために node と list を
-// 別の構造体にしていました。しかし、別の構造体に
-// すると再帰関数を定義できないというデメリットがあります。
+// list では 可読性のために node と list を別の構造体に
+// していました。しかし、別の構造体にすると再帰関数を定義
+// できないというデメリットがあります。
 // 今回の木構造では再帰関数が多用されるため別の構造体に
 // しません。サンプルでは混乱回避のために tree 自体を定義
 // しませんが typedef を使うと講義スライドと同様になります。
@@ -23,10 +23,10 @@ node* init_node(char element) {
   return n;
 }
 
-// NOTE: list では node と別の構造体にすることで
-// pointer to pinter と dereference を回避していました。
+// list では node と別の構造体にすることで pointer
+// to pinter と dereference を回避していました。
 // 木構造では、これらを回避するとかなりコードが肥大化
-// してしまうため、これらを使うことにしています。
+// してしまうため、採用することにします。
 void clear(node** p_current) {
   node* current = *p_current;
   if (current != NULL) {

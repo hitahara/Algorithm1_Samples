@@ -21,7 +21,7 @@ void swap(int* a, int* b) {
   *b = tmp;
 }
 
-// NOTE: Fisher–Yates shuffle というアルゴリズムを使います
+// Fisher–Yates shuffle というアルゴリズムを使います
 void shuffle(int* array, int length) {
   int i = length;
   while (i > 1) {

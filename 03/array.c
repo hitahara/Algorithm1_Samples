@@ -3,7 +3,6 @@
 
 #define SIZE 1000
 
-// NOTE:
 // C 言語では、struct name {}; と定義してしまうと変数宣言の
 // 際に毎回 struct name var; と書く必要があります。
 // typedef struct {} name; と書くことで name var; と簡潔に
@@ -13,7 +12,6 @@ typedef struct {
   int elements[SIZE];
 } sequence;
 
-// NOTE:
 // 2 つの理由から関数には構造体のポインタを渡しています。
 // - 1 つめの理由は関数内で構造体を変更するためです。
 //   構造体自体を渡してしまうと、構造体のコピーが発生するため
@@ -39,7 +37,7 @@ void insert(sequence* seq, int pos, int val) {
   seq->elements[pos] = val;
 }
 
-// NOTE: `delete` は C++ の予約語なので、念のため erase と書きます
+// delete は C++ の予約語なので、念のため erase と書きます
 void erase(sequence* seq, int pos) {
   seq->length--;
   for (int i = pos; i < seq->length; i++) {

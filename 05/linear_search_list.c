@@ -9,7 +9,7 @@ void swap(int* a, int* b) {
   *b = tmp;
 }
 
-// NOTE: Fisher–Yates shuffle というアルゴリズムを使います
+// Fisher–Yates shuffle というアルゴリズムを使います。
 void shuffle(int* array, int length) {
   int i = length;
   while (i > 1) {
@@ -66,7 +66,7 @@ record* search_previous(table* tab, int target) {
   }
   bool found = current != tab->sentinel;
 
-  // NOTE: コメントアウトを外すと自己再構成リストになります
+  // コメントアウトを外すと自己再構成リストになります。
   // if (found) {
   //   previous->next = current->next;
   //   insert_head(tab, current);

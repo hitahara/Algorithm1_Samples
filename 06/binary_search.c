@@ -15,9 +15,9 @@ typedef struct {
   record records[MAX_NUM_RECORDS];
 } table;
 
-// NOTE: key 以上となる値が現れる最小の index を返します
-// もし条件を満たす値が存在しない場合は tab->length を返します
-// この仕様は C++ の std::lower_bound に準拠しています
+// key 以上となる値が現れる最小の index を返します。
+// もし条件を満たす値が存在しない場合は tab->length を返します。
+// この仕様は C++ の std::lower_bound に準拠しています。
 int search(table* tab, int target) {
   int low = 0;
   int high = tab->length - 1;
