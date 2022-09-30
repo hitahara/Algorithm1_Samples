@@ -526,15 +526,24 @@ void cli_insert(tree *rt) {
 }
 
 int main() {
-  int tmp[] = {1, 3, 2};
+  int keys[] = {1, 3, 2};
+  int num_keys = sizeof(keys) / sizeof(int);
   tree rt = NULL;
   bool dummy;
 
-  for (int i = 0; i < sizeof(tmp) / sizeof(int); i++) {
-    insert_node(&rt, init_node(init_record(tmp[i], "AAAA")), &dummy);
+  for (int i = 0; i < num_keys; i++) {
+    insert_node(&rt, init_node(init_record(keys[i], "AAAA")), &dummy);
   }
   print_tree(rt);
 
   release_tree(&rt);
   return 0;
 }
+
+// 実行結果
+// VISUALISING TREE
+// ================================
+//  +-3, "AAAA"
+// +-2, "AAAA"
+//  +-1, "AAAA"
+// ================================
