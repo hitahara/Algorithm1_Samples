@@ -43,13 +43,15 @@ void enqueue(queue* q, int val) {
   q->tail = c;
 }
 
-void dequeue(queue* q, int* val) {
+// 講義スライドと異なり、dequeue された値を返り値とします。
+int dequeue(queue* q) {
   assert(!empty(q));
 
-  *val = q->head->element;
   cell* c = q->head;
+  int val = c->element;
   q->head = q->head->next;
   free(c);
+  return val;
 }
 
 void print(queue* q) {
@@ -70,8 +72,7 @@ int main() {
   }
   print(&q);
 
-  int val;
-  dequeue(&q, &val);
+  printf("DEQUEUE: %d\n", dequeue(&q));
   print(&q);
 
   clear(&q);
@@ -81,5 +82,6 @@ int main() {
 
 // 実行結果
 // QUEUE: [ 0 1 2 3 4 5 6 7 8 9 ]
+// DEQUEUE: 0
 // QUEUE: [ 1 2 3 4 5 6 7 8 9 ]
 // QUEUE: [ ]
