@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int binary_search(int* table, int length, int x) {
+bool binary_search(int* table, int length, int x) {
   int low = 0;
   int high = length - 1;
   while (low <= high) {
