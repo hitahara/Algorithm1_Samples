@@ -24,7 +24,7 @@ node* init_node(char element) {
 }
 
 // list では node と別の構造体にすることで pointer
-// to pinter と dereference を回避していました。
+// to pointer と dereference を回避していました。
 // 木構造では、これらを回避するとかなりコードが肥大化
 // してしまうため、採用することにします。
 void clear(node** p_current) {
