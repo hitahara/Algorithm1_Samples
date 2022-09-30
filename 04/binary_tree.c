@@ -9,10 +9,10 @@
 // 今回の木構造では再帰関数が多用されるため別の構造体に
 // しません。サンプルでは混乱回避のために tree 自体を定義
 // しませんが typedef を使うと講義スライドと同様になります。
-typedef struct _node {
+typedef struct node_ {
   char element;
-  struct _node* left;
-  struct _node* right;
+  struct node_* left;
+  struct node_* right;
 } node;
 
 node* init_node(char element) {

@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _cell {
+typedef struct cell_ {
   int element;
-  struct _cell* next;
+  struct cell_* next;
 } cell;
 
 typedef struct {

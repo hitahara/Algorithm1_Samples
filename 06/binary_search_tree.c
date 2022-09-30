@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _node {
+typedef struct node_ {
   int key;
   char value[32];
-  struct _node* left;
-  struct _node* right;
+  struct node_* left;
+  struct node_* right;
 } node;
 
 node* init_node(int key, const char* value) {

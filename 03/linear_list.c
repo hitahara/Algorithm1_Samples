@@ -4,11 +4,11 @@
 // この構造体ではメンバにこの構造体自身を持たせる必要があります。
 // いままでのように typedef struct {} name; と書くと、メンバ
 // 宣言時点で構造体の名前が存在しないため定義できません。よって
-// 仮の構造体名 _cell を先に付けておき、あとから typedef で
+// 仮の構造体名 cell_ を先に付けておき、あとから typedef で
 // 正しい名前 cell をつけています。
-typedef struct _cell {
+typedef struct cell_ {
   int element;
-  struct _cell* next;
+  struct cell_* next;
 } cell;
 
 // 講義スライドでは list は cell* の別名ですが、このコードでは
