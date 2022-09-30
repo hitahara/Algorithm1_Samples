@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,10 +34,7 @@ int search(table* tab, int target) {
 }
 
 void insert(table* tab, record rec) {
-  if (tab->length >= MAX_NUM_RECORDS - 1) {
-    printf("ERROR: No more record can be inserted into table.\n");
-    return;
-  }
+  assert(tab->length < MAX_NUM_RECORDS);
 
   // 順序が正しく保たれるように、正しい挿入位置を計算します
   int index = search(tab, rec.key);

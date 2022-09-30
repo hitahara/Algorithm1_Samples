@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,10 +52,7 @@ void insert(node** p_current, int key, const char* value) {
     return;
   }
 
-  if (key == current->key) {
-    printf("The key is already used.\n");
-    return;
-  }
+  assert(key != current->key);
 
   if (key < current->key) {
     insert(&current->left, key, value);
@@ -74,10 +72,7 @@ node* extract_max(node** p_current) {
 
 void erase(node** p_current, int key) {
   node* current = *p_current;
-  if (current == NULL) {
-    printf("This key does not exist.\n");
-    return;
-  }
+  assert(current != NULL);
 
   if (key == current->key) {
     if (current->left == NULL) {
