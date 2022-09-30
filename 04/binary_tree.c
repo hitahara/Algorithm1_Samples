@@ -27,6 +27,11 @@ node* init_node(char element) {
 // to pointer と dereference を回避していました。
 // 木構造では、これらを回避するとかなりコードが肥大化
 // してしまうため、採用することにします。
+// pointer to pointer はその名の通り pointer を指す
+// pointer です。単なる pointer はそれが指すインスタンス
+// の中身を変更できます。それに対して pointer to pointer
+// は pointer の中身、つまり pointer が指すインスタンス
+// そのものを、別のインスタンス、または NULL に変更できます。
 void clear(node** p_current) {
   node* current = *p_current;
   if (current != NULL) {
