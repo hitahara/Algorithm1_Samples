@@ -21,11 +21,12 @@ void push(stack* stack, int val) {
   stack->length++;
 }
 
-void pop(stack* stack, int* val) {
+// 講義スライドと異なり、pop された値を返り値とします。
+int pop(stack* stack) {
   assert(stack->length != 0);
 
   stack->length--;
-  *val = stack->elements[stack->length];
+  return stack->elements[stack->length];
 }
 
 void print(stack* s) {
@@ -45,10 +46,8 @@ int main() {
   }
   print(&s);
 
-  int val;
-  pop(&s, &val);
+  printf("POP: %d\n", pop(&s));
   print(&s);
-  printf("POP: %d\n", val);
 
   clear(&s);
   print(&s);
@@ -59,8 +58,8 @@ int main() {
 // 実行結果
 // ELEMENTS: [ 9 8 7 6 5 4 3 2 1 0 ]
 // STACK POINTER: 10
+// POP: 9
 // ELEMENTS: [ 8 7 6 5 4 3 2 1 0 ]
 // STACK POINTER: 9
-// POP: 9
 // ELEMENTS: [ ]
 // STACK POINTER: 0
