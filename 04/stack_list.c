@@ -30,17 +30,19 @@ void push(stack* s, int val) {
   s->head = c;
 }
 
-void pop(stack* s, int* val) {
+// 講義スライドと異なり、pop された値を返り値とします。
+int pop(stack* s) {
   assert(s->head != NULL);
 
-  *val = s->head->element;
   cell* c = s->head;
   s->head = s->head->next;
+  int val = c->element;
   free(c);
+  return val;
 }
 
 void print(stack* s) {
-  printf("LIST CELLS: [ ");
+  printf("LIST: [ ");
   cell* current = s->head;
   while (current != NULL) {
     printf("%d ", current->element);
@@ -57,16 +59,14 @@ int main() {
   }
   print(&s);
 
-  int val;
-  pop(&s, &val);
+  printf("POP: %d\n", pop(&s));
   print(&s);
-  printf("POP: %d\n", val);
 
   clear(&s);
   return 0;
 }
 
 // 実行結果
-// LIST CELLS: [ 9 8 7 6 5 4 3 2 1 0 ]
-// LIST CELLS: [ 8 7 6 5 4 3 2 1 0 ]
+// LIST: [ 9 8 7 6 5 4 3 2 1 0 ]
 // POP: 9
+// LIST: [ 8 7 6 5 4 3 2 1 0 ]
