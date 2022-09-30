@@ -3,21 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void swap(int* a, int* b) {
-  int tmp = *a;
-  *a = *b;
-  *b = tmp;
-}
-
-// Fisher–Yates shuffle というアルゴリズムを使います。
-void shuffle(int* array, int length) {
-  int i = length;
-  while (i > 1) {
-    int j = rand() % i--;
-    swap(&array[i], &array[j]);
-  }
-}
-
 typedef struct _record {
   int key;
   char value[32];
@@ -110,16 +95,15 @@ void print(table* tab) {
 }
 
 int main() {
-  // shuffle keys
-  int keys[] = {0, 1, 2, 3, 4};
-  int num_keys = sizeof(keys) / sizeof(int);
-  shuffle(keys, num_keys);
-
   // create table
   table tab;
   tab.sentinel = init_record(-1, "");
   tab.header = init_record(-1, "");
   tab.header->next = tab.sentinel;
+
+  // insert records
+  int keys[] = {4, 1, 0, 2, 3};
+  int num_keys = sizeof(keys) / sizeof(int);
   for (int i = 0; i < num_keys; i++) {
     record* rec = init_record(keys[i], "AAA");
     insert_head(&tab, rec);
@@ -134,7 +118,6 @@ int main() {
   record* previous = search_previous(&tab, 3);
   bool found = previous != NULL;
   printf("3 was %s\n", found ? previous->next->value : "NOT FOUND.");
-  print(&tab);
 
   // erase 3
   erase_target(&tab, 3);
@@ -159,9 +142,6 @@ int main() {
 // LENGTH: 6
 //
 // 3 was AAA
-// TABLE: [ {100, B} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
-// LENGTH: 6
-//
 // TABLE: [ {100, B} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
 // LENGTH: 5
 //

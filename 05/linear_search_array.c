@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,21 +16,6 @@ typedef struct {
   record records[MAX_NUM_RECORDS];
 } table;
 
-void swap(int* a, int* b) {
-  int tmp = *a;
-  *a = *b;
-  *b = tmp;
-}
-
-// Fisher–Yates shuffle というアルゴリズムを使います
-void shuffle(int* array, int length) {
-  int i = length;
-  while (i > 1) {
-    int j = rand() % i--;
-    swap(&array[i], &array[j]);
-  }
-}
-
 int search(table* tab, int target) {
   tab->records[tab->length].key = target;
   int index = 0;
@@ -42,10 +28,7 @@ int search(table* tab, int target) {
 }
 
 void insert_tail(table* tab, record rec) {
-  if (tab->length >= MAX_NUM_RECORDS - 1) {
-    printf("ERROR: No more record can be inserted into table.\n");
-    return;
-  }
+  assert(tab->length < MAX_NUM_RECORDS);
 
   tab->records[tab->length] = rec;
   tab->length++;
@@ -82,13 +65,10 @@ void print(table* tab) {
 }
 
 int main() {
-  // shuffle keys ([0...4])
-  int keys[] = {0, 1, 2, 3, 4};
-  int num_keys = sizeof(keys) / sizeof(int);
-  shuffle(keys, num_keys);
-
   // create table
   table tab = {0};
+  int keys[] = {4, 1, 0, 2, 3};
+  int num_keys = sizeof(keys) / sizeof(int);
   for (int i = 0; i < num_keys; i++) {
     record rec = {keys[i], "AAA"};
     insert_tail(&tab, rec);
