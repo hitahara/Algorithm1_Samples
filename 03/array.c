@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -25,10 +26,7 @@ typedef struct {
 //   大抵の処理系では 4004 bytes です。それに対してポインタは
 //   8 bytes と圧倒的に小さいです。
 void insert(sequence* seq, int pos, int val) {
-  if (seq->length >= SIZE) {
-    printf("No more element can be inserted into elements.\n");
-    return;
-  }
+  assert(seq->length < SIZE);
 
   for (int i = seq->length - 1; i >= pos; i--) {
     seq->elements[i + 1] = seq->elements[i];
@@ -55,8 +53,9 @@ void print(sequence* seq) {
 }
 
 int main() {
+  // list と異なり、固定長配列である array は
+  // 大抵は動的確保(malloc)する必要がありません。
   sequence seq = {0, {0}};
-
   for (int i = 0; i < 10; i++) {
     insert(&seq, i, i);
   }

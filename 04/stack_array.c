@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,20 +15,14 @@ void clear(stack* stack) {
 }
 
 void push(stack* stack, int val) {
-  if (stack->length >= SIZE) {
-    printf("No more element can be pushed into the stack.\n");
-    return;
-  }
+  assert(stack->length < SIZE);
 
   stack->elements[stack->length] = val;
   stack->length++;
 }
 
 void pop(stack* stack, int* val) {
-  if (stack->length == 0) {
-    printf("No more element can be popped from the elements.\n");
-    return;
-  }
+  assert(stack->length != 0);
 
   stack->length--;
   *val = stack->elements[stack->length];

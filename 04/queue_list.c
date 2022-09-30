@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,10 +44,8 @@ void enqueue(queue* q, int val) {
 }
 
 void dequeue(queue* q, int* val) {
-  if (empty(q)) {
-    printf("No more element can be dequeued from the queue.\n");
-    return;
-  }
+  assert(!empty(q));
+
   *val = q->head->element;
   cell* c = q->head;
   q->head = q->head->next;

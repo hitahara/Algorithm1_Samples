@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,10 +24,7 @@ bool empty(queue* q) {
 }
 
 void enqueue(queue* q, int val) {
-  if (q->count >= SIZE) {
-    printf("No more element can be enqueued into the queue.\n");
-    return;
-  }
+  assert(q->count < SIZE);
 
   q->elements[q->tail] = val;
   q->tail++;
@@ -39,10 +37,7 @@ void enqueue(queue* q, int val) {
 }
 
 void dequeue(queue* q, int* val) {
-  if (q->count <= 0) {
-    printf("No more element can be dequeued from the queue.\n");
-    return;
-  }
+  assert(q->count > 0);
 
   *val = q->elements[q->head];
   q->head++;

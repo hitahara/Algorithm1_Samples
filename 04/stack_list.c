@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,10 +31,8 @@ void push(stack* s, int val) {
 }
 
 void pop(stack* s, int* val) {
-  if (s == NULL) {
-    printf("No more element can be popped from the stack.\n");
-    return;
-  }
+  assert(s->head != NULL);
+
   *val = s->head->element;
   cell* c = s->head;
   s->head = s->head->next;
