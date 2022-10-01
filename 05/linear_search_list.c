@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _record {
+typedef struct record_ {
   int key;
   char value[32];
-  struct _record* next;
+  struct record_* next;
 } record;
 
 typedef struct {
