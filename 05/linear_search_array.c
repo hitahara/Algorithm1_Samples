@@ -80,18 +80,25 @@ int main() {
   print(&tab);
 
   // search 3
-  int index = search(&tab, 3);
-  bool found = index != -1;
-  printf("3 was %s\n", found ? tab.records[index].value : "NOT FOUND.");
+  int target = 3;
+  int index = search(&tab, target);
+  if (index != -1) {
+    printf("%d was %s\n", target, tab.records[index].value);
+  } else {
+    printf("%d was NOT FOUND\n", target);
+  }
 
   // erase 3
   erase(&tab, index);
   print(&tab);
 
   // search 3
-  index = search(&tab, 3);
-  found = index != -1;
-  printf("3 was %s\n", found ? tab.records[index].value : "NOT FOUND.");
+  index = search(&tab, target);
+  if (index != -1) {
+    printf("%d was %s\n", target, tab.records[index].value);
+  } else {
+    printf("%d was NOT FOUND\n", target);
+  }
 
   return 0;
 }
