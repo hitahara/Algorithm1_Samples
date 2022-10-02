@@ -34,9 +34,9 @@ void push(stack* s, int val) {
 int pop(stack* s) {
   assert(s->head != NULL);
 
+  int val = s->head->element;
   cell* c = s->head;
   s->head = s->head->next;
-  int val = c->element;
   free(c);
   return val;
 }
