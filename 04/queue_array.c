@@ -28,11 +28,9 @@ void enqueue(queue* q, int val) {
 
   q->elements[q->tail] = val;
   q->tail++;
-
   if (q->tail >= SIZE) {
     q->tail = 0;
   }
-
   q->count++;
 }
 
@@ -42,11 +40,9 @@ int dequeue(queue* q) {
 
   int val = q->elements[q->head];
   q->head++;
-
   if (q->head >= SIZE) {
     q->head = 0;
   }
-
   q->count--;
   return val;
 }
