@@ -36,11 +36,6 @@ void clear(table* tab) {
   tab->sentinel = NULL;
 }
 
-void insert_head(table* tab, record* p) {
-  p->next = tab->header->next;
-  tab->header->next = p;
-}
-
 record* search_previous(table* tab, int target) {
   tab->sentinel->key = target;
   record* previous = tab->header;
@@ -59,8 +54,12 @@ record* search_previous(table* tab, int target) {
   return found ? previous : NULL;
 }
 
-void erase_target(table* tab, int target) {
-  record* previous = search_previous(tab, target);
+void insert_head(table* tab, record* rec) {
+  rec->next = tab->header->next;
+  tab->header->next = rec;
+}
+
+void erase_next(record* previous) {
   record* current = previous->next;
   previous->next = current->next;
   free(current);
@@ -115,18 +114,25 @@ int main() {
   print(&tab);
 
   // search 3
-  record* previous = search_previous(&tab, 3);
-  bool found = previous != NULL;
-  printf("3 was %s\n", found ? previous->next->value : "NOT FOUND.");
+  int target = 3;
+  record* previous = search_previous(&tab, target);
+  if (previous != NULL) {
+    printf("%d was %s\n", target, previous->next->value);
+  } else {
+    printf("%d was NOT FOUND\n", target);
+  }
 
   // erase 3
-  erase_target(&tab, 3);
+  erase_next(previous);
   print(&tab);
 
   // search 3
-  previous = search_previous(&tab, 3);
-  found = previous != NULL;
-  printf("3 was %s\n", found ? previous->next->value : "NOT FOUND.");
+  previous = search_previous(&tab, target);
+  if (previous != NULL) {
+    printf("%d was %s\n", target, previous->next->value);
+  } else {
+    printf("%d was NOT FOUND\n", target);
+  }
 
   clear(&tab);
   return 0;
