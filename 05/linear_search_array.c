@@ -16,19 +16,19 @@ typedef struct {
   record records[MAX_NUM_RECORDS];
 } table;
 
+// target と同じ key を持つ record の index を返します。
+// 条件に合致する record が見つからない場合は -1 を返します。
 int search(table* tab, int target) {
-  tab->records[tab->length].key = target;
+  tab->records[tab->length].key = target;  // sentinel
   int index = 0;
   while (target != tab->records[index].key) {
     index++;
   }
-
-  // 見つからなければ -1 を返します
   return index < tab->length ? index : -1;
 }
 
-void insert_tail(table* tab, record rec) {
-  assert(tab->length < MAX_NUM_RECORDS);
+void insert(table* tab, record rec) {
+  assert(tab->length < MAX_NUM_RECORDS - 1);
 
   tab->records[tab->length] = rec;
   tab->length++;
@@ -41,7 +41,7 @@ void erase(table* tab, int pos) {
   tab->length--;
 }
 
-void cli_insert_tail(table* tab) {
+void cli_insert(table* tab) {
   printf("Type in a key (>= 0) and a field. (example: \"100 BBB\")\n");
   while (true) {
     record rec;
@@ -49,7 +49,7 @@ void cli_insert_tail(table* tab) {
     if (search(tab, rec.key) != -1) {
       printf("The key is already used.\n");
     } else {
-      insert_tail(tab, rec);
+      insert(tab, rec);
       return;
     }
   }
@@ -71,12 +71,12 @@ int main() {
   int num_keys = sizeof(keys) / sizeof(int);
   for (int i = 0; i < num_keys; i++) {
     record rec = {keys[i], "AAA"};
-    insert_tail(&tab, rec);
+    insert(&tab, rec);
   }
   print(&tab);
 
   // insert user input
-  cli_insert_tail(&tab);
+  cli_insert(&tab);
   print(&tab);
 
   // search 3
