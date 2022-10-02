@@ -14,42 +14,41 @@ typedef struct {
   cell* tail;
 } queue;
 
-void clear(queue* q) {
-  cell* current = q->head;
+void clear(queue* que) {
+  cell* current = que->head;
   while (current != NULL) {
     cell* next = current->next;
     free(current);
     current = next;
   }
-  q->head = NULL;
-  q->tail = NULL;
+  que->head = NULL;
+  que->tail = NULL;
 }
 
-bool empty(queue* q) {
-  return q->head == NULL;
+bool empty(queue* que) {
+  return que->head == NULL;
 }
 
-void enqueue(queue* q, int val) {
+void enqueue(queue* que, int val) {
   cell* c = (cell*)malloc(sizeof(cell));
   c->element = val;
   c->next = NULL;
 
-  if (empty(q)) {
-    q->head = c;
+  if (empty(que)) {
+    que->head = c;
   } else {
-    q->tail->next = c;
+    que->tail->next = c;
   }
-
-  q->tail = c;
+  que->tail = c;
 }
 
 // 講義スライドと異なり、dequeue された値を返り値とします。
-int dequeue(queue* q) {
-  assert(!empty(q));
+int dequeue(queue* que) {
+  assert(!empty(que));
 
-  cell* c = q->head;
-  int val = c->element;
-  q->head = q->head->next;
+  int val = que->head->element;
+  cell* c = que->head;
+  que->head = que->head->next;
   free(c);
   return val;
 }
