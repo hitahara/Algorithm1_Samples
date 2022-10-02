@@ -5,6 +5,10 @@
 
 #define SIZE 1000
 
+// C 言語の配列は zero origin であることから
+// 講義スライドの sp と 本サンプルの length は
+// 役割が若干異なります。それによって push や
+// pop の実装も違いがあるので注意してください。
 typedef struct {
   int length;
   int elements[SIZE];
