@@ -66,7 +66,7 @@ void erase_next(record* previous) {
 }
 
 void cli_insert_head(table* tab) {
-  printf("Type in a key (>= 0) and a field. (example: \"100 BBB\")\n");
+  printf("Type in a key (>= 0) and a field. (example: \"100 XX\")\n");
   while (true) {
     record* rec = init_record(-1, "");
     scanf("%d %s", &rec->key, rec->value);
@@ -82,15 +82,12 @@ void cli_insert_head(table* tab) {
 
 void print(table* tab) {
   printf("TABLE: [ ");
-  int length = 0;
   record* current = tab->header->next;
   while (current != tab->sentinel) {
     printf("{%d, %s} ", current->key, current->value);
     current = current->next;
-    length++;
   }
   printf("]\n");
-  printf("LENGTH: %d\n\n", length);
 }
 
 int main() {
@@ -100,13 +97,11 @@ int main() {
   tab.header = init_record(-1, "");
   tab.header->next = tab.sentinel;
 
-  // insert records
-  int keys[] = {4, 1, 0, 2, 3};
-  int num_keys = sizeof(keys) / sizeof(int);
-  for (int i = 0; i < num_keys; i++) {
-    record* rec = init_record(keys[i], "AAA");
-    insert_head(&tab, rec);
-  }
+  insert_head(&tab, init_record(5, "EEE"));
+  insert_head(&tab, init_record(2, "BBB"));
+  insert_head(&tab, init_record(1, "AAA"));
+  insert_head(&tab, init_record(3, "CCC"));
+  insert_head(&tab, init_record(4, "DDD"));
   print(&tab);
 
   // insert user input
@@ -139,16 +134,10 @@ int main() {
 }
 
 // 実行結果
-// TABLE: [ {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
-// LENGTH: 5
-//
-// Type in a key (>= 0) and a field. (example: "100 BBB")
-// 100 B
-// TABLE: [ {100, B} {3, AAA} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
-// LENGTH: 6
-//
-// 3 was AAA
-// TABLE: [ {100, B} {2, AAA} {0, AAA} {1, AAA} {4, AAA} ]
-// LENGTH: 5
-//
-// 3 was NOT FOUND.
+// TABLE: [ {4, DDD} {3, CCC} {1, AAA} {2, BBB} {5, EEE} ]
+// Type in a key (>= 0) and a field. (example: "100 XX")
+// 100 XXX
+// TABLE: [ {100, XXX} {4, DDD} {3, CCC} {1, AAA} {2, BBB} {5, EEE} ]
+// 3 was CCC
+// TABLE: [ {100, XXX} {4, DDD} {1, AAA} {2, BBB} {5, EEE} ]
+// 3 was NOT FOUND

@@ -27,10 +27,11 @@ int search(table* tab, int target) {
   return index < tab->length ? index : -1;
 }
 
-void insert(table* tab, record rec) {
+void insert(table* tab, int key, const char* value) {
   assert(tab->length < MAX_NUM_RECORDS - 1);
 
-  tab->records[tab->length] = rec;
+  tab->records[tab->length].key = key;
+  strcpy(tab->records[tab->length].value, value);
   tab->length++;
 }
 
@@ -42,14 +43,16 @@ void erase(table* tab, int pos) {
 }
 
 void cli_insert(table* tab) {
-  printf("Type in a key (>= 0) and a field. (example: \"100 BBB\")\n");
+  printf("Type in a key (>= 0) and a field. (example: \"100 XXX\")\n");
   while (true) {
-    record rec;
-    scanf("%d %s", &rec.key, rec.value);
-    if (search(tab, rec.key) != -1) {
+    // record rec;
+    int key;
+    char value[32];
+    scanf("%d %s", &key, value);
+    if (search(tab, key) != -1) {
       printf("The key is already used.\n");
     } else {
-      insert(tab, rec);
+      insert(tab, key, value);
       return;
     }
   }
@@ -61,18 +64,16 @@ void print(table* tab) {
     printf("{%d, %s} ", tab->records[i].key, tab->records[i].value);
   }
   printf("]\n");
-  printf("LENGTH: %d\n\n", tab->length);
 }
 
 int main() {
   // create table
   table tab = {0};
-  int keys[] = {4, 1, 0, 2, 3};
-  int num_keys = sizeof(keys) / sizeof(int);
-  for (int i = 0; i < num_keys; i++) {
-    record rec = {keys[i], "AAA"};
-    insert(&tab, rec);
-  }
+  insert(&tab, 5, "EEE");
+  insert(&tab, 2, "BBB");
+  insert(&tab, 1, "AAA");
+  insert(&tab, 3, "CCC");
+  insert(&tab, 4, "DDD");
   print(&tab);
 
   // insert user input
@@ -104,16 +105,10 @@ int main() {
 }
 
 // 実行結果
-// TABLE: [ {4, AAA} {1, AAA} {0, AAA} {2, AAA} {3, AAA} ]
-// LENGTH: 5
-//
-// Type in a key (>= 0) and a field. (example: "100 BBB")
-// 100 B
-// TABLE: [ {4, AAA} {1, AAA} {0, AAA} {2, AAA} {3, AAA} {100, B} ]
-// LENGTH: 6
-//
-// 3 was AAA
-// TABLE: [ {4, AAA} {1, AAA} {0, AAA} {2, AAA} {100, B} ]
-// LENGTH: 5
-//
-// 3 was NOT FOUND.
+// TABLE: [ {5, EEE} {2, BBB} {1, AAA} {3, CCC} {4, DDD} ]
+// Type in a key (>= 0) and a field. (example: "100 XXX")
+// 100 XXX
+// TABLE: [ {5, EEE} {2, BBB} {1, AAA} {3, CCC} {4, DDD} {100, XXX} ]
+// 3 was CCC
+// TABLE: [ {5, EEE} {2, BBB} {1, AAA} {4, DDD} {100, XXX} ]
+// 3 was NOT FOUND
