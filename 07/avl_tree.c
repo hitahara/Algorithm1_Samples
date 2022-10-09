@@ -17,33 +17,33 @@ typedef struct node_ {
   direction balance;
 } node;
 
-bool rebalance(node** p, direction dir) {
-  direction opp;
-  if (dir == LEFT) {
-    opp = RIGHT;
+bool rebalance(node** p, direction inserted_dir) {
+  direction opposite_dir;
+  if (inserted_dir == LEFT) {
+    opposite_dir = RIGHT;
   } else {
-    opp = LEFT;
+    opposite_dir = LEFT;
   }
 
   // case 1: 挿入された方向と逆の高さが1高い場合
   node* a = *p;
-  if (a->balance == opp) {
+  if (a->balance == opposite_dir) {
     a->balance = BALANCED;
     return false;
   }
 
   // case 2: 左右の高さが等しい場合
   if (a->balance == BALANCED) {
-    a->balance = dir;
+    a->balance = inserted_dir;
     return true;
   }
 
   // case 3: 挿入された方向の高さが1高い場合
   // case 3a: 1重回転
-  node* b = a->children[dir];
-  if (b->balance == dir) {
-    a->children[dir] = b->children[opp];  // βをBからAに付け替え
-    b->children[opp] = a;                 // βの場所にAを入れる
+  node* b = a->children[inserted_dir];
+  if (b->balance == inserted_dir) {
+    a->children[inserted_dir] = b->children[opposite_dir];  // βをBからAに付け替え
+    b->children[opposite_dir] = a;                          // βの場所にAを入れる
     a->balance = BALANCED;
     b->balance = BALANCED;
     *p = b;  // Bを上に持ち上げる
@@ -51,21 +51,21 @@ bool rebalance(node** p, direction dir) {
   }
 
   // case 3c: 2重回転
-  if (b->balance == opp) {
-    node* c = b->children[opp];
-    b->children[opp] = c->children[dir];  // β1をCからBに付け替え
-    a->children[dir] = c->children[opp];  // β2をCからAに付け替え
-    c->children[dir] = b;                 // BをCに付け替え
-    c->children[opp] = a;                 // AをCに付け替え
-    if (c->balance != opp) {
+  if (b->balance == opposite_dir) {
+    node* c = b->children[opposite_dir];
+    b->children[opposite_dir] = c->children[inserted_dir];  // β1をCからBに付け替え
+    a->children[inserted_dir] = c->children[opposite_dir];  // β2をCからAに付け替え
+    c->children[inserted_dir] = b;                          // BをCに付け替え
+    c->children[opposite_dir] = a;                          // AをCに付け替え
+    if (c->balance != opposite_dir) {
       b->balance = BALANCED;
     } else {
-      b->balance = dir;
+      b->balance = inserted_dir;
     }
-    if (c->balance != dir) {
+    if (c->balance != inserted_dir) {
       a->balance = BALANCED;
     } else {
-      a->balance = opp;
+      a->balance = opposite_dir;
     }
     *p = c;  // Cを上に持ち上げる
     return false;
@@ -75,7 +75,7 @@ bool rebalance(node** p, direction dir) {
   assert(false);
 }
 
-// grown を返す。
+// 部分木が成長した場合は true を、そうでない場合は false を返す。
 bool insert(node** p_current, int key, const char* value) {
   node* current = *p_current;
 
