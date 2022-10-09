@@ -7,79 +7,79 @@
 #define SIZE 1000
 
 typedef struct {
-  int head;
-  int tail;
-  int count;
-  int elements[SIZE];
+    int head;
+    int tail;
+    int count;
+    int elements[SIZE];
 } queue;
 
 void clear(queue* q) {
-  q->head = 0;
-  q->tail = 0;
-  q->count = 0;
+    q->head = 0;
+    q->tail = 0;
+    q->count = 0;
 }
 
 bool empty(queue* q) {
-  return q->count == 0;
+    return q->count == 0;
 }
 
 void enqueue(queue* q, int val) {
-  assert(q->count < SIZE);
+    assert(q->count < SIZE);
 
-  q->elements[q->tail] = val;
-  q->tail++;
-  if (q->tail >= SIZE) {
-    q->tail = 0;
-  }
-  q->count++;
+    q->elements[q->tail] = val;
+    q->tail++;
+    if (q->tail >= SIZE) {
+        q->tail = 0;
+    }
+    q->count++;
 }
 
 // 講義スライドと異なり、dequeue された値を返り値とします。
 int dequeue(queue* q) {
-  assert(q->count > 0);
+    assert(q->count > 0);
 
-  int val = q->elements[q->head];
-  q->head++;
-  if (q->head >= SIZE) {
-    q->head = 0;
-  }
-  q->count--;
-  return val;
+    int val = q->elements[q->head];
+    q->head++;
+    if (q->head >= SIZE) {
+        q->head = 0;
+    }
+    q->count--;
+    return val;
 }
 
 void print(queue* q) {
-  printf("QUEUE: [ ");
-  int index = q->head;
-  for (int count = 0; count < q->count; count++) {
-    printf("%d ", q->elements[index]);
-    index = (index + 1) % SIZE;
-  }
-  printf("]\n");
+    printf("QUEUE: [ ");
+    int index = q->head;
+    for (int count = 0; count < q->count; count++) {
+        printf("%d ", q->elements[index]);
+        index = (index + 1) % SIZE;
+    }
+    printf("]\n");
 
-  // SIZE を 8 程度にして操作の内容を変更して
-  // リングバッファの様子を確認してみましょう
-  // printf("ELEMENTS: [ ");
-  // for(int i = 0; i < SIZE; i++ )
-  // {
-  //   printf("%d ", q->elements[i] );
-  // }
-  // printf("]\n");
+    // SIZE を 8 程度にして操作の内容を変更して
+    // リングバッファの様子を確認してみましょう
+    // printf("ELEMENTS: [ ");
+    // for(int i = 0; i < SIZE; i++ )
+    // {
+    //   printf("%d ", q->elements[i] );
+    // }
+    // printf("]\n");
 }
 
 int main() {
-  queue q = {0, 0, 0, {0}};
+    queue q = {0, 0, 0, {0}};
 
-  for (int i = 0; i < 10; i++) {
-    enqueue(&q, i);
-  }
-  print(&q);
+    for (int i = 0; i < 10; i++) {
+        enqueue(&q, i);
+    }
+    print(&q);
 
-  printf("DEQUEUE: %d\n", dequeue(&q));
-  print(&q);
+    printf("DEQUEUE: %d\n", dequeue(&q));
+    print(&q);
 
-  clear(&q);
-  print(&q);
-  return 0;
+    clear(&q);
+    print(&q);
+    return 0;
 }
 
 // 実行結果

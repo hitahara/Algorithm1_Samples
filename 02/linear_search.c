@@ -4,45 +4,45 @@
 #include <time.h>
 
 bool linear_search(int* table, int length, int x) {
-  for (int i = 0; i < length; i++) {
-    if (x == table[i]) {
-      return true;
+    for (int i = 0; i < length; i++) {
+        if (x == table[i]) {
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 int main() {
-  int length;
-  printf("Type in the length of the array...\n");
-  scanf("%d", &length);
+    int length;
+    printf("Type in the length of the array...\n");
+    scanf("%d", &length);
 
-  int* table = (int*)malloc(length * sizeof(int));
+    int* table = (int*)malloc(length * sizeof(int));
 
-  printf("Type in the table numbers (number >= 0)...\n");
-  for (int i = 0; i < length; i++) {
-    scanf("%d", &table[i]);
-  }
-
-  while (true) {
-    int target = -1;
-    printf("\nType in the target number... (Type in number < 0 to exit)\n");
-    scanf("%d", &target);
-    if (target < 0) {
-      break;
+    printf("Type in the table numbers (number >= 0)...\n");
+    for (int i = 0; i < length; i++) {
+        scanf("%d", &table[i]);
     }
 
-    double start_clock = (double)clock();
-    bool found = linear_search(table, length, target);
-    double end_clock = (double)clock();
+    while (true) {
+        int target = -1;
+        printf("\nType in the target number... (Type in number < 0 to exit)\n");
+        scanf("%d", &target);
+        if (target < 0) {
+            break;
+        }
 
-    printf("CPU execution time: %.8lf s.\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
-    printf("Is target in the table: %s\n", found ? "Yes" : "No");
-  }
+        double start_clock = (double)clock();
+        bool found = linear_search(table, length, target);
+        double end_clock = (double)clock();
 
-  free(table);
+        printf("CPU execution time: %.8lf s.\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
+        printf("Is target in the table: %s\n", found ? "Yes" : "No");
+    }
 
-  return 0;
+    free(table);
+
+    return 0;
 }
 
 // 実行結果

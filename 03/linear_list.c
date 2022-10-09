@@ -7,8 +7,8 @@
 // 仮の構造体名 cell_ を先に付けておき、あとから typedef で
 // 正しい名前 cell をつけています。
 typedef struct cell_ {
-  int element;
-  struct cell_* next;
+    int element;
+    struct cell_* next;
 } cell;
 
 // 講義スライドでは list は cell* の別名ですが、このコードでは
@@ -19,79 +19,79 @@ typedef struct cell_ {
 // head と tail の両方を持つようなデータ構造にも容易に拡張できます。
 typedef struct
 {
-  cell* head;
+    cell* head;
 } list;
 
 void clear(list* l) {
-  cell* current = l->head;
-  while (current != NULL) {
-    cell* next = current->next;
-    free(current);
-    current = next;
-  }
-  l->head = NULL;
+    cell* current = l->head;
+    while (current != NULL) {
+        cell* next = current->next;
+        free(current);
+        current = next;
+    }
+    l->head = NULL;
 }
 
 void insert(cell* previous, int val) {
-  cell* c = (cell*)malloc(sizeof(cell));
-  c->element = val;
-  c->next = previous->next;
-  previous->next = c;
+    cell* c = (cell*)malloc(sizeof(cell));
+    c->element = val;
+    c->next = previous->next;
+    previous->next = c;
 }
 
 void insert_head(list* l, int val) {
-  cell* c = (cell*)malloc(sizeof(cell));
-  c->element = val;
-  c->next = l->head;
-  l->head = c;
+    cell* c = (cell*)malloc(sizeof(cell));
+    c->element = val;
+    c->next = l->head;
+    l->head = c;
 }
 
 void erase(cell* previous) {
-  cell* target = previous->next;
-  previous->next = target->next;
-  free(target);
+    cell* target = previous->next;
+    previous->next = target->next;
+    free(target);
 }
 
 void erase_head(list* l) {
-  cell* target = l->head;
-  l->head = target->next;
-  free(target);
+    cell* target = l->head;
+    l->head = target->next;
+    free(target);
 }
 
 void print(list* l) {
-  printf("LIST: [ ");
-  cell* current = l->head;
-  while (current != NULL) {
-    printf("%d ", current->element);
-    current = current->next;
-  }
-  printf("]\n");
+    printf("LIST: [ ");
+    cell* current = l->head;
+    while (current != NULL) {
+        printf("%d ", current->element);
+        current = current->next;
+    }
+    printf("]\n");
 }
 
 int main() {
-  list l = {NULL};
+    list l = {NULL};
 
-  cell* c;
-  for (int i = 0; i < 10; i++) {
-    insert_head(&l, i);
-    if (i == 6)
-      c = l.head;
-  }
-  print(&l);
+    cell* c;
+    for (int i = 0; i < 10; i++) {
+        insert_head(&l, i);
+        if (i == 6)
+            c = l.head;
+    }
+    print(&l);
 
-  insert(c, 100);
-  print(&l);
+    insert(c, 100);
+    print(&l);
 
-  erase(c);
-  print(&l);
+    erase(c);
+    print(&l);
 
-  erase_head(&l);
-  print(&l);
+    erase_head(&l);
+    print(&l);
 
-  clear(&l);
-  print(&l);
+    clear(&l);
+    print(&l);
 
-  return 0;
+    return 0;
 }
 
 // 実行結果
