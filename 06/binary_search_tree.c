@@ -106,7 +106,7 @@ void print(node* current, int depth) {
   for (int i = 0; i < depth; i++) {
     printf("  ");
   }
-  printf("{ %d, %s}\n", current->key, current->value);
+  printf("{%d, %s}\n", current->key, current->value);
 
   // left
   print(current->left, depth + 1);
