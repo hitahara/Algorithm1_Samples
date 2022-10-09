@@ -14,7 +14,7 @@ bool binary_search(int* table, int length, int x) {
       low = middle + 1;
     }
   }
-  return (high >= 0) && (x == table[high]);
+  return (high > -1) && (x == table[high]);
 }
 
 int main() {
