@@ -17,6 +17,7 @@ typedef struct node_ {
     direction balance;
 } node;
 
+// 部分木が成長した場合は true を、そうでない場合は false を返す。
 bool rebalance(node** p, direction inserted_dir) {
     direction opposite_dir;
     if (inserted_dir == LEFT) {
