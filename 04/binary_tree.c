@@ -66,7 +66,7 @@ void post_order(node* p) {
   }
 }
 
-node* create_root() {
+int main() {
   node* root = init_node('*');
   root->left = init_node('+');
   root->right = init_node('-');
@@ -76,11 +76,6 @@ node* create_root() {
   root->right->right = init_node('/');
   root->right->right->left = init_node('d');
   root->right->right->right = init_node('e');
-  return root;
-}
-
-int main() {
-  node* root = create_root();
 
   printf("TREE: [ ");
   pre_order(root);
@@ -104,6 +99,7 @@ int main() {
 }
 
 // 実行結果
-// * + a b - c / d e
-// a + b * c - d / e
-// a b + c d e / - *
+// TREE: [ * + a b - c / d e ]
+// TREE: [ a + b * c - d / e ]
+// TREE: [ a b + c d e / - * ]
+// TREE: [ ]
