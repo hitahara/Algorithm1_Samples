@@ -32,11 +32,11 @@ int main() {
             break;
         }
 
-        double start_clock = (double)clock();
+        long start_clock = clock();
         bool found = linear_search(table, length, target);
-        double end_clock = (double)clock();
+        long end_clock = clock();
 
-        printf("CPU execution time: %.8lf s.\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
+        printf("CPU execution time: %.8lf s.\n", (end_clock - start_clock) / (double)CLOCKS_PER_SEC);
         printf("Is target in the table: %s\n", found ? "Yes" : "No");
     }
 
