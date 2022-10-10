@@ -41,7 +41,7 @@ int main() {
         bool found = binary_search(table, length, target);
         long end_clock = clock();
 
-        printf("CPU execution time: %.8lf s.\n", (end_clock - start_clock) / (double)CLOCKS_PER_SEC);
+        printf("CPU execution time: %.8lf s.\n", (double)(end_clock - start_clock) / CLOCKS_PER_SEC);
         printf("Is target in the table: %s\n", found ? "Yes" : "No");
     }
 
