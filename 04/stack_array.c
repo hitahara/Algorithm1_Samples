@@ -35,7 +35,7 @@ int pop(stack* stack) {
 
 void print(stack* s) {
     printf("ELEMENTS: [ ");
-    for (int i = s->length - 1; i >= 0; i--) {
+    for (int i = 0; i < s->length; i++) {
         printf("%d ", s->elements[i]);
     }
     printf("]\n");
@@ -60,10 +60,10 @@ int main() {
 }
 
 // 実行結果
-// ELEMENTS: [ 9 8 7 6 5 4 3 2 1 0 ]
+// ELEMENTS: [ 0 1 2 3 4 5 6 7 8 9 ]
 // STACK POINTER: 10
 // POP: 9
-// ELEMENTS: [ 8 7 6 5 4 3 2 1 0 ]
+// ELEMENTS: [ 0 1 2 3 4 5 6 7 8 ]
 // STACK POINTER: 9
 // ELEMENTS: [ ]
 // STACK POINTER: 0
