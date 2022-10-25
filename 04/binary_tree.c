@@ -7,9 +7,9 @@
 // していました。しかし、別の構造体にすると統一的な再帰関数
 // を定義できないというデメリットがあります。木構造では
 // 再帰関数が多用されるため構造体を1つにします。また、
-// C言語において typedef node* tree; と書くとスライド同様に
-// tree を扱えますが、第6回サンプルで使用する pointer to
-// pointer において混乱を招くため tree は定義しません。
+// C言語において typedef node* tree; と書くとスライド同様
+// に tree を扱えますが、次のコメントで言及する pointer to
+// pointer において混乱を招くため、tree は定義しません。
 typedef struct node_ {
     char element;
     struct node_* left;
@@ -22,6 +22,25 @@ node* init_node(char element) {
     n->left = NULL;
     n->right = NULL;
     return n;
+}
+
+// list では node と別の構造体にすることで pointer
+// to pointer と dereference を回避していました。
+// 木構造では、これらを回避するとかなりコードが肥大化
+// してしまうため、採用することにします。
+// pointer to pointer はその名の通り pointer を指す
+// pointer です。単なる pointer はそれが指すインスタンス
+// の中身を変更できます。それに対して pointer to pointer
+// は pointer の中身、つまり pointer が指すインスタンス
+// そのものを、別のインスタンス、または NULL に変更できます。
+void clear(node** p_current) {
+    node* current = *p_current;
+    if (current != NULL) {
+        clear(&current->left);
+        clear(&current->right);
+        free(current);
+        *p_current = NULL;
+    }
 }
 
 void pre_order(node* p) {
@@ -71,6 +90,12 @@ int main() {
     post_order(root);
     printf("]\n");
 
+    clear(&root);
+
+    printf("TREE: [ ");
+    pre_order(root);
+    printf("]\n");
+
     return 0;
 }
 
@@ -78,3 +103,4 @@ int main() {
 // TREE: [ * + a b - c / d e ]
 // TREE: [ a + b * c - d / e ]
 // TREE: [ a b + c d e / - * ]
+// TREE: [ ]
