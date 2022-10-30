@@ -18,7 +18,12 @@ typedef struct {
 
 // key 以上となる値が現れる最小の index を返します。
 // もし条件を満たす値が存在しない場合は tab->length を返します。
-// この仕様は C++ の std::lower_bound に準拠しています。
+// さらに補足：
+//   この仕様は C++ の std::lower_bound に準拠しています。
+//   講義スライドの仕様は「key 以下となる値が現れる最大の index を返す」
+//   となっており、insertのコードで「table[pos+1] = data」と一つずらす
+//   必要が生じています。講義上はスライドに合わせた方が分かりやすいとは
+//   思うのですが、コード上分かりやすい仕様に変更させていただきました。
 int search(table* tab, int target) {
     int low = 0;
     int high = tab->length - 1;
