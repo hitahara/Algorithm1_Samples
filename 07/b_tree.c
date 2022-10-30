@@ -60,6 +60,8 @@ int locate(node* n, int target) {
     return high;
 }
 
+// target が見つかった場合はその node へのポインタを返す
+// 見つからなかった場合は NULL を返す
 node* search(node* root, int target) {
     if (root == NULL) {
         return NULL;
