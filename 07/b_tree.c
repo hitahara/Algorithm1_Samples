@@ -84,6 +84,12 @@ node* search(node* root, int target) {
     return NULL;
 }
 
+void swap(node** a, node** b) {
+    node* tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
 bool insert_(node** p_current, int key, const char* value, pair** p_secondary) {
     node* current = *p_current;
     pair* secondary = *p_secondary;
@@ -92,10 +98,7 @@ bool insert_(node** p_current, int key, const char* value, pair** p_secondary) {
 
         node* new_node = init_external_node(key, value);
         if (key < current->external.key) {
-            // current と new_node を swap
-            node* tmp = current;
-            *p_current = new_node;
-            new_node = tmp;
+            swap(p_current, &new_node);
         }
 
         secondary->ptr = new_node;
