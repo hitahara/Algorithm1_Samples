@@ -37,7 +37,13 @@ struct node_ {
     };
 };
 
-// TODO: use
+node* init_internal_node(int count) {
+    node* new_node = (node*)malloc(sizeof(node));
+    new_node->tag = INTERNAL;
+    new_node->internal.count = count;
+    return new_node;
+}
+
 node* init_external_node(int key, const char* value) {
     node* new_node = (node*)malloc(sizeof(node));
     new_node->tag = EXTERNAL;
@@ -84,10 +90,7 @@ bool insert_(node** p_current, int key, const char* value, pair** p_secondary) {
     if (current->tag == EXTERNAL) {
         assert(current->external.key != key);
 
-        node* new_node = (node*)malloc(sizeof(node));
-        new_node->tag = EXTERNAL;
-        new_node->external.key = key;
-        strcpy(new_node->external.value, value);
+        node* new_node = init_external_node(key, value);
         if (key < current->external.key) {
             // current と new_node を swap
             node* tmp = current;
@@ -141,19 +144,13 @@ bool insert_(node** p_current, int key, const char* value, pair** p_secondary) {
 
 void insert(node** p_root, int key, const char* value) {
     if (*p_root == NULL) {
-        node* root = (node*)malloc(sizeof(node));
-        root->tag = EXTERNAL;
-        root->external.key = key;
-        strcpy(root->external.value, value);
-        *p_root = root;
+        *p_root = init_external_node(key, value);
         return;
     }
 
     pair* secondary = (pair*)malloc(sizeof(pair));
     if (insert_(p_root, key, value, &secondary)) {
-        node* new_root = (node*)malloc(sizeof(node));
-        new_root->tag = INTERNAL;
-        new_root->internal.count = 2;
+        node* new_root = init_internal_node(2);
         new_root->internal.children[0].ptr = *p_root;
         new_root->internal.children[1] = *secondary;
         *p_root = new_root;
