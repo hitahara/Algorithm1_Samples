@@ -81,17 +81,36 @@ void print(table* tab) {
     printf("LENGTH: %d\n\n", tab->length);
 }
 
+// 入力をシャッフルするために用意した本題とは関係ない関数です。
+void shuffle(int* array, int length) {
+    int i = length;
+    while (i > 1) {
+        int j = rand() % i--;
+        int tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+}
+
 int main() {
+    // create inputs
+    int num_keys = 15;
+    int keys[15];
+    for (int i = 0; i < num_keys; i++) {
+        keys[i] = i;
+    }
+    shuffle(keys, num_keys);
+
     table tab = {0};
-    for (int i = 0; i < 5; i++) {
-        record rec = {i, "AAA"};
+    for (int i = 0; i < num_keys; i++) {
+        record rec = {keys[i], "AAA"};
         insert(&tab, rec);
     }
     print(&tab);
 
-    // insert user input
-    cli_insert(&tab);
-    print(&tab);
+    // // insert user input
+    // cli_insert(&tab);
+    // print(&tab);
 
     // search 3
     int target = 3;

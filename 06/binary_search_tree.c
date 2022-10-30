@@ -112,10 +112,27 @@ void print(node* current, int depth) {
     print(current->left, depth + 1);
 }
 
+// 入力をシャッフルするために用意した本題とは関係ない関数です。
+void shuffle(int* array, int length) {
+    int i = length;
+    while (i > 1) {
+        int j = rand() % i--;
+        int tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+}
+
 int main() {
+    // create inputs
+    int num_keys = 15;
+    int keys[15];
+    for (int i = 0; i < num_keys; i++) {
+        keys[i] = i;
+    }
+    shuffle(keys, num_keys);
+
     // create tree
-    int keys[] = {44, 55, 12, 42, 14, 18, 06, 67};
-    int num_keys = sizeof(keys) / sizeof(int);
     node* root = NULL;
     for (int i = 0; i < num_keys; i++) {
         insert(&root, keys[i], "AAA");
@@ -124,7 +141,7 @@ int main() {
     print(root, 0);
 
     // search target
-    int target = 44;
+    int target = 8;
     node* result = search(root, target);
     if (result != NULL) {
         printf("%d is %s\n", target, result->value);
