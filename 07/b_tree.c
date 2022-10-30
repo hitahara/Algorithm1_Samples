@@ -118,8 +118,8 @@ bool insert(node** p_current, int key, const char* value, pair** p_secondary) {
     // まだ子ノードを入れられる場合は、そのまま入れて終了します。
     if (current->internal.count < M) {
         // insert: 4
-        // before: [1][3][5][ ]
-        // after:  [1][3][4][5]
+        // before: [1][3][5][7][ ]
+        // after:  [1][3][4][5][7]
         //               ^^^ added
 
         for (int j = current->internal.count - 1; j >= index + 1; j--) {
@@ -140,11 +140,11 @@ bool insert(node** p_current, int key, const char* value, pair** p_secondary) {
         // ノードを追加したい箇所が split_index 以上であれば、
         // 分割して新しく作った方の内点に追加します。
         // insert 6 (index=2)
-        // before: [1][3][5][7]
-        // after1: [1][3][ ][ ]  [5][7][ ][ ]
+        // before: [1][3][5][7][9]
+        // after1: [1][3][5][ ]  [7][9][ ][ ]
         //                       ^^^^^^^^^^^^ new internal node
-        // after2: [1][3][ ][ ]  [5][6][7][ ]
-        //                          ^^^ added
+        // after2: [1][3][5][ ]  [6][7][9][ ]
+        //                       ^^^ added
 
         int new_index = 0;
         for (int j = split_index + 1; j <= index; j++) {
@@ -154,33 +154,30 @@ bool insert(node** p_current, int key, const char* value, pair** p_secondary) {
         for (int j = index + 1; j < M; j++) {
             new_node->internal.children[new_index++] = current->internal.children[j];
         }
-        current->internal.count = split_index + 1;
-        new_node->internal.count = M - split_index;
     } else {  // index < split_index
         // ノードを追加したい箇所が split_index 未満であれば、
         // 分割して残った方の内点に追加します。
         // insert 2 (index=0)
-        // before: [1][3][5][7]
-        // after1: [1][3][ ][ ]  [5][7][ ][ ]
+        // before: [1][3][5][7][9]
+        // after1: [1][3][ ][ ]  [5][7][9][ ]
         //                       ^^^^^^^^^^^^ new internal node
-        // after2: [1][2][3][ ]  [5][7][ ][ ]
+        // after2: [1][2][3][ ]  [5][7][9][ ]
         //            ^^^ added
 
         // new_node に子ノードの半分を移動させます。
         int new_index = 0;
-        for (int j = split_index + 1; j < M; j++) {
+        for (int j = split_index; j < M; j++) {
             new_node->internal.children[new_index++] = current->internal.children[j];
         }
 
         // current に新しい子ノードを追加します。
-        for (int j = split_index; j >= index + 1; j--) {
+        for (int j = split_index - 1; j >= index + 1; j--) {
             current->internal.children[j + 1] = current->internal.children[j];
         }
         current->internal.children[index + 1] = *secondary;
-
-        current->internal.count = split_index + 2;
-        new_node->internal.count = M - split_index - 1;
     }
+    current->internal.count = split_index + 1;
+    new_node->internal.count = M - split_index;
     secondary->ptr = new_node;
     secondary->bound = new_node->internal.children[0].bound;
     return true;
