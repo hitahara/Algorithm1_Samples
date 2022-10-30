@@ -83,12 +83,9 @@ node* search(node* root, int target) {
     return NULL;
 }
 
-void swap(node** a, node** b) {
-    node* tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
+// ノードを挿入するための再帰関数です。
+// 親ノードに対して新たに子ノードを追加する必要があるかどうかを返します。
+// p_secondary: 関数内から親ノードに対して新たに挿入を依頼するためのノード情報
 bool insert(node** p_current, int key, const char* value, pair** p_secondary) {
     node* current = *p_current;
     pair* secondary = *p_secondary;
@@ -97,7 +94,11 @@ bool insert(node** p_current, int key, const char* value, pair** p_secondary) {
 
         node* new_node = init_external_node(key, value);
         if (key < current->external.key) {
-            swap(p_current, &new_node);
+            // swap current and new_node
+            new_node->external.key = current->external.key;
+            current->external.key = key;
+            strcpy(new_node->external.value, current->external.value);
+            strcpy(current->external.value, value);
         }
 
         secondary->ptr = new_node;
@@ -114,8 +115,8 @@ bool insert(node** p_current, int key, const char* value, pair** p_secondary) {
         return false;
     }
 
+    // まだ子ノードを入れられる場合は、そのまま入れて終了します。
     if (current->internal.count < M) {
-        // まだ子ノードを入れられる場合
         // insert: 4
         // before: [1][3][5][ ]
         // after:  [1][3][4][5]
@@ -127,63 +128,62 @@ bool insert(node** p_current, int key, const char* value, pair** p_secondary) {
         current->internal.children[index + 1] = *secondary;
         current->internal.count++;
         return false;
-    } else {
-        // もう子ノードを入れられない場合
-        // これ以上追加できないため、ノードを分割します。
-
-        // 分割してノードの半数を移動するための新しい内点を作成します。
-        node* new_node = init_internal_node(0);
-
-        int split_index = (M + 1) / 2 - 1;
-        if (index >= split_index) {
-            // ノードを追加したい箇所が n 以上であれば、
-            // 分割して新しく作った方の内点に追加します。
-            // insert 6 (index=2)
-            // before: [1][3][5][7]
-            // after1: [1][3][ ][ ]  [5][7][ ][ ]
-            //                       ^^^^^^^^^^^^ new internal node
-            // after2: [1][3][ ][ ]  [5][6][7][ ]
-            //                          ^^^ added
-
-            int new_index = 0;
-            for (int j = split_index + 1; j <= index; j++) {
-                new_node->internal.children[new_index++] = current->internal.children[j];
-            }
-            new_node->internal.children[new_index++] = *secondary;
-            for (int j = index + 1; j < M; j++) {
-                new_node->internal.children[new_index++] = current->internal.children[j];
-            }
-            current->internal.count = split_index + 1;
-            new_node->internal.count = M - split_index;
-        } else {  // index < n
-            // ノードを追加したい箇所が n 未満であれば、
-            // 分割して残った方の内点に追加します。
-            // insert 2 (index=0)
-            // before: [1][3][5][7]
-            // after1: [1][3][ ][ ]  [5][7][ ][ ]
-            //                       ^^^^^^^^^^^^ new internal node
-            // after2: [1][2][3][ ]  [5][7][ ][ ]
-            //            ^^^ added
-
-            // new_node に子ノードの半分を移動させます。
-            int new_index = 0;
-            for (int j = split_index + 1; j < M; j++) {
-                new_node->internal.children[new_index] = current->internal.children[j];
-            }
-
-            // current に新しい子ノードを追加します。
-            for (int j = split_index; j >= index + 1; j--) {
-                current->internal.children[j + 1] = current->internal.children[j];
-            }
-            current->internal.children[index + 1] = *secondary;
-
-            current->internal.count = split_index + 2;
-            new_node->internal.count = M - split_index - 1;
-        }
-        secondary->ptr = new_node;
-        secondary->bound = new_node->internal.children[0].bound;
-        return true;
     }
+
+    // これ以降は、もう子ノードを入れられない場合です。
+    // これ以上追加できないため、ノードを分割します。
+    // 分割してノードの半数を移動するための新しい内点を作成します。
+    node* new_node = init_internal_node(0);
+
+    int split_index = (M + 1) / 2 - 1;
+    if (index >= split_index) {
+        // ノードを追加したい箇所が split_index 以上であれば、
+        // 分割して新しく作った方の内点に追加します。
+        // insert 6 (index=2)
+        // before: [1][3][5][7]
+        // after1: [1][3][ ][ ]  [5][7][ ][ ]
+        //                       ^^^^^^^^^^^^ new internal node
+        // after2: [1][3][ ][ ]  [5][6][7][ ]
+        //                          ^^^ added
+
+        int new_index = 0;
+        for (int j = split_index + 1; j <= index; j++) {
+            new_node->internal.children[new_index++] = current->internal.children[j];
+        }
+        new_node->internal.children[new_index++] = *secondary;
+        for (int j = index + 1; j < M; j++) {
+            new_node->internal.children[new_index++] = current->internal.children[j];
+        }
+        current->internal.count = split_index + 1;
+        new_node->internal.count = M - split_index;
+    } else {  // index < split_index
+        // ノードを追加したい箇所が split_index 未満であれば、
+        // 分割して残った方の内点に追加します。
+        // insert 2 (index=0)
+        // before: [1][3][5][7]
+        // after1: [1][3][ ][ ]  [5][7][ ][ ]
+        //                       ^^^^^^^^^^^^ new internal node
+        // after2: [1][2][3][ ]  [5][7][ ][ ]
+        //            ^^^ added
+
+        // new_node に子ノードの半分を移動させます。
+        int new_index = 0;
+        for (int j = split_index + 1; j < M; j++) {
+            new_node->internal.children[new_index++] = current->internal.children[j];
+        }
+
+        // current に新しい子ノードを追加します。
+        for (int j = split_index; j >= index + 1; j--) {
+            current->internal.children[j + 1] = current->internal.children[j];
+        }
+        current->internal.children[index + 1] = *secondary;
+
+        current->internal.count = split_index + 2;
+        new_node->internal.count = M - split_index - 1;
+    }
+    secondary->ptr = new_node;
+    secondary->bound = new_node->internal.children[0].bound;
+    return true;
 }
 
 void insert_to_root(node** p_root, int key, const char* value) {
