@@ -62,7 +62,7 @@ int locate(node* n, int target) {
 
 node* search(node* root, int target) {
     if (root == NULL) {
-        return false;
+        return NULL;
     }
 
     node* current = root;
