@@ -29,3 +29,5 @@ jobs:
       - run: gcc -Wall -Wextra -Werror ./05/linear_search_list.c
       - run: gcc -Wall -Wextra -Werror ./06/binary_search.c
       - run: gcc -Wall -Wextra -Werror ./06/binary_search_tree.c
+      - run: gcc -Wall -Wextra -Werror ./07/avl_tree.c
+      - run: gcc -Wall -Wextra -Werror ./07/b_tree.c
