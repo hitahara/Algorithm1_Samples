@@ -6,7 +6,6 @@
 
 #define M 5
 
-// 4 bytes
 typedef enum {
     INTERNAL,
     EXTERNAL,
@@ -117,7 +116,8 @@ bool insert_(node** p_current, int key, const char* value, pair** p_secondary) {
         return false;
     }
 
-    if (current->internal.count < M) {  // まだ子ノードを入れられる場合
+    if (current->internal.count < M) {
+        // まだ子ノードを入れられる場合
         // insert: 4
         // before: [1][3][5][ ]
         // after:  [1][3][4][5]
@@ -129,9 +129,11 @@ bool insert_(node** p_current, int key, const char* value, pair** p_secondary) {
         current->internal.children[index + 1] = *secondary;
         current->internal.count++;
         return false;
-    } else {  // もう子ノードを入れられない場合
+    } else {
+        // もう子ノードを入れられない場合
         // これ以上追加できないため、ノードを分割する。
-        // 分割したノードの半数を移動するための新しい内点を作成。
+
+        // 分割してノードの半数を移動するための新しい内点を作成。
         node* new_node = init_internal_node(0);
 
         // ノードを分割する箇所を計算。
@@ -232,10 +234,17 @@ void print(node* current, int depth) {
 int main() {
     node* root = NULL;
     for (int i = 0; i < 15; i++) {
-        // printf("insert %d\n", i);
         insert(&root, i, "A");
     }
     print(root, 0);
+
+    int target = 8;
+    node* result = search(root, target);
+    if (result) {
+        printf("%d was %s\n", target, result->external.value);
+    } else {
+        printf("%d was not found\n", target);
+    }
 }
 
 // 実行結果
