@@ -45,7 +45,6 @@ void erase(table* tab, int pos) {
 void cli_insert(table* tab) {
     printf("Type in a key (>= 0) and a field. (example: \"100 XXX\")\n");
     while (true) {
-        // record rec;
         int key;
         char value[32];
         scanf("%d %s", &key, value);
