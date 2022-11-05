@@ -38,9 +38,8 @@ void insert(table* tab, record rec) {
     // 順序が正しく保たれるように、正しい挿入位置を計算します
     int index = search(tab, rec.key);
 
-    // insert: 3
-    // index : 2
     // before: [0 1 2 4]
+    // insert: 3 (index = 2)
     // after : [0 1 2   4]
     for (int i = tab->length; i > index + 1; i--) {
         tab->records[i] = tab->records[i - 1];
@@ -53,9 +52,8 @@ void insert(table* tab, record rec) {
 }
 
 void erase(table* tab, int pos) {
-    // erase: 3
-    // index: 3
     // before: [0 1 2 3 4 5]
+    // erase: 3 (index = 3)
     // after : [0 1 2 4 5]
     for (int i = pos; i < tab->length - 1; i++) {
         tab->records[i] = tab->records[i + 1];
