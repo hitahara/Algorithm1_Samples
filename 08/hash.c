@@ -1,273 +1,112 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct record record;
-typedef struct hash_record hash_record;
-typedef struct hash hash;
+#define SIZE 10
 
-record *init_record(int key, const char *field);
-hash_record *init_hash_record(record *rec);
-hash *init_hash();
-void release_hash(hash *h);
+typedef struct {
+    int key;
+    char* value;
+    enum {
+        FREE,
+        USED,
+        DELETED,
+    } mark;
+} record;
 
-int hash_func(int i, int max_size);
-void insert(hash *has, record *rec);
-void search_existence_and_record(hash *has, int target, bool *found, record **target_rec);
+typedef struct {
+    int length;
+    record records[SIZE];
+} hash_table;
 
-void print_record(record *rec);
-void print_hash(hash *h);
-void print_search_existence(hash *has, int target);
-
-record *cli_record();
-
-/**
- * @brief 文字列化.
- */
-#define STRINGFY(s) #s
-/**
- * @brief 定義された値に変化しSTRINGFY.
- */
-#define DEF_STRINGFY(def) STRINGFY(def)
-
-/**
- * @brief 配列がとれる最大バイト数.
- */
-#define MAX_ARRAY_MEMORY 4096
-/**
- * @brief レコードのフィールドのデータが占有できる最大バイト数.
- */
-#define MAX_FIELD_MEMORY 32
-/**
- * @brief サンプルで使用するrecordsの量
- */
-#define INITIAL_NUM_RECORDS 10
-
-/**
- * @brief レコード：keyとfieldをもった構造体
- */
-struct record {
-  int key;                      /** int型のキー. key==-1or2^64-1を例外処理に用いている*/
-  char field[MAX_FIELD_MEMORY]; /** データを保持するchar型の配列. */
-};
-
-/**
- * @brief hash_recordでのデータが存在するかなどの状態.
- */
-typedef enum status {
-  FREE,
-  USED,
-  DELETED,
-} status;
-
-/**
- * @brief hash用レコード.
- */
-struct hash_record {
-  record *data;
-  status mark; /** statusの一番上FREEがデフォルトで. */
-};
-
-/**
- * @brief ハッシュの開番地法,線形走査で.
- */
-struct hash {
-  int size; /** 配列がとれる最大長. */
-  int filled_size;
-  hash_record table[MAX_ARRAY_MEMORY / sizeof(hash_record)]; /** record型で表された配列. */
-};
-
-/**
- * @brief recordの初期化.
- * @param[in] key 指定するキー.
- * @param[in] field const char*,動的にするのであればchar*,サイズはMAX_FIELD_MEMORYで定義.
- * @return 初期化されたrecordのポインタ.
- */
-record *init_record(int key, const char *field) {
-  if (strlen(field) > MAX_FIELD_MEMORY + 1) {
-    fprintf(stderr, "ERROR: \"field\" is too large.\n");
-    exit(1);
-  }
-
-  record *rec = (record *)malloc(sizeof(record));
-  rec->key = key;
-  strncpy(rec->field, field, MAX_FIELD_MEMORY);
-
-  return rec;
+// 簡単なハッシュ関数
+// あえて衝突するようにしている悪いアルゴリズムです。
+int hash_func(int i) {
+    double m = (3.14 / i) * 10000;
+    return (int)m % SIZE;
 }
 
-hash_record *init_hash_record(record *rec) {
-  hash_record *hr = (hash_record *)malloc(sizeof(hash_record));
-  hr->data = rec;
-  hr->mark = USED;
-  return hr;
-}
+void insert(hash_table* table, int key, char* value) {
+    assert(table->length < SIZE);
 
-/**
- * @brief tableの初期化.
- * @return 初期化されたtableのポインタ.
- */
-hash *init_hash() {
-  hash *h = (hash *)malloc(sizeof(hash));
-  h->size = MAX_ARRAY_MEMORY / sizeof(hash_record);
-  h->filled_size = 0;
-
-  return h;
-}
-
-/**
- * @brief hashのメモリを解放.
- * @param[in] h メモリを開放するhash.
- */
-void release_hash(hash *h) {
-  for (int i = 0; i < h->size; i++) {
-    if (h->table[i].mark == FREE) {
-      continue;
+    int h = hash_func(key);
+    printf("hash(%d) = %d\n", key, h);
+    while (table->records[h].mark == USED) {
+        assert(key != table->records[h].key);
+        h = (h + 1) % SIZE;
     }
-    free(h->table[i].data);
-  }
-  free(h);
-  h = NULL;
+    record rec = {key, value, USED};
+    table->records[h] = rec;
+    table->length++;
 }
 
-/**
- * @brief 雑なハッシュ関数.
- * @param[in] i 変換するインデックス.
- * @param[in] max_size hashがとれる最大のインデックス+1.
- */
-int hash_func(int i, int max_size) {
-  double m = i;
-  m = (3.14 / i) * 10000;
-  // printf("%lf\n", m);
-  i = (int)m % max_size;
-  // printf("%d\n", i);
-
-  return (int)i;
-}
-
-/**
- * @brief hashにrecordを挿入する.
- * @param[in] has recordを挿入するhashのポインタ.
- * @param[in] rec 挿入するrecordのポインタ.
- */
-void insert(hash *has, record *rec) {
-  if (has->filled_size >= has->size - 1) {
-    fprintf(stderr, "ERROR: The hash table is full.\n");
-    return;
-  } else {
-    int h = hash_func(rec->key, has->size);
-    while (has->table[h].mark == USED) {
-      if (rec->key == has->table[h].data->key) {
-        fprintf(stderr, "ERROR: The key already exists in the hash table.\n");
-        exit(1);
-      } else {
-        h = (h + 1) % has->size;
-      }
+// target と一致する record を探索し
+// 見つかった場合はそのポインタを返します。
+// 見つからなかった場合は NULL を返します。
+record* search(hash_table* table, int target) {
+    int pos = hash_func(target);
+    while (table->records[pos].mark == USED &&
+           target != table->records[pos].key) {
+        pos = (pos + 1) % SIZE;
     }
-    has->table[h].mark = USED;
-    has->table[h].data = rec;
-    has->filled_size++;
-  }
-}
-
-/**
- * @brief hashのtableにtargetが存在するか調べ,recordを取り出す.
- * @param[in] has targetが存在するか調べるhash.
- * @param[in] target 調べるキー.
- * @param[out] found targetがhash内に存在するかの真理値を返す.
- * @param[out] target_rec target==target_rec->keyのrecordを返す.
- */
-void search_existence_and_record(hash *has, int target, bool *found, record **target_rec) {
-  int pos = hash_func(target, has->size);
-  int loop = 0;
-  while (has->table[pos].mark == USED && target != has->table[pos].data->key) {
-    pos = (pos + 1) % has->size;
-    loop++;
-    if (loop <= has->size) {
-      *found = false;
-      *target_rec = NULL;
-      return;
+    if (table->records[pos].mark == USED) {
+        return &table->records[pos];
     }
-  }
-  *found = has->table[pos].mark == USED;
-  *target_rec = *found ? has->table[pos].data : NULL;
+    return NULL;
 }
 
-/**
- * @brief record確認用プリント関数.
- * @param[in] rec プリントするrecordのポインタ.
- */
-void print_record(record *rec) {
-  printf("[%06zu, %s]\n", rec->key, rec->field);
-}
-
-/**
- * @brief table確認用プリント関数.
- * @param[in] tab プリントする配列をもつtableのポインタ.
- */
-void print_hash(hash *h) {
-  printf("================================\n");
-  printf("TABLE: [\n");
-  for (int i = 0; i < h->size; i++) {
-    if (h->table[i].mark == FREE) {
-      printf("Index %d is FREE.\n", i);
-      continue;
+void print(hash_table* table) {
+    printf("TABLE:\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("  {%d, %s, %d}\n", table->records[i].key,
+               table->records[i].value, table->records[i].mark);
     }
-    print_record(h->table[i].data);
-  }
-  printf("]\nHASH SIZE: %d\n", h->size);
-  printf("================================\n");
-}
-
-/**
- * @brief search_existence_and_record確認用プリント関数.
- * @param[in] has targetが存在するか調べるhash.
- * @param[in] target 調べるキー.
- */
-void print_search_existence(hash *has, int target) {
-  bool found;
-  record *target_rec;
-  search_existence_and_record(has, target, &found, &target_rec);
-  printf("\"%d\" was %s.\n", target, found ? "FOUND" : "NOT FOUND");
-  if (found) {
-    printf("Hash table index is %d.\n", hash_func(target, has->size));
-    printf("Found data is...\n");
-    print_record(target_rec);
-  }
-}
-
-/**
- * @brief cliからrecordの内容を読み取りrecordに格納.
- * @return cliから読み取った内容で生成したrecordのポインタ
- */
-record *cli_record() {
-  record *rec;
-  int key = -1;
-  char field[MAX_FIELD_MEMORY];
-
-  printf("Type in a key >= 0 and a field. (example: \"10001 BBB\")\n");
-  printf(STRINGFY(MAX_FIELD_MEMORY) "=" DEF_STRINGFY(MAX_FIELD_MEMORY) "\n");
-
-  while (key == -1) {
-    scanf("%d", &key);
-  }
-  scanf("%" DEF_STRINGFY(MAX_FIELD_MEMORY) "s%*[^\n]", field);
-
-  rec = init_record(key, field);
-
-  return rec;
 }
 
 int main() {
-  hash *has = init_hash();
-  for (int i = 0; i < 100; i++) {
-    insert(has, init_record(i, "AAAA"));
-  }
+    hash_table table = {0};
+    insert(&table, 1, "AA");
+    insert(&table, 2, "BB");
+    insert(&table, 3, "CC");
+    insert(&table, 4, "DD");
+    print(&table);
 
-  print_hash(has);
-  print_search_existence(has, 30);
+    int target = 3;
+    record* rec = search(&table, target);
+    if (rec) {
+        printf("%d is %s\n", target, rec->value);
+    } else {
+        printf("%d is NULL\n", target);
+    }
 
-  release_hash(has);
-  return 0;
+    target = 5;
+    rec = search(&table, target);
+    if (rec) {
+        printf("%d is %s\n", target, rec->value);
+    } else {
+        printf("%d is NULL\n", target);
+    }
+
+    return 0;
 }
+
+// 実行結果
+// hash(1) = 0
+// hash(2) = 0
+// hash(3) = 6
+// hash(4) = 0
+// TABLE:
+//   {1, AA, 1}
+//   {2, BB, 1}
+//   {4, DD, 1}
+//   {0, (null), 0}
+//   {0, (null), 0}
+//   {0, (null), 0}
+//   {3, CC, 1}
+//   {0, (null), 0}
+//   {0, (null), 0}
+//   {0, (null), 0}
+// 3 is CC
+// 5 is NULL
