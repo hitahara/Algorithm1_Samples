@@ -77,7 +77,7 @@ int main() {
     }
     shuffle(keys, SIZE);
 
-    int* array = (int*)malloc(sizeof(int) * SIZE);
+    int array[SIZE];
     for (int i = 0; i < SIZE; i++) {
         array[i] = keys[i];
     }

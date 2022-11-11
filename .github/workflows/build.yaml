@@ -34,3 +34,4 @@ jobs:
       - run: gcc -Wall -Wextra -Werror ./08/hash.c
       - run: gcc -Wall -Wextra -Werror ./09/sort.c
       - run: gcc -Wall -Wextra -Werror ./10/sort.c
+      - run: gcc -Wall -Wextra -Werror ./11/sort.c
