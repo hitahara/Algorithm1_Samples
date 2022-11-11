@@ -31,3 +31,5 @@ jobs:
       - run: gcc -Wall -Wextra -Werror ./06/binary_search_tree.c
       - run: gcc -Wall -Wextra -Werror ./07/avl_tree.c
       - run: gcc -Wall -Wextra -Werror ./07/b_tree.c
+      - run: gcc -Wall -Wextra -Werror ./08/hash.c
+      - run: gcc -Wall -Wextra -Werror ./09/sort.c
