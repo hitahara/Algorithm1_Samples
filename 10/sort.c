@@ -38,8 +38,7 @@ void quick(int* array, int left, int right) {
         return;
     }
 
-    int some_where = (left + right) / 2;
-    int pivot = array[some_where];
+    int pivot = array[(left + right) / 2];
     int i = left;
     int j = right;
     do {
@@ -92,8 +91,8 @@ int main() {
     print(array);
 
     double start_clock = (double)clock();
-    shell_sort(array);
-    // quick_sort(array);
+    // shell_sort(array);
+    quick_sort(array);
     double end_clock = (double)clock();
     printf("Time  : %.8lf s\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
 
