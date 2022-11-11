@@ -62,14 +62,6 @@ void print(int* array) {
     printf("\n");
 }
 
-void run_sort_algorithm(int* array, void (*sort_algorithm)(int*)) {
-    double start_clock, end_clock;
-    start_clock = (double)clock();
-    sort_algorithm(array);
-    end_clock = (double)clock();
-    printf("Time  : %.8lf s\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
-}
-
 void shuffle(int* array, int length) {
     int i = length;
     while (i > 1) {
@@ -92,9 +84,16 @@ int main() {
 
     printf("Before: ");
     print(array);
-    run_sort_algorithm(array, simple_sort);
-    // run_sort_algorithm(array, bubble_sort);
-    // run_sort_algorithm(array, insertion_sort);
+
+    double start_clock = (double)clock();
+
+    simple_sort(array);
+    // bubble_sort(array);
+    // insertion_sort(array);
+
+    double end_clock = (double)clock();
+    printf("Time  : %.8lf s\n", (end_clock - start_clock) / CLOCKS_PER_SEC);
+
     printf("After : ");
     print(array);
 
