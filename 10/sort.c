@@ -76,16 +76,11 @@ void shuffle(int* array, int length) {
 }
 
 int main() {
-    int keys[SIZE];
-    for (int i = 0; i < SIZE; i++) {
-        keys[i] = i;
-    }
-    shuffle(keys, SIZE);
-
     int array[SIZE];
     for (int i = 0; i < SIZE; i++) {
-        array[i] = keys[i];
+        array[i] = i;
     }
+    shuffle(array, SIZE);
 
     printf("Before: ");
     print(array);
