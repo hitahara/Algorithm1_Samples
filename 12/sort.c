@@ -5,7 +5,7 @@
 
 // 時間計測をする際には大きな数値にしてください。
 #define SIZE 10
-#define M 10
+#define M 5
 
 // 配列の要素は [0, m-1] の範囲とします。
 void count_sort(int* a) {
@@ -66,10 +66,9 @@ void print(int* array) {
 }
 
 int main() {
-    int m = SIZE;
     int array[SIZE];
     for (int i = 0; i < SIZE; i++) {
-        array[i] = rand() % m;
+        array[i] = rand() % M;
     }
 
     printf("Before: ");
