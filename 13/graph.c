@@ -14,7 +14,7 @@ typedef struct edge_cell_ {
 } edge_cell;
 
 typedef struct {
-    edge_cell* adj_list[MAX_GRAPH_SIZE];
+    edge_cell* cells[MAX_GRAPH_SIZE];
 } adjacency_list;
 
 edge_cell* init_edge_cell(int dest) {
@@ -46,7 +46,7 @@ void dfs_mat(adjacency_matrix* mat) {
 
 void visit_list(adjacency_list* list, bool* visited, int v) {
     visited[v] = true;
-    edge_cell* p = list->adj_list[v];
+    edge_cell* p = list->cells[v];
     while (p) {
         int z = p->destination;
         if (!visited[z]) {
@@ -93,24 +93,24 @@ int main() {
     // ここでのnextはリスト表現における次なので、
     // グラフとしての次ではないことに注意してください。
     adjacency_list l = {0};
-    l.adj_list[0] = init_edge_cell(1);
-    l.adj_list[0]->next = init_edge_cell(2);
-    l.adj_list[0]->next->next = init_edge_cell(3);
-    l.adj_list[1] = init_edge_cell(0);
-    l.adj_list[1]->next = init_edge_cell(3);
-    l.adj_list[2] = init_edge_cell(0);
-    l.adj_list[2]->next = init_edge_cell(4);
-    l.adj_list[2]->next->next = init_edge_cell(5);
-    l.adj_list[3] = init_edge_cell(0);
-    l.adj_list[3]->next = init_edge_cell(1);
-    l.adj_list[3]->next->next = init_edge_cell(5);
-    l.adj_list[4] = init_edge_cell(2);
-    l.adj_list[4]->next = init_edge_cell(5);
-    l.adj_list[4]->next->next = init_edge_cell(6);
-    l.adj_list[5] = init_edge_cell(2);
-    l.adj_list[5]->next = init_edge_cell(3);
-    l.adj_list[5]->next->next = init_edge_cell(4);
-    l.adj_list[6] = init_edge_cell(4);
+    l.cells[0] = init_edge_cell(1);
+    l.cells[0]->next = init_edge_cell(2);
+    l.cells[0]->next->next = init_edge_cell(3);
+    l.cells[1] = init_edge_cell(0);
+    l.cells[1]->next = init_edge_cell(3);
+    l.cells[2] = init_edge_cell(0);
+    l.cells[2]->next = init_edge_cell(4);
+    l.cells[2]->next->next = init_edge_cell(5);
+    l.cells[3] = init_edge_cell(0);
+    l.cells[3]->next = init_edge_cell(1);
+    l.cells[3]->next->next = init_edge_cell(5);
+    l.cells[4] = init_edge_cell(2);
+    l.cells[4]->next = init_edge_cell(5);
+    l.cells[4]->next->next = init_edge_cell(6);
+    l.cells[5] = init_edge_cell(2);
+    l.cells[5]->next = init_edge_cell(3);
+    l.cells[5]->next->next = init_edge_cell(4);
+    l.cells[6] = init_edge_cell(4);
     dfs_list(&l);
     printf("\n");
 
