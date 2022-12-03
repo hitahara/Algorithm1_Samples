@@ -38,7 +38,7 @@ edge_cell *init_edge_cell(int dest) {
 void dfs_mat(adj_mat *mat) {
     bool visited[MAX_GRAPH_SIZE] = {0};
     for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
-        if (visited[i] == false) {
+        if (!visited[i]) {
             visit_mat(mat, visited, i);
         }
     }
@@ -57,28 +57,22 @@ void visit_mat(adj_mat *mat, bool *visited, int v) {
 }
 
 void dfs_list(adj_list *list) {
-    bool visit_list[MAX_GRAPH_SIZE];
-
+    bool visited[MAX_GRAPH_SIZE] = {0};
     for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
-        visit_list[i] = false;
-    }
-    for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
-        if (visit_list[i] == false) {
-            visit_lst(list, visit_list, i);
+        if (!visited[i]) {
+            visit_lst(list, visited, i);
         }
     }
 }
 
-void visit_lst(adj_list *list, bool *visit_list, int v) {
-    visit_list[v] = true;
-
+void visit_lst(adj_list *list, bool *visited, int v) {
+    visited[v] = true;
     edge_cell *p = list->adj_list[v];
     while (p != NULL) {
         int z = p->destination;
-
-        if (visit_list[z] == false) {
+        if (!visited[z]) {
             printf("%d - %d\n", v, z);
-            visit_lst(list, visit_list, z);
+            visit_lst(list, visited, z);
         }
         p = p->next;
     }
