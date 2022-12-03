@@ -42,7 +42,6 @@ void dfs_mat(adjacency_matrix* mat) {
             visit_mat(mat, visited, i);
         }
     }
-    printf("\n");
 }
 
 void visit_list(adjacency_list* list, bool* visited, int v) {
@@ -89,6 +88,7 @@ int main() {
     mat.M[5][4] = true;
     mat.M[6][4] = true;
     dfs_mat(&mat);
+    printf("\n");
 
     // ここでのnextはリスト表現における次なので、
     // グラフとしての次ではないことに注意してください。
@@ -112,6 +112,7 @@ int main() {
     l.adj_list[5]->next->next = init_edge_cell(4);
     l.adj_list[6] = init_edge_cell(4);
     dfs_list(&l);
+    printf("\n");
 
     return 0;
 }
