@@ -68,12 +68,7 @@ void dfs_list(adjacency_list *list) {
 }
 
 int main() {
-    adjacency_matrix mat;
-    for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
-        for (int j = 0; j < MAX_GRAPH_SIZE; ++j) {
-            mat.M[i][j] = false;
-        }
-    }
+    adjacency_matrix mat = {0};
     mat.M[0][1] = true;
     mat.M[0][2] = true;
     mat.M[0][3] = true;
@@ -94,29 +89,26 @@ int main() {
     mat.M[6][4] = true;
     dfs_mat(&mat);
 
-    adjacency_list *l = (adjacency_list *)malloc(sizeof(adjacency_list));
-    for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
-        l->adj_list[i] = NULL;
-    }
-    l->adj_list[0] = init_edge_cell(2);
-    l->adj_list[0]->next = init_edge_cell(3);
-    l->adj_list[0]->next->next = init_edge_cell(1);
-    l->adj_list[1] = init_edge_cell(0);
-    l->adj_list[1]->next = init_edge_cell(3);
-    l->adj_list[2] = init_edge_cell(4);
-    l->adj_list[2]->next = init_edge_cell(5);
-    l->adj_list[2]->next->next = init_edge_cell(0);
-    l->adj_list[3] = init_edge_cell(5);
-    l->adj_list[3]->next = init_edge_cell(0);
-    l->adj_list[3]->next->next = init_edge_cell(1);
-    l->adj_list[4] = init_edge_cell(6);
-    l->adj_list[4]->next = init_edge_cell(2);
-    l->adj_list[4]->next->next = init_edge_cell(5);
-    l->adj_list[5] = init_edge_cell(4);
-    l->adj_list[5]->next = init_edge_cell(2);
-    l->adj_list[5]->next->next = init_edge_cell(3);
-    l->adj_list[6] = init_edge_cell(4);
-    dfs_list(l);
+    adjacency_list l = {0};
+    l.adj_list[0] = init_edge_cell(2);
+    l.adj_list[0]->next = init_edge_cell(3);
+    l.adj_list[0]->next->next = init_edge_cell(1);
+    l.adj_list[1] = init_edge_cell(0);
+    l.adj_list[1]->next = init_edge_cell(3);
+    l.adj_list[2] = init_edge_cell(4);
+    l.adj_list[2]->next = init_edge_cell(5);
+    l.adj_list[2]->next->next = init_edge_cell(0);
+    l.adj_list[3] = init_edge_cell(5);
+    l.adj_list[3]->next = init_edge_cell(0);
+    l.adj_list[3]->next->next = init_edge_cell(1);
+    l.adj_list[4] = init_edge_cell(6);
+    l.adj_list[4]->next = init_edge_cell(2);
+    l.adj_list[4]->next->next = init_edge_cell(5);
+    l.adj_list[5] = init_edge_cell(4);
+    l.adj_list[5]->next = init_edge_cell(2);
+    l.adj_list[5]->next->next = init_edge_cell(3);
+    l.adj_list[6] = init_edge_cell(4);
+    dfs_list(&l);
 
     return 0;
 }
