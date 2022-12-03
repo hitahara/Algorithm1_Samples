@@ -7,26 +7,18 @@
 
 #define MAX_GRAPH_SIZE 100
 
-typedef struct edge_cell edge_cell;
-typedef struct adjacency_matrix adj_mat;
-typedef struct adjacency_list adj_list;
-void dfs_mat(adj_mat *mat);
-void visit_mat(adj_mat *mat, bool *visit_list, int v);
-void dfs_list(adj_list *list);
-void visit_lst(adj_list *list, bool *visit_list, int v);
-
-struct adjacency_matrix {
+typedef struct {
     bool M[MAX_GRAPH_SIZE][MAX_GRAPH_SIZE];
-};
+} adjacency_matrix;
 
-struct edge_cell {
+typedef struct edge_cell_ {
     int destination;
-    edge_cell *next;
-};
+    struct edge_cell_ *next;
+} edge_cell;
 
-struct adjacency_list {
+typedef struct {
     edge_cell *adj_list[MAX_GRAPH_SIZE];
-};
+} adjacency_list;
 
 edge_cell *init_edge_cell(int dest) {
     edge_cell *c = (edge_cell *)malloc(sizeof(edge_cell));
@@ -35,17 +27,7 @@ edge_cell *init_edge_cell(int dest) {
     return c;
 }
 
-void dfs_mat(adj_mat *mat) {
-    bool visited[MAX_GRAPH_SIZE] = {0};
-    for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
-        if (!visited[i]) {
-            visit_mat(mat, visited, i);
-        }
-    }
-    printf("\n");
-}
-
-void visit_mat(adj_mat *mat, bool *visited, int v) {
+void visit_mat(adjacency_matrix *mat, bool *visited, int v) {
     visited[v] = true;
 
     for (int z = 0; z < MAX_GRAPH_SIZE; ++z) {
@@ -56,30 +38,40 @@ void visit_mat(adj_mat *mat, bool *visited, int v) {
     }
 }
 
-void dfs_list(adj_list *list) {
+void dfs_mat(adjacency_matrix *mat) {
     bool visited[MAX_GRAPH_SIZE] = {0};
     for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
         if (!visited[i]) {
-            visit_lst(list, visited, i);
+            visit_mat(mat, visited, i);
         }
     }
+    printf("\n");
 }
 
-void visit_lst(adj_list *list, bool *visited, int v) {
+void visit_list(adjacency_list *list, bool *visited, int v) {
     visited[v] = true;
     edge_cell *p = list->adj_list[v];
     while (p != NULL) {
         int z = p->destination;
         if (!visited[z]) {
             printf("%d - %d\n", v, z);
-            visit_lst(list, visited, z);
+            visit_list(list, visited, z);
         }
         p = p->next;
     }
 }
 
+void dfs_list(adjacency_list *list) {
+    bool visited[MAX_GRAPH_SIZE] = {0};
+    for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
+        if (!visited[i]) {
+            visit_list(list, visited, i);
+        }
+    }
+}
+
 int main() {
-    adj_mat mat;
+    adjacency_matrix mat;
     for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
         for (int j = 0; j < MAX_GRAPH_SIZE; ++j) {
             mat.M[i][j] = false;
@@ -105,7 +97,7 @@ int main() {
     mat.M[6][4] = true;
     dfs_mat(&mat);
 
-    adj_list *l = (adj_list *)malloc(sizeof(adj_list));
+    adjacency_list *l = (adjacency_list *)malloc(sizeof(adjacency_list));
     for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
         l->adj_list[i] = NULL;
     }
