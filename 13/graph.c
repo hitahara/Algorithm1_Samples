@@ -10,32 +10,32 @@ typedef struct {
 
 typedef struct edge_cell_ {
     int destination;
-    struct edge_cell_ *next;
+    struct edge_cell_* next;
 } edge_cell;
 
 typedef struct {
-    edge_cell *adj_list[MAX_GRAPH_SIZE];
+    edge_cell* adj_list[MAX_GRAPH_SIZE];
 } adjacency_list;
 
-edge_cell *init_edge_cell(int dest) {
-    edge_cell *c = (edge_cell *)malloc(sizeof(edge_cell));
+edge_cell* init_edge_cell(int dest) {
+    edge_cell* c = (edge_cell*)malloc(sizeof(edge_cell));
     c->destination = dest;
     c->next = NULL;
     return c;
 }
 
-void visit_mat(adjacency_matrix *mat, bool *visited, int v) {
+void visit_mat(adjacency_matrix* mat, bool* visited, int v) {
     visited[v] = true;
-
     for (int z = 0; z < MAX_GRAPH_SIZE; ++z) {
         if (mat->M[v][z] && !visited[z]) {
-            printf("%d - %d\n", v, z);
+            printf("%d -> %d\n", v, z);
             visit_mat(mat, visited, z);
         }
     }
 }
 
-void dfs_mat(adjacency_matrix *mat) {
+void dfs_mat(adjacency_matrix* mat) {
+    printf("dfs in matrix:\n");
     bool visited[MAX_GRAPH_SIZE] = {0};
     for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
         if (!visited[i]) {
@@ -45,20 +45,21 @@ void dfs_mat(adjacency_matrix *mat) {
     printf("\n");
 }
 
-void visit_list(adjacency_list *list, bool *visited, int v) {
+void visit_list(adjacency_list* list, bool* visited, int v) {
     visited[v] = true;
-    edge_cell *p = list->adj_list[v];
-    while (p != NULL) {
+    edge_cell* p = list->adj_list[v];
+    while (p) {
         int z = p->destination;
         if (!visited[z]) {
-            printf("%d - %d\n", v, z);
+            printf("%d -> %d\n", v, z);
             visit_list(list, visited, z);
         }
         p = p->next;
     }
 }
 
-void dfs_list(adjacency_list *list) {
+void dfs_list(adjacency_list* list) {
+    printf("dfs in list:\n");
     bool visited[MAX_GRAPH_SIZE] = {0};
     for (int i = 0; i < MAX_GRAPH_SIZE; ++i) {
         if (!visited[i]) {
@@ -89,24 +90,26 @@ int main() {
     mat.M[6][4] = true;
     dfs_mat(&mat);
 
+    // ここでのnextはリスト表現における次なので、
+    // グラフとしての次ではないことに注意してください。
     adjacency_list l = {0};
-    l.adj_list[0] = init_edge_cell(2);
-    l.adj_list[0]->next = init_edge_cell(3);
-    l.adj_list[0]->next->next = init_edge_cell(1);
+    l.adj_list[0] = init_edge_cell(1);
+    l.adj_list[0]->next = init_edge_cell(2);
+    l.adj_list[0]->next->next = init_edge_cell(3);
     l.adj_list[1] = init_edge_cell(0);
     l.adj_list[1]->next = init_edge_cell(3);
-    l.adj_list[2] = init_edge_cell(4);
-    l.adj_list[2]->next = init_edge_cell(5);
-    l.adj_list[2]->next->next = init_edge_cell(0);
-    l.adj_list[3] = init_edge_cell(5);
-    l.adj_list[3]->next = init_edge_cell(0);
-    l.adj_list[3]->next->next = init_edge_cell(1);
-    l.adj_list[4] = init_edge_cell(6);
-    l.adj_list[4]->next = init_edge_cell(2);
-    l.adj_list[4]->next->next = init_edge_cell(5);
-    l.adj_list[5] = init_edge_cell(4);
-    l.adj_list[5]->next = init_edge_cell(2);
-    l.adj_list[5]->next->next = init_edge_cell(3);
+    l.adj_list[2] = init_edge_cell(0);
+    l.adj_list[2]->next = init_edge_cell(4);
+    l.adj_list[2]->next->next = init_edge_cell(5);
+    l.adj_list[3] = init_edge_cell(0);
+    l.adj_list[3]->next = init_edge_cell(1);
+    l.adj_list[3]->next->next = init_edge_cell(5);
+    l.adj_list[4] = init_edge_cell(2);
+    l.adj_list[4]->next = init_edge_cell(5);
+    l.adj_list[4]->next->next = init_edge_cell(6);
+    l.adj_list[5] = init_edge_cell(2);
+    l.adj_list[5]->next = init_edge_cell(3);
+    l.adj_list[5]->next->next = init_edge_cell(4);
     l.adj_list[6] = init_edge_cell(4);
     dfs_list(&l);
 
