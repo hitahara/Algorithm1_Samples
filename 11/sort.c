@@ -19,7 +19,7 @@ void swap(int* a, int* b) {
 
 void down_heap(int* array, int k, int r) {
     int v = array[k];
-    for (;;) {
+    while (true) {
         int j = k + k + 1;
         if (j > r) {
             break;

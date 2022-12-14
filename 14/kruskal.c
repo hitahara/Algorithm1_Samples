@@ -4,16 +4,18 @@
 
 #define INF 1000000
 #define MAX_SIZE 100
-#define SWAP(type, a, b)   \
-    {                      \
-        type swap_tmp = a; \
-        a = b;             \
-        b = swap_tmp;      \
-    }
 
 typedef struct {
-    int u, v, w;
+    int from;
+    int into;
+    int weight;
 } edge;
+
+void swap(edge* a, edge* b) {
+    edge tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
 
 // DisjointSet: 素集合を表すデータ構造
 //   メンバー変数:
@@ -22,7 +24,6 @@ typedef struct {
 //     init_parents();
 //     find_root(int x);
 //     unite(int x, int y);
-//     same_root(int x, int y);
 int parents[MAX_SIZE];
 
 void init_parents() {
@@ -48,29 +49,21 @@ void unite(int x, int y) {
     parents[x] = y;
 }
 
-bool same_root(int x, int y) {
-    return find_root(x) == find_root(y);
-}
-
-void down_heap(edge* edges, int target_node_index, int end_node_index) {
-    // top min
+void down_heap(edge* edges, int target, int end) {
     while (true) {
-        int comparing_node_index = 2 * target_node_index + 1;
-        if (comparing_node_index > end_node_index) {
+        int comparing = 2 * target + 1;
+        if (comparing > end) {
             break;
         }
-        // comparing_node_index == end_node_indexの時に右部分木は存在しない.
-        if (comparing_node_index != end_node_index) {
-            if (edges[comparing_node_index + 1].w < edges[comparing_node_index].w) {
-                // 右部分木に
-                comparing_node_index++;
-            }
+        if (comparing != end &&
+            edges[comparing + 1].weight < edges[comparing].weight) {
+            comparing++;
         }
-        if (edges[target_node_index].w < edges[comparing_node_index].w) {
+        if (edges[target].weight < edges[comparing].weight) {
             break;
         }
-        SWAP(edge, edges[target_node_index], edges[comparing_node_index])
-        target_node_index = comparing_node_index;
+        swap(&edges[target], &edges[comparing]);
+        target = comparing;
     }
 }
 
@@ -81,23 +74,20 @@ void kruskal(edge* edges, int num_edges) {
     }
 
     int total_weight = 0;
-    int u, v;
     for (int i = num_edges - 1; i >= 0; --i) {
-        edge* e = &edges[0];
-        u = e->u;
-        v = e->v;
-        if (!same_root(u, v)) {
-            printf("%d - %d : %d\n", e->u, e->v, e->w);
-            total_weight += e->w;
-            unite(u, v);
+        edge e = edges[0];
+        // エッジが異なる集合を結んでいる場合
+        if (find_root(e.from) != find_root(e.into)) {
+            printf("%d-%d: %d\n", e.from, e.into, e.weight);
+            total_weight += e.weight;  // 最小全域木の重みに加算
+            unite(e.from, e.into);     // 集合を結合
         }
         if (i > 0) {
-            SWAP(edge, edges[0], edges[i])
-            down_heap(edges, 0, i);
+            swap(&edges[0], &edges[i]);  // ヒープの先頭を更新
+            down_heap(edges, 0, i);      // ヒープを更新
         }
     }
-
-    printf("Total weight of minimum spanning tree: %d\n", total_weight);
+    printf("Total weight: %d\n", total_weight);
 }
 
 int main() {
