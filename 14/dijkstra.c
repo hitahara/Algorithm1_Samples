@@ -1,114 +1,90 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INF 1000000000
-#define SIZE 100
+#define INF 1000000
+#define MAX_SIZE 100
 
-typedef struct node node;
-struct node {
-  int via;
-  int weight;
-  bool visited;
-};
+typedef struct {
+    int prev;
+    int weight;
+    bool visited;
+} node;
 
-typedef struct adj_mat adj_mat;
-struct adj_mat {
-  int max_size;
-  int mat[SIZE][SIZE];
-};
+typedef struct {
+    int size;
+    int mat[MAX_SIZE][MAX_SIZE];
+} adj_mat;
 
-adj_mat GRAPH;
-node NODES[SIZE];
+adj_mat graph;
+node nodes[MAX_SIZE];
 
 int dijkstra(int start, int goal) {
-  int min, target;
+    nodes[start].weight = 0;
+    while (true) {
+        int min = INF;
+        int target;
 
-  NODES[start].weight = 0;
+        for (int i = 0; i < graph.size; ++i) {
+            if (!nodes[i].visited && nodes[i].weight < min) {
+                target = i;
+                min = nodes[i].weight;
+            }
+        }
+        assert(min != INF);
 
-  while (true) {
-    min = INF;
+        if (target == goal) {
+            return nodes[goal].weight;
+        }
+        nodes[target].visited = true;
 
-    for (int i = 0; i < GRAPH.max_size; ++i) {
-      if (NODES[i].visited == false && NODES[i].weight < min) {
-        target = i;
-        min = NODES[i].weight;
-      }
+        for (int neighbor = 0; neighbor < graph.size; ++neighbor) {
+            if (nodes[target].weight + graph.mat[target][neighbor] < nodes[neighbor].weight) {
+                nodes[neighbor].weight = graph.mat[target][neighbor] + nodes[target].weight;
+                nodes[neighbor].prev = target;
+            }
+        }
     }
-
-    if (min == INF) {
-      fprintf(stderr, "ERROR: s=%d and s=%d is not in the same graph.\n", start, goal);
-      exit(1);
-    }
-
-    if (target == goal)
-      return NODES[goal].weight;
-
-    NODES[target].visited = true;
-
-    for (int neighbor = 0; neighbor < GRAPH.max_size; ++neighbor) {
-      if (NODES[target].weight + GRAPH.mat[target][neighbor] < NODES[neighbor].weight) {
-        NODES[neighbor].weight = GRAPH.mat[target][neighbor] + NODES[target].weight;
-        NODES[neighbor].via = target;
-      }
-    }
-  }
 }
 
 void init_graph_and_nodes() {
-  for (int i = 0; i < SIZE; ++i) {
-    NODES[i].weight = INF;
-    NODES[i].visited = false;
-    NODES[i].via = -1;
-    for (int j = 0; j < SIZE; ++j)
-      GRAPH.mat[i][j] = INF;
-  }
+    for (int i = 0; i < MAX_SIZE; ++i) {
+        nodes[i].weight = INF;
+        nodes[i].visited = false;
+        nodes[i].prev = -1;
+        for (int j = 0; j < MAX_SIZE; ++j)
+            graph.mat[i][j] = INF;
+    }
 }
 
 int main(void) {
-  int edge_count;
-  int a, b, w;
-  int start, goal;
+    init_graph_and_nodes();
 
-  init_graph_and_nodes();
+    graph.size = 6;
+    graph.mat[0][1] = 6;
+    graph.mat[0][2] = 4;
+    graph.mat[1][3] = 3;
+    graph.mat[2][4] = 3;
+    graph.mat[2][5] = 6;
+    graph.mat[4][1] = 2;
+    graph.mat[4][3] = 1;
+    int start = 0;
+    int goal = 3;
 
-  /*
-  A : 0
-  B : 1
-  C : 2
-  D : 3
-  E : 4
-  F : 5
-
-  6 7
-  0 1 6
-  0 2 4
-  1 3 3
-  2 4 3
-  2 5 6
-  4 1 2
-  4 3 1
-  0 3
-  */
-
-  scanf("%d %d", &(GRAPH.max_size), &edge_count);
-  for (int i = 0; i < edge_count; ++i) {
-    scanf("%d %d %d", &a, &b, &w);
-    GRAPH.mat[a][b] = w;
-  }
-  scanf("%d %d", &start, &goal);
-
-  printf("Total weight: %d\n", dijkstra(start, goal));
-
-  int route_node = goal;
-  printf("%d", route_node);
-  while (true) {
-    route_node = NODES[route_node].via;
-    printf(" <- %d", route_node);
-    if (route_node == start)
-      break;
-  }
-
-  printf("\n");
-  return 0;
+    printf("Weight: %d\n", dijkstra(start, goal));
+    int route_node = goal;
+    printf("Route: %d", route_node);
+    while (true) {
+        route_node = nodes[route_node].prev;
+        printf(" <- %d", route_node);
+        if (route_node == start)
+            break;
+    }
+    printf("\n");
+    return 0;
 }
+
+// 実行結果
+// Weight: 8
+// Route: 3 <- 4 <- 2 <- 0
