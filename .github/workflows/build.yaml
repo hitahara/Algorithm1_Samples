@@ -35,3 +35,7 @@ jobs:
       - run: gcc -Wall -Wextra -Werror ./09/sort.c
       - run: gcc -Wall -Wextra -Werror ./10/sort.c
       - run: gcc -Wall -Wextra -Werror ./11/sort.c
+      - run: gcc -Wall -Wextra -Werror ./12/sort.c
+      - run: gcc -Wall -Wextra -Werror ./13/sort.c
+      - run: gcc -Wall -Wextra -Werror ./14/dijkstra.c
+      - run: gcc -Wall -Wextra -Werror ./14/kruskal.c
